@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://apis.google.com/js/api.js"></script>
-<script src="https://accounts.google.com/gsi/client"></script>
 <style>
 .drive-bar{padding:10px 18px;border-top:1px solid var(--bdr);display:flex;flex-direction:column;gap:6px}
 .drive-status{font-size:9.5px;color:var(--soft);display:flex;align-items:center;gap:5px;min-height:16px}
@@ -377,10 +375,8 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
     <div class="ni" onclick="nav('curriculum',this)"><div class="nd"></div>Curriculum</div>
   </div>
   <div class="drive-bar">
-    <div class="drive-status"><div class="drive-dot" id="driveDot"></div><span id="driveStatusText">Not connected</span></div>
-    <div id="driveSignInBtn" class="drive-btn primary" onclick="driveSignIn()" style="display:none">Connect Google Drive</div>
-    <div id="driveSaveBtn" class="drive-btn" onclick="driveSave()" style="display:none">Save to Drive</div>
-    <div id="driveSetupBtn" class="drive-btn" onclick="showSetup()" style="font-size:9.5px">Set up Drive sync</div>
+    <div class="drive-status"><div class="drive-dot" id="driveDot"></div><span id="driveStatusText">Connecting...</span></div>
+    <div id="driveSaveBtn" class="drive-btn primary" onclick="sbSave()" style="display:none">Save</div>
   </div>
   <div class="sb-foot" id="sbClock">—</div>
 </nav>
@@ -1352,124 +1348,36 @@ function addSpecSection() {
 }
 </script>
 
-<!-- DRIVE SETUP OVERLAY -->
-<div class="setup-overlay" id="setupOverlay">
-  <div class="setup-box">
-    <div class="setup-title">Connect Google Drive</div>
-    <div class="setup-sub">This takes about 5 minutes and is free. Your dashboard data will save to a file in your Google Drive automatically.</div>
-    <div class="setup-step"><div class="setup-num">1</div><div class="setup-text">Go to <strong>console.cloud.google.com</strong> and sign in with your Google account.</div></div>
-    <div class="setup-step"><div class="setup-num">2</div><div class="setup-text">Create a new project (name it anything, e.g. "My Dashboard").</div></div>
-    <div class="setup-step"><div class="setup-num">3</div><div class="setup-text">Go to <strong>APIs & Services → Library</strong>, search for "Google Drive API" and enable it.</div></div>
-    <div class="setup-step"><div class="setup-num">4</div><div class="setup-text">Go to <strong>APIs & Services → Credentials → Create Credentials → OAuth client ID</strong>. Choose "Web application". Under Authorized JavaScript origins add: <code style="background:var(--bg);padding:1px 5px;border-radius:3px">http://localhost</code> and the URL where you host this file.</div></div>
-    <div class="setup-step"><div class="setup-num">5</div><div class="setup-text">Copy the <strong>Client ID</strong> and paste it below.</div></div>
-    <input type="text" class="setup-input" id="clientIdInput" placeholder="Paste your Google OAuth Client ID here...">
-    <div style="display:flex;gap:8px;margin-top:16px">
-      <div class="drive-btn primary" onclick="saveClientId()" style="flex:1;padding:8px">Save & Connect</div>
-      <div class="drive-btn" onclick="hideSetup()" style="padding:8px">Cancel</div>
-    </div>
-  </div>
-</div>
-
 <script>
-// ── GOOGLE DRIVE INTEGRATION ───────────────────────
-const DRIVE_FILE_NAME = 'dashboard-data.json';
-const SCOPES = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file';
-let driveFileId = null;
-let tokenClient = null;
-let gapiInited = false;
-let gsiInited = false;
-let clientId = '';
+// ── SUPABASE INTEGRATION ───────────────────────────
+const SB_URL = 'https://nsqbefbgkbymfvzcrbhm.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5zcWJlZmJna2J5bWZ2emNyYmhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwOTg1MDIsImV4cCI6MjA5MjY3NDUwMn0.05DZVKAluvoqLFIxbzPgpGw56m_gki3NyRZM2G-oazI';
 
-function showSetup() { document.getElementById('setupOverlay').style.display = 'flex'; }
-function hideSetup() { document.getElementById('setupOverlay').style.display = 'none'; }
-
-function saveClientId() {
-  const val = document.getElementById('clientIdInput').value.trim();
-  if (!val) return;
-  try { localStorage.setItem('driveClientId', val); } catch(e) {}
-  clientId = val;
-  hideSetup();
-  initDrive();
-}
-
-function setDriveStatus(state, text) {
+function setStatus(state, text) {
   const dot = document.getElementById('driveDot');
   const statusText = document.getElementById('driveStatusText');
   dot.className = 'drive-dot' + (state ? ' ' + state : '');
   statusText.textContent = text;
 }
 
-function initDrive() {
-  try { clientId = localStorage.getItem('driveClientId') || ''; } catch(e) {}
-  if (!clientId) {
-    document.getElementById('driveSetupBtn').style.display = 'block';
-    document.getElementById('driveSignInBtn').style.display = 'none';
-    document.getElementById('driveSaveBtn').style.display = 'none';
-    setDriveStatus('', 'Not connected');
-    return;
-  }
-  document.getElementById('driveSetupBtn').style.display = 'block';
-  document.getElementById('driveSignInBtn').style.display = 'block';
-  setDriveStatus('', 'Ready to connect');
-  gapiLoaded();
-}
-
-function gapiLoaded() {
-  if (typeof gapi === 'undefined') { setTimeout(gapiLoaded, 500); return; }
-  gapi.load('client', async () => {
-    await gapi.client.init({
-      discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
-    });
-    gapiInited = true;
-    maybeInitTokenClient();
-  });
-}
-
-function maybeInitTokenClient() {
-  if (!clientId || typeof google === 'undefined') { setTimeout(maybeInitTokenClient, 500); return; }
-  tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: clientId,
-    scope: SCOPES,
-    callback: async (resp) => {
-      if (resp.error) { setDriveStatus('error', 'Sign in failed'); return; }
-      setDriveStatus('connected', 'Connected');
-      document.getElementById('driveSignInBtn').style.display = 'none';
-      document.getElementById('driveSaveBtn').style.display = 'block';
-      await driveLoad();
-    },
-  });
-  gsiInited = true;
-}
-
-function driveSignIn() {
-  if (!gapiInited || !gsiInited) { setDriveStatus('error', 'Still loading...'); setTimeout(()=>setDriveStatus('','Ready to connect'), 2000); return; }
-  setDriveStatus('', 'Signing in...');
-  tokenClient.requestAccessToken({ prompt: 'consent' });
+function setStatus(state, text) {
+  const dot = document.getElementById('driveDot');
+  const statusText = document.getElementById('driveStatusText');
+  dot.className = 'drive-dot' + (state ? ' ' + state : '');
+  statusText.textContent = text;
 }
 
 // ── COLLECT ALL DATA ──────────────────────────────
 function collectAllData() {
   const data = {};
-
-  // brain dump
   try { data.brainDump = document.getElementById('brainDump').value; } catch(e) {}
-
-  // sprint tasks
   data.tasks = Object.values(tasks).map(t => ({...t}));
-
-  // overflow
   data.overflow = Array.from(document.querySelectorAll('#ovList .ov-item')).map(el => ({
     text: el.querySelector('.ov-txt') ? el.querySelector('.ov-txt').textContent : '',
     done: el.classList.contains('done')
   }));
-
-  // calendar events
   data.calEvents = calEvents;
-
-  // planner slots (daily)
   data.dailyPlanner = Array.from(document.querySelectorAll('#dayPlanner .dp-slot input')).map(i => i.value);
-
-  // appointments
   data.appointments = Array.from(document.querySelectorAll('#apptList .appt-item')).map(el => ({
     day: el.querySelector('.appt-day') ? el.querySelector('.appt-day').textContent : '',
     mon: el.querySelector('.appt-mon') ? el.querySelector('.appt-mon').textContent : '',
@@ -1477,8 +1385,6 @@ function collectAllData() {
     meta: el.querySelector('.appt-meta') ? el.querySelector('.appt-meta').textContent : '',
     tag: el.querySelector('.appt-tag') ? el.querySelector('.appt-tag').textContent : ''
   }));
-
-  // routines
   data.routines = {
     morning: Array.from(document.querySelectorAll('#morList .r-item')).map(el => ({
       time: el.querySelector('.r-time') ? el.querySelector('.r-time').textContent : '',
@@ -1491,24 +1397,9 @@ function collectAllData() {
       done: el.classList.contains('done')
     }))
   };
-
-  // grocery
   data.groceries = Object.values(groceries);
-
-  // finance
   data.finance = { income: finData.income, expense: finData.expense, bills, ccData };
-
-  // savings (text-based from DOM)
-  data.savings = Array.from(document.querySelectorAll('#savList .sav-item')).map(el => ({
-    name: el.querySelector('.sav-name') ? el.querySelector('.sav-name').textContent : '',
-    meta: el.querySelector('.sav-meta') ? el.querySelector('.sav-meta').textContent : '',
-    pct: el.querySelector('.sav-pct') ? el.querySelector('.sav-pct').textContent : ''
-  }));
-
-  // media
   data.media = media;
-
-  // work notes
   ['main','ra','spec','other'].forEach(role => {
     const el = document.getElementById('wk-'+role+'-notes');
     if (el) data['workNotes_'+role] = el.value;
@@ -1520,44 +1411,21 @@ function collectAllData() {
       done: el.classList.contains('done')
     }));
   });
-
-  // curriculum notes
   try { data.currNotes = document.getElementById('currNotes') ? document.getElementById('currNotes').value : ''; } catch(e) {}
   data.courses = courses;
-
-  // month/planner notes
   try { data.monthGoals = document.getElementById('monthGoals') ? document.getElementById('monthGoals').value : ''; } catch(e) {}
   try { data.monthIntentions = document.getElementById('monthIntentions') ? document.getElementById('monthIntentions').value : ''; } catch(e) {}
-
-  // cur cal (from localStorage)
   const curCalData = {};
-  try {
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (k && k.startsWith('cur-')) curCalData[k] = localStorage.getItem(k);
-    }
-  } catch(e) {}
+  try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith('cur-')) curCalData[k] = localStorage.getItem(k); } } catch(e) {}
   data.curCal = curCalData;
-
   return data;
 }
 
 // ── RESTORE ALL DATA ──────────────────────────────
 function restoreAllData(data) {
   if (!data) return;
-
-  // brain dump
-  if (data.brainDump !== undefined) {
-    const el = document.getElementById('brainDump');
-    if (el) el.value = data.brainDump;
-  }
-
-  // tasks
-  if (data.tasks && Array.isArray(data.tasks)) {
-    data.tasks.forEach(t => addTask(t));
-  }
-
-  // overflow
+  if (data.brainDump !== undefined) { const el = document.getElementById('brainDump'); if (el) el.value = data.brainDump; }
+  if (data.tasks && Array.isArray(data.tasks)) { data.tasks.forEach(t => addTask(t)); }
   if (data.overflow && Array.isArray(data.overflow)) {
     data.overflow.forEach(ov => {
       const el = document.createElement('div'); el.className = 'ov-item' + (ov.done ? ' done' : '');
@@ -1566,23 +1434,9 @@ function restoreAllData(data) {
       document.getElementById('ovList').appendChild(el);
     });
   }
-
-  // calendar events
   if (data.calEvents) { Object.assign(calEvents, data.calEvents); buildMonth(); }
-
-  // daily planner
-  if (data.dailyPlanner) {
-    const inputs = document.querySelectorAll('#dayPlanner .dp-slot input');
-    data.dailyPlanner.forEach((v, i) => { if (inputs[i]) inputs[i].value = v; });
-  }
-
-  // grocery
-  if (data.groceries) {
-    data.groceries.forEach(g => { groceries[g.id] = g; });
-    rendG();
-  }
-
-  // finance
+  if (data.dailyPlanner) { const inputs = document.querySelectorAll('#dayPlanner .dp-slot input'); data.dailyPlanner.forEach((v, i) => { if (inputs[i]) inputs[i].value = v; }); }
+  if (data.groceries) { data.groceries.forEach(g => { groceries[g.id] = g; }); rendG(); }
   if (data.finance) {
     if (data.finance.income) { finData.income = data.finance.income; rendFin('income'); }
     if (data.finance.expense) { finData.expense = data.finance.expense; rendFin('expense'); }
@@ -1590,14 +1444,7 @@ function restoreAllData(data) {
     if (data.finance.ccData) { ccData.length = 0; data.finance.ccData.forEach(c => ccData.push(c)); rendCC(); }
     updFinSum();
   }
-
-  // media
-  if (data.media) {
-    Object.assign(media, data.media);
-    ['books','films'].forEach(t => rendMedia(t));
-  }
-
-  // work notes
+  if (data.media) { Object.assign(media, data.media); ['books','films'].forEach(t => rendMedia(t)); }
   ['main','ra','spec','other'].forEach(role => {
     const el = document.getElementById('wk-'+role+'-notes');
     if (el && data['workNotes_'+role] !== undefined) el.value = data['workNotes_'+role];
@@ -1615,103 +1462,69 @@ function restoreAllData(data) {
       });
     });
   }
-
-  // curriculum
   if (data.currNotes) { const el = document.getElementById('currNotes'); if (el) el.value = data.currNotes; }
-  if (data.courses && Array.isArray(data.courses)) {
-    courses.length = 0;
-    data.courses.forEach(c => courses.push(c));
-    rendCourseLanding();
-  }
-
-  // month notes
+  if (data.courses && Array.isArray(data.courses)) { courses.length = 0; data.courses.forEach(c => courses.push(c)); rendCourseLanding(); }
   if (data.monthGoals) { const el = document.getElementById('monthGoals'); if (el) el.value = data.monthGoals; }
   if (data.monthIntentions) { const el = document.getElementById('monthIntentions'); if (el) el.value = data.monthIntentions; }
-
-  // cur cal
-  if (data.curCal) {
-    try { Object.entries(data.curCal).forEach(([k,v]) => localStorage.setItem(k, v)); } catch(e) {}
-    buildCurCal();
-  }
+  if (data.curCal) { try { Object.entries(data.curCal).forEach(([k,v]) => localStorage.setItem(k, v)); } catch(e) {} buildCurCal(); }
 }
 
-// ── SAVE TO DRIVE ──────────────────────────────────
-async function driveSave() {
-  setDriveStatus('saving', 'Saving...');
+// ── SUPABASE SAVE ─────────────────────────────────
+async function sbSave() {
+  setStatus('saving', 'Saving...');
   try {
-    const data = JSON.stringify(collectAllData());
-    const metadata = { name: DRIVE_FILE_NAME, mimeType: 'application/json' };
-
-    if (driveFileId) {
-      // update existing file
-      await gapi.client.request({
-        path: `https://www.googleapis.com/upload/drive/v3/files/${driveFileId}`,
-        method: 'PATCH',
-        params: { uploadType: 'multipart' },
-        headers: { 'Content-Type': 'multipart/related; boundary=boundary' },
-        body: `--boundary\r\nContent-Type: application/json\r\n\r\n${JSON.stringify(metadata)}\r\n--boundary\r\nContent-Type: application/json\r\n\r\n${data}\r\n--boundary--`
-      });
-    } else {
-      // create new file
-      const res = await gapi.client.request({
-        path: 'https://www.googleapis.com/upload/drive/v3/files',
-        method: 'POST',
-        params: { uploadType: 'multipart' },
-        headers: { 'Content-Type': 'multipart/related; boundary=boundary' },
-        body: `--boundary\r\nContent-Type: application/json\r\n\r\n${JSON.stringify(metadata)}\r\n--boundary\r\nContent-Type: application/json\r\n\r\n${data}\r\n--boundary--`
-      });
-      driveFileId = JSON.parse(res.body).id;
-      try { localStorage.setItem('driveFileId', driveFileId); } catch(e) {}
-    }
+    const payload = { id: 'main', data: collectAllData(), updated_at: new Date().toISOString() };
+    const res = await fetch(SB_URL + '/rest/v1/dashboard_data', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY,
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const now = new Date();
-    setDriveStatus('connected', 'Saved ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0'));
+    setStatus('connected', 'Saved ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0'));
   } catch(e) {
-    console.error(e);
-    setDriveStatus('error', 'Save failed');
-    setTimeout(() => setDriveStatus('connected', 'Connected'), 3000);
+    console.error('Save error:', e);
+    setStatus('error', 'Save failed');
+    setTimeout(() => setStatus('connected', 'Connected'), 3000);
   }
 }
 
-// ── LOAD FROM DRIVE ────────────────────────────────
-async function driveLoad() {
-  setDriveStatus('saving', 'Loading data...');
+// ── SUPABASE LOAD ─────────────────────────────────
+async function sbLoad() {
+  setStatus('saving', 'Loading...');
   try {
-    // try known file id first
-    try { driveFileId = localStorage.getItem('driveFileId') || null; } catch(e) {}
-
-    if (!driveFileId) {
-      // search for the file
-      const list = await gapi.client.drive.files.list({
-        q: `name='${DRIVE_FILE_NAME}' and trashed=false`,
-        fields: 'files(id,name)',
-        spaces: 'drive'
-      });
-      const files = JSON.parse(list.body).files;
-      if (files && files.length > 0) {
-        driveFileId = files[0].id;
-        try { localStorage.setItem('driveFileId', driveFileId); } catch(e) {}
+    const res = await fetch(SB_URL + '/rest/v1/dashboard_data?id=eq.main&select=data', {
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY
       }
-    }
-
-    if (driveFileId) {
-      const res = await gapi.client.drive.files.get({
-        fileId: driveFileId,
-        alt: 'media'
-      });
-      const data = typeof res.body === 'string' ? JSON.parse(res.body) : res.result;
-      restoreAllData(data);
-      setDriveStatus('connected', 'Loaded from Drive');
-    } else {
-      setDriveStatus('connected', 'Connected — no data yet');
-    }
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const rows = await res.json();
+    if (rows && rows.length > 0 && rows[0].data) restoreAllData(rows[0].data);
+    setStatus('connected', 'Connected');
+    document.getElementById('driveSaveBtn').style.display = 'block';
   } catch(e) {
-    console.error(e);
-    setDriveStatus('connected', 'Connected (load error)');
+    console.error('Load error:', e);
+    setStatus('connected', 'Connected');
+    document.getElementById('driveSaveBtn').style.display = 'block';
   }
 }
+
+// ── AUTO-SAVE every 2 minutes ─────────────────────
+setInterval(() => {
+  if (document.getElementById('driveStatusText').textContent.startsWith('Connected')) {
+    sbSave();
+  }
+}, 120000);
 
 // init on page load
-window.addEventListener('load', () => { setTimeout(initDrive, 800); });
+window.addEventListener('load', () => { setTimeout(sbLoad, 500); });
 </script>
 </body>
 </html>
