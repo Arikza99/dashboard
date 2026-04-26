@@ -190,6 +190,9 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
 .dp-cat-btn{padding:5px 10px;border-radius:4px;font-size:11px;cursor:pointer;font-family:var(--mono);transition:opacity .12s;border:1px solid transparent}
 .dp-cat-btn:hover{opacity:.8}
 .dp-cat-btn.selected{outline:2px solid var(--txt);outline-offset:1px}
+.dp-dur-btn{padding:5px 10px;border-radius:4px;font-size:11px;cursor:pointer;font-family:var(--mono);border:1px solid var(--bdr);color:var(--mid);background:var(--surf);transition:all .12s}
+.dp-dur-btn:hover{border-color:var(--bdr2);color:var(--txt)}
+.dp-dur-btn.selected{background:var(--txt);color:var(--surf);border-color:var(--txt)}
 
 /* ══ WEEKLY CALENDAR ══ */
 .week-grid{display:grid;grid-template-columns:50px repeat(7,1fr);border:1px solid var(--bdr);border-radius:5px;overflow:hidden;background:var(--surf)}
@@ -545,6 +548,19 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
       <div class="dp-add-box">
         <div class="dp-add-title" id="dpModalTitle">Add time block</div>
         <input type="text" id="dpBlockLabel" placeholder="What are you doing?" style="width:100%;padding:8px 10px;margin-bottom:10px;border-radius:4px">
+        <div style="margin-bottom:12px">
+          <div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:6px">Duration</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap" id="dpDurationBtns">
+            <div class="dp-dur-btn" data-dur="0.25" onclick="selectDpDur(this)">15 min</div>
+            <div class="dp-dur-btn" data-dur="0.5" onclick="selectDpDur(this)">30 min</div>
+            <div class="dp-dur-btn" data-dur="0.75" onclick="selectDpDur(this)">45 min</div>
+            <div class="dp-dur-btn selected" data-dur="1" onclick="selectDpDur(this)">1 hr</div>
+            <div class="dp-dur-btn" data-dur="1.5" onclick="selectDpDur(this)">1.5 hrs</div>
+            <div class="dp-dur-btn" data-dur="2" onclick="selectDpDur(this)">2 hrs</div>
+            <div class="dp-dur-btn" data-dur="2.5" onclick="selectDpDur(this)">2.5 hrs</div>
+            <div class="dp-dur-btn" data-dur="3" onclick="selectDpDur(this)">3 hrs</div>
+          </div>
+        </div>
         <div style="margin-bottom:14px">
           <div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:6px">Category</div>
           <div style="display:flex;gap:6px;flex-wrap:wrap">
@@ -1044,65 +1060,51 @@ try { const bd = localStorage.getItem('brainDump'); if (bd) document.getElementB
 document.getElementById('brainDump').addEventListener('input', function() { try { localStorage.setItem('brainDump', this.value); } catch(e) {} });
 
 // ── VISUAL TIME BLOCK PLANNER ──────────────────────
-const DP_HOURS = ['5am','6am','7am','8am','9am','10am','11am','12pm','1pm','2pm','3pm','4pm','5pm','6pm','7pm','8pm','9pm','10pm','11pm'];
-const dpBlocks = []; // {id, startSlot, endSlot, label, cat}
-let dpDragStart = null;
-let dpDragEnd = null;
-let dpPendingStart = null;
-let dpPendingEnd = null;
+// Each slot = 30 minutes. Hours run 5am-11pm = 18 hours = 36 slots
+const DP_HOURS_BASE = [5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
+const DP_SLOT_HEIGHT = 36; // px per 30-min slot
+const dpBlocks = [];
+let dpPendingSlot = null;
 let dpSelectedCat = 'other';
+let dpSelectedDur = 1; // hours
+
+function slotToLabel(slot) {
+  const totalMins = 5 * 60 + slot * 30;
+  const h = Math.floor(totalMins / 60);
+  const m = totalMins % 60;
+  const ampm = h >= 12 ? 'pm' : 'am';
+  const h12 = h > 12 ? h - 12 : h === 0 ? 12 : h;
+  return h12 + (m ? ':' + String(m).padStart(2,'0') : '') + ampm;
+}
 
 function buildDayPlanner() {
   const dp = document.getElementById('dayPlanner');
-  dp.innerHTML = DP_HOURS.map((h, i) =>
-    `<div class="dp-hour">${h}</div><div class="dp-slot" data-slot="${i}" onmousedown="dpMouseDown(${i})" onmouseenter="dpMouseEnter(${i})" onmouseup="dpMouseUp(${i})"></div>`
-  ).join('');
+  const totalSlots = DP_HOURS_BASE.length * 2; // 2 slots per hour
+  let html = '';
+  for (let i = 0; i < totalSlots; i++) {
+    const isHour = i % 2 === 0;
+    const label = isHour ? slotToLabel(i) : '';
+    html += `<div class="dp-hour" style="height:${DP_SLOT_HEIGHT}px;${!isHour?'border-bottom:1px dashed var(--bdr);color:transparent;':'border-bottom:1px solid var(--bdr);'}">${label}</div>`;
+    html += `<div class="dp-slot" data-slot="${i}" style="height:${DP_SLOT_HEIGHT}px;border-bottom:${isHour?'1px solid var(--bdr)':'1px dashed var(--bdr)'}" onclick="clickDpSlot(${i})"></div>`;
+  }
+  dp.innerHTML = html;
   renderDpBlocks();
 }
 
-function dpMouseDown(slot) {
-  dpDragStart = slot;
-  dpDragEnd = slot;
-  markDragSelect();
-}
-function dpMouseEnter(slot) {
-  if (dpDragStart === null) return;
-  dpDragEnd = slot;
-  markDragSelect();
-}
-function dpMouseUp(slot) {
-  if (dpDragStart === null) return;
-  dpPendingStart = Math.min(dpDragStart, slot);
-  dpPendingEnd = Math.max(dpDragStart, slot);
-  dpDragStart = null; dpDragEnd = null;
-  clearDragSelect();
-  openDpModal();
-}
-document.addEventListener('mouseup', () => { dpDragStart = null; dpDragEnd = null; clearDragSelect(); });
-
-function markDragSelect() {
-  document.querySelectorAll('.dp-slot').forEach(el => el.classList.remove('drag-selecting'));
-  if (dpDragStart === null) return;
-  const s = Math.min(dpDragStart, dpDragEnd), e = Math.max(dpDragStart, dpDragEnd);
-  for (let i = s; i <= e; i++) {
-    const el = document.querySelector(`.dp-slot[data-slot="${i}"]`);
-    if (el) el.classList.add('drag-selecting');
-  }
-}
-function clearDragSelect() {
-  document.querySelectorAll('.dp-slot').forEach(el => el.classList.remove('drag-selecting'));
-}
-
-function openDpModal() {
-  const startLabel = DP_HOURS[dpPendingStart];
-  const endLabel = DP_HOURS[Math.min(dpPendingEnd + 1, DP_HOURS.length - 1)];
-  document.getElementById('dpModalTitle').textContent = 'Add block — ' + startLabel + (dpPendingEnd > dpPendingStart ? ' to ' + endLabel : '');
+function clickDpSlot(slot) {
+  dpPendingSlot = slot;
+  const label = slotToLabel(slot);
+  document.getElementById('dpModalTitle').textContent = 'Add block from ' + label;
   document.getElementById('dpBlockLabel').value = '';
   document.querySelectorAll('.dp-cat-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.dp-dur-btn').forEach(b => {
+    b.classList.toggle('selected', parseFloat(b.dataset.dur) === dpSelectedDur);
+  });
   dpSelectedCat = 'other';
   document.getElementById('dpModal').style.display = 'flex';
   setTimeout(() => document.getElementById('dpBlockLabel').focus(), 50);
 }
+
 function closeDpModal() { document.getElementById('dpModal').style.display = 'none'; }
 
 function selectDpCat(btn) {
@@ -1111,26 +1113,38 @@ function selectDpCat(btn) {
   dpSelectedCat = btn.dataset.cat;
 }
 
+function selectDpDur(btn) {
+  document.querySelectorAll('.dp-dur-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  dpSelectedDur = parseFloat(btn.dataset.dur);
+}
+
 function saveDpBlock() {
   const label = document.getElementById('dpBlockLabel').value.trim();
   if (!label) return;
-  dpBlocks.push({ id: Date.now().toString(), startSlot: dpPendingStart, endSlot: dpPendingEnd, label, cat: dpSelectedCat });
+  const durSlots = dpSelectedDur * 2; // convert hours to slots (each slot = 30 min)
+  dpBlocks.push({
+    id: Date.now().toString(),
+    startSlot: dpPendingSlot,
+    durSlots,
+    label,
+    cat: dpSelectedCat
+  });
   closeDpModal();
   renderDpBlocks();
 }
 
 function renderDpBlocks() {
-  // clear existing blocks
   document.querySelectorAll('.dp-block').forEach(el => el.remove());
-  const SLOT_HEIGHT = 52;
   dpBlocks.forEach(block => {
     const slot = document.querySelector(`.dp-slot[data-slot="${block.startSlot}"]`);
     if (!slot) return;
     const el = document.createElement('div');
     el.className = 'dp-block dp-cat-' + block.cat;
-    el.style.top = '2px';
-    el.style.height = ((block.endSlot - block.startSlot + 1) * SLOT_HEIGHT - 4) + 'px';
-    el.innerHTML = `<span class="dp-block-text">${block.label}</span><span class="dp-block-del" onclick="deleteDpBlock('${block.id}')">✕</span>`;
+    el.style.top = '1px';
+    el.style.height = (block.durSlots * DP_SLOT_HEIGHT - 3) + 'px';
+    const endLabel = slotToLabel(block.startSlot + block.durSlots);
+    el.innerHTML = `<span class="dp-block-text">${block.label}<span style="font-size:9px;opacity:.6;margin-left:5px">${slotToLabel(block.startSlot)}–${endLabel}</span></span><span class="dp-block-del" onclick="deleteDpBlock('${block.id}')">✕</span>`;
     slot.appendChild(el);
   });
 }
@@ -1754,7 +1768,7 @@ function restoreAllData(data) {
     });
   }
   if (data.calEvents) { Object.assign(calEvents, data.calEvents); buildMonth(); }
-  if (data.dailyPlanner && Array.isArray(data.dailyPlanner) && data.dailyPlanner.length && data.dailyPlanner[0] && typeof data.dailyPlanner[0] === 'object' && 'startSlot' in data.dailyPlanner[0]) {
+  if (data.dailyPlanner && Array.isArray(data.dailyPlanner) && data.dailyPlanner.length && data.dailyPlanner[0] && typeof data.dailyPlanner[0] === 'object' && ('startSlot' in data.dailyPlanner[0])) {
     dpBlocks.length = 0;
     data.dailyPlanner.forEach(b => dpBlocks.push(b));
     renderDpBlocks();
