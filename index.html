@@ -6,6 +6,17 @@
 <title>Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
+#lockScreen{position:fixed;inset:0;background:#f8f7f5;z-index:9999;display:flex;align-items:center;justify-content:center;font-family:'Geist Mono','Courier New',monospace}
+.lock-box{width:320px;text-align:center}
+.lock-title{font-size:22px;font-weight:500;color:#1c1b19;margin-bottom:6px;letter-spacing:-.02em}
+.lock-sub{font-size:11px;color:#a09b94;margin-bottom:28px}
+.lock-input{width:100%;padding:11px 14px;font-family:'Geist Mono','Courier New',monospace;font-size:13px;background:#fff;border:1px solid #e5e2dd;border-radius:5px;outline:none;color:#1c1b19;text-align:center;letter-spacing:.05em;transition:border-color .15s}
+.lock-input:focus{border-color:#1c1b19}
+.lock-btn{width:100%;margin-top:10px;padding:10px;font-family:'Geist Mono','Courier New',monospace;font-size:12px;background:#1c1b19;color:#fff;border:none;border-radius:5px;cursor:pointer;transition:background .15s}
+.lock-btn:hover{background:#333}
+.lock-err{font-size:11px;color:#b83232;margin-top:8px;min-height:16px}
+</style>
+<style>
 .drive-bar{padding:10px 18px;border-top:1px solid var(--bdr);display:flex;flex-direction:column;gap:6px}
 .drive-status{font-size:9.5px;color:var(--soft);display:flex;align-items:center;gap:5px;min-height:16px}
 .drive-dot{width:6px;height:6px;border-radius:50%;background:var(--dim);flex-shrink:0}
@@ -378,6 +389,17 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
 </style>
 </head>
 <body>
+
+<!-- LOCK SCREEN -->
+<div id="lockScreen">
+  <div class="lock-box">
+    <div class="lock-title">Dashboard</div>
+    <div class="lock-sub">Enter your password to continue</div>
+    <input class="lock-input" type="password" id="lockInput" placeholder="password" onkeydown="if(event.key==='Enter')unlock()">
+    <button class="lock-btn" onclick="unlock()">Unlock</button>
+    <div class="lock-err" id="lockErr"></div>
+  </div>
+</div>
 
 <!-- SIDEBAR -->
 <nav class="sb">
@@ -954,6 +976,28 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
 
 <script>
 'use strict';
+
+// ── LOCK SCREEN ───────────────────────────────────
+const PW = 'ExNihilo#NihilFit3';
+function unlock() {
+  const val = document.getElementById('lockInput').value;
+  if (val === PW) {
+    document.getElementById('lockScreen').style.display = 'none';
+    try { sessionStorage.setItem('unlocked', '1'); } catch(e) {}
+  } else {
+    const err = document.getElementById('lockErr');
+    err.textContent = 'Incorrect password. Try again.';
+    document.getElementById('lockInput').value = '';
+    document.getElementById('lockInput').focus();
+    setTimeout(() => { err.textContent = ''; }, 3000);
+  }
+}
+// stay unlocked within the same browser session
+try {
+  if (sessionStorage.getItem('unlocked') === '1') {
+    document.getElementById('lockScreen').style.display = 'none';
+  }
+} catch(e) {}
 
 // ── NAV ──────────────────────────────────────────
 function nav(id, el) {
