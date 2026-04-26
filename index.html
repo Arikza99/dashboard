@@ -155,11 +155,30 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
 .brain-dump textarea{width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:12.5px;color:var(--txt);outline:none;line-height:1.8;min-height:100px}
 
 /* ══ DAILY PLANNER ══ */
-.day-planner{display:grid;grid-template-columns:50px 1fr;gap:0}
-.dp-hour{font-size:10px;color:var(--dim);padding:0 8px;text-align:right;padding-top:6px;border-right:1px solid var(--bdr);height:48px}
-.dp-slot{border-bottom:1px solid var(--bdr);height:48px;padding:0}
-.dp-slot input{width:100%;height:100%;background:transparent;border:none;outline:none;font-family:var(--mono);font-size:11.5px;color:var(--txt);padding:0 10px}
-.dp-slot input::placeholder{color:var(--dim)}
+.day-planner{display:grid;grid-template-columns:52px 1fr;background:var(--surf);border:1px solid var(--bdr);border-radius:5px;overflow:hidden;user-select:none}
+.dp-hour{font-size:9.5px;color:var(--dim);padding:0 8px;text-align:right;padding-top:5px;border-right:1px solid var(--bdr);height:52px;border-bottom:1px solid var(--bdr);flex-shrink:0}
+.dp-slot{border-bottom:1px solid var(--bdr);height:52px;position:relative;cursor:pointer;transition:background .1s}
+.dp-slot:hover{background:var(--bg)}
+.dp-slot.drag-selecting{background:rgba(122,142,168,.12)}
+.dp-block{position:absolute;left:4px;right:4px;border-radius:4px;padding:4px 8px;font-size:11px;font-family:var(--mono);cursor:pointer;overflow:hidden;z-index:2;display:flex;align-items:flex-start;justify-content:space-between;gap:4px;line-height:1.3;min-height:44px}
+.dp-block-text{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dp-block-del{font-size:10px;opacity:0;transition:opacity .1s;cursor:pointer;flex-shrink:0;padding:0 2px}
+.dp-block:hover .dp-block-del{opacity:1}
+.dp-cat-urgent{background:rgba(184,50,50,.15);border:1px solid rgba(184,50,50,.3);color:var(--urgent)}
+.dp-cat-deadline{background:rgba(196,125,14,.12);border:1px solid rgba(196,125,14,.3);color:var(--deadline)}
+.dp-cat-admin{background:rgba(42,100,128,.12);border:1px solid rgba(42,100,128,.3);color:var(--admin)}
+.dp-cat-creative{background:rgba(61,122,82,.12);border:1px solid rgba(61,122,82,.3);color:var(--creative)}
+.dp-cat-personal{background:rgba(150,120,180,.12);border:1px solid rgba(150,120,180,.3);color:#9678b4}
+.dp-cat-other{background:var(--surf2);border:1px solid var(--bdr);color:var(--mid)}
+.dp-add-modal{position:fixed;inset:0;background:rgba(28,27,25,.5);z-index:200;display:flex;align-items:center;justify-content:center}
+.dp-add-box{background:var(--surf);border:1px solid var(--bdr);border-radius:6px;padding:20px 22px;width:320px;box-shadow:0 8px 24px rgba(0,0,0,.1)}
+.dp-add-title{font-size:13px;font-weight:500;margin-bottom:14px;color:var(--txt)}
+.dp-legend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.dp-leg-item{display:flex;align-items:center;gap:4px;font-size:9.5px;color:var(--soft)}
+.dp-leg-dot{width:8px;height:8px;border-radius:2px}
+.dp-cat-btn{padding:5px 10px;border-radius:4px;font-size:11px;cursor:pointer;font-family:var(--mono);transition:opacity .12s;border:1px solid transparent}
+.dp-cat-btn:hover{opacity:.8}
+.dp-cat-btn.selected{outline:2px solid var(--txt);outline-offset:1px}
 
 /* ══ WEEKLY CALENDAR ══ */
 .week-grid{display:grid;grid-template-columns:50px repeat(7,1fr);border:1px solid var(--bdr);border-radius:5px;overflow:hidden;background:var(--surf)}
@@ -327,9 +346,16 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
 .mat-item:hover .mat-del{opacity:1}
 
 /* notes */
-.note-entry{background:var(--bg);border:1px solid var(--bdr);border-radius:4px;padding:10px 12px;margin-bottom:6px}
-.note-date{font-size:9.5px;color:var(--dim);margin-bottom:4px}
-.note-text{font-size:12px;color:var(--txt);line-height:1.6;white-space:pre-wrap}
+.note-entry{background:var(--bg);border:1px solid var(--bdr);border-radius:4px;margin-bottom:5px;overflow:hidden}
+.note-header{display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;transition:background .12s;user-select:none}
+.note-header:hover{background:var(--surf2)}
+.note-arrow{font-size:9px;color:var(--dim);transition:transform .2s;flex-shrink:0}
+.note-entry.open .note-arrow{transform:rotate(90deg)}
+.note-title{flex:1;font-size:12px;color:var(--txt);font-weight:500}
+.note-date{font-size:9.5px;color:var(--dim)}
+.note-body{display:none;padding:0 12px 12px;border-top:1px solid var(--bdr)}
+.note-entry.open .note-body{display:block}
+.note-text{font-size:12px;color:var(--txt);line-height:1.6;white-space:pre-wrap;padding-top:10px}
 
 /* cur calendar */
 .cur-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);border:1px solid var(--bdr);border-radius:5px;overflow:hidden;background:var(--surf)}
@@ -363,7 +389,7 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
     <div class="nl">Home</div>
     <div class="ni active" onclick="nav('home',this)"><div class="nd"></div>Today / Calendar</div>
     <div class="nl">Planning</div>
-    <div class="ni" onclick="nav('appt',this)"><div class="nd"></div>Appointments</div>
+    <div class="ni" onclick="nav('appt',this)"><div class="nd"></div>Events & Appts</div>
     <div class="ni" onclick="nav('routines',this)"><div class="nd"></div>Routines</div>
     <div class="ni" onclick="nav('work',this)"><div class="nd"></div>Work</div>
     <div class="nl">Lists</div>
@@ -436,6 +462,9 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
           <div style="flex:1"><div class="atf-lbl">Sprint</div>
             <select id="atfSprint" style="width:100%"><option value="urgent">Urgent</option><option value="deadline">Deadline</option><option value="admin" selected>Admin</option><option value="creative">Creative/Study</option></select>
           </div>
+          <div style="flex:1"><div class="atf-lbl">Role (optional)</div>
+            <select id="atfRole" style="width:100%"><option value="">— none —</option><option value="main">Main Job</option><option value="ra">RA</option><option value="spec">SPEC</option><option value="other">Other</option></select>
+          </div>
         </div>
         <div style="display:flex;gap:8px;margin-bottom:8px">
           <div style="flex:1"><div class="atf-lbl">Est. time</div><input type="text" id="atfTime" placeholder="30 min, 2 hrs" style="width:100%;padding:6px 9px"></div>
@@ -474,9 +503,41 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
 
     <!-- Daily planner -->
     <div class="sec">
-      <div class="slbl">Day planner</div>
-      <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:5px;overflow:hidden">
-        <div class="day-planner" id="dayPlanner"></div>
+      <div class="slbl">
+        <span>Day planner</span>
+        <div class="dp-legend">
+          <div class="dp-leg-item"><div class="dp-leg-dot" style="background:var(--urgent)"></div>urgent</div>
+          <div class="dp-leg-item"><div class="dp-leg-dot" style="background:var(--deadline)"></div>deadline</div>
+          <div class="dp-leg-item"><div class="dp-leg-dot" style="background:var(--admin)"></div>admin</div>
+          <div class="dp-leg-item"><div class="dp-leg-dot" style="background:var(--creative)"></div>creative</div>
+          <div class="dp-leg-item"><div class="dp-leg-dot" style="background:#9678b4"></div>personal</div>
+          <div class="dp-leg-item"><div class="dp-leg-dot" style="background:var(--bdr2)"></div>other</div>
+        </div>
+      </div>
+      <p style="font-size:10.5px;color:var(--soft);margin-bottom:10px">Click any slot to add a block. Drag across multiple slots to span hours.</p>
+      <div class="day-planner" id="dayPlanner"></div>
+    </div>
+
+    <!-- Time block modal -->
+    <div class="dp-add-modal" id="dpModal" style="display:none" onclick="if(event.target===this)closeDpModal()">
+      <div class="dp-add-box">
+        <div class="dp-add-title" id="dpModalTitle">Add time block</div>
+        <input type="text" id="dpBlockLabel" placeholder="What are you doing?" style="width:100%;padding:8px 10px;margin-bottom:10px;border-radius:4px">
+        <div style="margin-bottom:14px">
+          <div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:6px">Category</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <div class="dp-cat-btn dp-cat-urgent" data-cat="urgent" onclick="selectDpCat(this)">Urgent</div>
+            <div class="dp-cat-btn dp-cat-deadline" data-cat="deadline" onclick="selectDpCat(this)">Deadline</div>
+            <div class="dp-cat-btn dp-cat-admin" data-cat="admin" onclick="selectDpCat(this)">Admin</div>
+            <div class="dp-cat-btn dp-cat-creative" data-cat="creative" onclick="selectDpCat(this)">Creative/Study</div>
+            <div class="dp-cat-btn dp-cat-personal" data-cat="personal" onclick="selectDpCat(this)">Personal</div>
+            <div class="dp-cat-btn dp-cat-other" data-cat="other" onclick="selectDpCat(this)">Other</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn bd" style="flex:1" onclick="saveDpBlock()">Add block</button>
+          <button class="btn" onclick="closeDpModal()">Cancel</button>
+        </div>
       </div>
     </div>
   </div>
@@ -508,7 +569,7 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
 
 <!-- ══════ APPOINTMENTS ══════ -->
 <div class="page" id="p-appt">
-  <div class="ph"><div class="pl">Planning</div><div class="pt">Appointments</div></div>
+  <div class="ph"><div class="pl">Planning</div><div class="pt">Events & Appointments</div></div>
   <div class="card sec">
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;margin-bottom:8px">
       <input type="text" id="aN" placeholder="Name" style="padding:7px 9px">
@@ -518,7 +579,7 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
     </div>
     <div style="display:flex;gap:8px">
       <input type="text" id="aL" placeholder="Location / link" style="flex:1;padding:7px 9px">
-      <select id="aTag"><option>medical</option><option>academic</option><option>personal</option><option>work</option><option>other</option></select>
+      <select id="aTag"><option>medical</option><option>academic</option><option>personal</option><option>work</option><option>concert</option><option>social</option><option>sport</option><option>travel</option><option>other</option></select>
     </div>
   </div>
   <div id="apptList"></div>
@@ -554,7 +615,7 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
       <button class="btn" onclick="addGrocery()">+ Add</button>
     </div>
   </div>
-  <div style="display:flex;gap:7px;margin-bottom:12px"><button class="btn bsm" onclick="clearG(true)">Clear checked</button><button class="btn bsm" onclick="clearG(false)">Clear all</button></div>
+  <div style="display:flex;gap:7px;margin-bottom:12px"><button class="btn bsm" onclick="clearG(true)">Clear checked</button><button class="btn bsm" onclick="clearG(false)">Clear all</button><button class="btn bsm" onclick="copyGroceryList()">Copy list</button></div>
   <div id="grocList"></div>
 </div>
 
@@ -730,7 +791,8 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
       <!-- Notes -->
       <div class="cd-tc" id="cd-notes">
         <div class="card" style="margin-bottom:10px">
-          <textarea id="noteInput" placeholder="Write a note, reflection, or key concept..." style="width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:12.5px;color:var(--txt);outline:none;line-height:1.8;min-height:80px"></textarea>
+          <input type="text" id="noteTitleInput" placeholder="Note title or subject..." style="width:100%;padding:7px 9px;margin-bottom:8px;border-radius:4px">
+          <textarea id="noteInput" placeholder="Write your note, reflection, or key concept..." style="width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:12.5px;color:var(--txt);outline:none;line-height:1.8;min-height:80px"></textarea>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
             <button class="btn bsm" onclick="exportCurriculumNotes()">Export all notes</button>
             <button class="btn bsm" onclick="saveNote()">Save note</button>
@@ -781,8 +843,10 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
 
   <!-- ALL TASKS VIEW -->
   <div class="tc active" id="wk-all">
-    <div class="slbl"><span>Everything across all roles</span></div>
+    <div class="slbl"><span>Everything across all roles</span><button class="btn bsm" onclick="renderAllWorkTasks()">Refresh</button></div>
     <div id="wk-all-list"><div class="empty">Add tasks in each role tab and they will appear here.</div></div>
+    <div class="slbl" style="margin-top:16px"><span>Sprint tasks tagged to a role</span></div>
+    <div id="wk-all-sprint"><div class="empty">No sprint tasks tagged to a role yet. Add a role when creating a sprint task.</div></div>
   </div>
 
   <!-- MAIN JOB -->
@@ -803,6 +867,8 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
       </div>
     </div>
     <div id="wk-main-list"><div class="empty">No tasks yet.</div></div>
+    <div class="slbl" style="margin-top:16px"><span>Sprint tasks — Main Job</span></div>
+    <div id="wk-sprint-main"><div class="empty">No sprint tasks tagged to Main Job yet.</div></div>
   </div>
 
   <!-- RA -->
@@ -823,6 +889,8 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
       </div>
     </div>
     <div id="wk-ra-list"><div class="empty">No tasks yet.</div></div>
+    <div class="slbl" style="margin-top:16px"><span>Sprint tasks — RA</span></div>
+    <div id="wk-sprint-ra"><div class="empty">No sprint tasks tagged to RA yet.</div></div>
   </div>
 
   <!-- SPEC -->
@@ -855,6 +923,8 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
       </div>
     </div>
     <div id="wk-spec-list"><div class="empty">No tasks yet.</div></div>
+    <div class="slbl" style="margin-top:16px"><span>Sprint tasks — SPEC</span></div>
+    <div id="wk-sprint-spec"><div class="empty">No sprint tasks tagged to SPEC yet.</div></div>
   </div>
 
   <!-- OTHER -->
@@ -875,6 +945,8 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
       </div>
     </div>
     <div id="wk-other-list"><div class="empty">No tasks yet.</div></div>
+    <div class="slbl" style="margin-top:16px"><span>Sprint tasks — Other</span></div>
+    <div id="wk-sprint-other"><div class="empty">No sprint tasks tagged to Other yet.</div></div>
   </div>
 </div>
 
@@ -927,14 +999,106 @@ updateClock(); setInterval(updateClock, 30000);
 try { const bd = localStorage.getItem('brainDump'); if (bd) document.getElementById('brainDump').value = bd; } catch(e) {}
 document.getElementById('brainDump').addEventListener('input', function() { try { localStorage.setItem('brainDump', this.value); } catch(e) {} });
 
-// ── DAILY PLANNER ─────────────────────────────────
-(function() {
-  const hours = ['6am','7am','8am','9am','10am','11am','12pm','1pm','2pm','3pm','4pm','5pm','6pm','7pm','8pm','9pm','10pm'];
+// ── VISUAL TIME BLOCK PLANNER ──────────────────────
+const DP_HOURS = ['5am','6am','7am','8am','9am','10am','11am','12pm','1pm','2pm','3pm','4pm','5pm','6pm','7pm','8pm','9pm','10pm','11pm'];
+const dpBlocks = []; // {id, startSlot, endSlot, label, cat}
+let dpDragStart = null;
+let dpDragEnd = null;
+let dpPendingStart = null;
+let dpPendingEnd = null;
+let dpSelectedCat = 'other';
+
+function buildDayPlanner() {
   const dp = document.getElementById('dayPlanner');
-  dp.innerHTML = hours.map(h =>
-    `<div class="dp-hour">${h}</div><div class="dp-slot"><input type="text" placeholder="—"></div>`
+  dp.innerHTML = DP_HOURS.map((h, i) =>
+    `<div class="dp-hour">${h}</div><div class="dp-slot" data-slot="${i}" onmousedown="dpMouseDown(${i})" onmouseenter="dpMouseEnter(${i})" onmouseup="dpMouseUp(${i})"></div>`
   ).join('');
-})();
+  renderDpBlocks();
+}
+
+function dpMouseDown(slot) {
+  dpDragStart = slot;
+  dpDragEnd = slot;
+  markDragSelect();
+}
+function dpMouseEnter(slot) {
+  if (dpDragStart === null) return;
+  dpDragEnd = slot;
+  markDragSelect();
+}
+function dpMouseUp(slot) {
+  if (dpDragStart === null) return;
+  dpPendingStart = Math.min(dpDragStart, slot);
+  dpPendingEnd = Math.max(dpDragStart, slot);
+  dpDragStart = null; dpDragEnd = null;
+  clearDragSelect();
+  openDpModal();
+}
+document.addEventListener('mouseup', () => { dpDragStart = null; dpDragEnd = null; clearDragSelect(); });
+
+function markDragSelect() {
+  document.querySelectorAll('.dp-slot').forEach(el => el.classList.remove('drag-selecting'));
+  if (dpDragStart === null) return;
+  const s = Math.min(dpDragStart, dpDragEnd), e = Math.max(dpDragStart, dpDragEnd);
+  for (let i = s; i <= e; i++) {
+    const el = document.querySelector(`.dp-slot[data-slot="${i}"]`);
+    if (el) el.classList.add('drag-selecting');
+  }
+}
+function clearDragSelect() {
+  document.querySelectorAll('.dp-slot').forEach(el => el.classList.remove('drag-selecting'));
+}
+
+function openDpModal() {
+  const startLabel = DP_HOURS[dpPendingStart];
+  const endLabel = DP_HOURS[Math.min(dpPendingEnd + 1, DP_HOURS.length - 1)];
+  document.getElementById('dpModalTitle').textContent = 'Add block — ' + startLabel + (dpPendingEnd > dpPendingStart ? ' to ' + endLabel : '');
+  document.getElementById('dpBlockLabel').value = '';
+  document.querySelectorAll('.dp-cat-btn').forEach(b => b.classList.remove('selected'));
+  dpSelectedCat = 'other';
+  document.getElementById('dpModal').style.display = 'flex';
+  setTimeout(() => document.getElementById('dpBlockLabel').focus(), 50);
+}
+function closeDpModal() { document.getElementById('dpModal').style.display = 'none'; }
+
+function selectDpCat(btn) {
+  document.querySelectorAll('.dp-cat-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  dpSelectedCat = btn.dataset.cat;
+}
+
+function saveDpBlock() {
+  const label = document.getElementById('dpBlockLabel').value.trim();
+  if (!label) return;
+  dpBlocks.push({ id: Date.now().toString(), startSlot: dpPendingStart, endSlot: dpPendingEnd, label, cat: dpSelectedCat });
+  closeDpModal();
+  renderDpBlocks();
+}
+
+function renderDpBlocks() {
+  // clear existing blocks
+  document.querySelectorAll('.dp-block').forEach(el => el.remove());
+  const SLOT_HEIGHT = 52;
+  dpBlocks.forEach(block => {
+    const slot = document.querySelector(`.dp-slot[data-slot="${block.startSlot}"]`);
+    if (!slot) return;
+    const el = document.createElement('div');
+    el.className = 'dp-block dp-cat-' + block.cat;
+    el.style.top = '2px';
+    el.style.height = ((block.endSlot - block.startSlot + 1) * SLOT_HEIGHT - 4) + 'px';
+    el.innerHTML = `<span class="dp-block-text">${block.label}</span><span class="dp-block-del" onclick="deleteDpBlock('${block.id}')">✕</span>`;
+    slot.appendChild(el);
+  });
+}
+
+function deleteDpBlock(id) {
+  const idx = dpBlocks.findIndex(b => b.id === id);
+  if (idx !== -1) dpBlocks.splice(idx, 1);
+  renderDpBlocks();
+}
+
+buildDayPlanner();
+document.getElementById('dpBlockLabel').addEventListener('keydown', e => { if (e.key === 'Enter') saveDpBlock(); });
 
 // ── WEEKLY CALENDAR ────────────────────────────────
 let weekOffset = 0;
@@ -985,9 +1149,17 @@ function shiftMonth(d) { monthOffset += d; buildMonth(); }
 function addCalEvent(key, y, m, d) {
   const txt = prompt('Add event for ' + MONTHS[m] + ' ' + d + ':');
   if (!txt) return;
+  // add to calendar
   if (!calEvents[key]) calEvents[key] = [];
   calEvents[key].push(txt.trim());
   buildMonth();
+  // also add to appointments list
+  const el = document.createElement('div'); el.className = 'appt-item';
+  const monStr = MONTHS[m].slice(0,3);
+  el.innerHTML = `<div class="appt-date"><div class="appt-day">${d}</div><div class="appt-mon">${monStr}</div></div><div class="appt-body"><div class="appt-name">${txt.trim()}</div><div class="appt-meta">${MONTHS[m]} ${d}, ${y}</div></div><div class="appt-tag">other</div>`;
+  const apptList = document.getElementById('apptList');
+  if (apptList.querySelector('.empty')) apptList.innerHTML = '';
+  apptList.prepend(el);
 }
 buildMonth();
 
@@ -1021,6 +1193,8 @@ function bfLabel(b) { const n=parseInt(b); if(isNaN(n)||b==='') return null; ret
 
 function mkCard(t) {
   const bc = bfClass(t.buffer), bl = bfLabel(t.buffer);
+  const roleLabels = { main:'Main Job', ra:'RA', spec:'SPEC', other:'Other' };
+  const roleColors = { main:'var(--admin)', ra:'var(--creative)', spec:'var(--deadline)', other:'var(--soft)' };
   const el = document.createElement('div');
   el.className = 'tcard' + (t.done?' done':'');
   el.id = 'tc-' + t.id; el.draggable = true;
@@ -1031,6 +1205,7 @@ function mkCard(t) {
       ${t.time?`<span class="pill">⏱ ${t.time}</span>`:''}
       ${bl?`<span class="pill ${bc}">${bl}</span>`:''}
       ${t.due?`<span class="pill">📅 ${t.due}</span>`:''}
+      ${t.role?`<span class="pill" style="color:${roleColors[t.role]};border-color:${roleColors[t.role]};opacity:.8">${roleLabels[t.role]}</span>`:''}
     </div>
     ${t.leadDays&&t.leadDays.length?`<div class="tc-ld"><div class="tc-ld-lbl">Lead days</div>${t.leadDays.map(ld=>`<div class="tc-ld-step">Day ${ld.day}: ${ld.text}</div>`).join('')}</div>`:''}
     <div class="tc-actions">
@@ -1042,18 +1217,20 @@ function mkCard(t) {
     </div>`;
   return el;
 }
-function addTask(t) { tasks[t.id]=t; const c=document.getElementById('sc-'+t.sprint); if(c){c.appendChild(mkCard(t));updCnts();} }
+function addTask(t) { tasks[t.id]=t; const c=document.getElementById('sc-'+t.sprint); if(c){c.appendChild(mkCard(t));updCnts();} if(t.role) renderSprintsByRole(); }
 function togDone(id) { tasks[id].done=!tasks[id].done; document.getElementById('tc-'+id).replaceWith(mkCard(tasks[id])); }
 function dupTask(id) { const o=tasks[id]; addTask({...o,id:Date.now().toString(),done:false,leadDays:[...(o.leadDays||[])]}); }
-function remTask(id) { const c=document.getElementById('tc-'+id); if(c)c.remove(); delete tasks[id]; updCnts(); }
+function remTask(id) { const c=document.getElementById('tc-'+id); if(c)c.remove(); delete tasks[id]; updCnts(); renderSprintsByRole(); }
 function updCnts() { ['urgent','deadline','admin','creative'].forEach(s=>{ const c=document.getElementById('sc-'+s); document.getElementById('cnt-'+s).textContent=c?c.children.length:0; }); }
 function dov(e) { e.preventDefault(); e.currentTarget.classList.add('dov'); }
 document.addEventListener('dragleave', e => { if(e.target.classList&&e.target.classList.contains('scards')) e.target.classList.remove('dov'); });
 function drp(e,sprint) { e.preventDefault(); e.currentTarget.classList.remove('dov'); if(!dragId||!tasks[dragId])return; const t=tasks[dragId]; document.getElementById('tc-'+t.id).remove(); t.sprint=sprint; const c=document.getElementById('sc-'+sprint); c.appendChild(mkCard(t)); updCnts(); dragId=null; }
 function submitTask() {
   const title=document.getElementById('atfTitle').value.trim(); if(!title)return;
-  addTask({id:Date.now().toString(),title,sprint:document.getElementById('atfSprint').value,time:document.getElementById('atfTime').value.trim(),due:document.getElementById('atfDue').value.trim(),buffer:document.getElementById('atfBuffer').value.trim(),leadDays:getLd(),done:false});
+  const role=document.getElementById('atfRole').value;
+  addTask({id:Date.now().toString(),title,sprint:document.getElementById('atfSprint').value,time:document.getElementById('atfTime').value.trim(),due:document.getElementById('atfDue').value.trim(),buffer:document.getElementById('atfBuffer').value.trim(),leadDays:getLd(),done:false,role});
   ['atfTitle','atfTime','atfDue','atfBuffer'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('atfRole').value='';
   document.getElementById('ldList').innerHTML=''; ldCount=0;
   document.getElementById('ldSection').style.display='none';
   document.getElementById('atf').style.display='none';
@@ -1076,7 +1253,26 @@ function addAppt() {
   const pts=d.split(' '),day=pts[1]||pts[0],mon=pts[0].length>2?pts[0].slice(0,3):pts[0];
   const el=document.createElement('div'); el.className='appt-item';
   el.innerHTML=`<div class="appt-date"><div class="appt-day">${day}</div><div class="appt-mon">${mon}</div></div><div class="appt-body"><div class="appt-name">${n}</div><div class="appt-meta">${t}${l?' · '+l:''}</div></div><div class="appt-tag">${tag}</div>`;
-  document.getElementById('apptList').prepend(el);
+  const apptList=document.getElementById('apptList');
+  if(apptList.querySelector('.empty'))apptList.innerHTML='';
+  apptList.prepend(el);
+  // also add to monthly calendar
+  try {
+    const monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const shortNames=['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+    const now=new Date();
+    let calMonth=now.getMonth(), calYear=now.getFullYear(), calDay=parseInt(day);
+    // try to parse month from date string
+    const monLower=pts[0].toLowerCase();
+    const mIdx=shortNames.indexOf(monLower.slice(0,3));
+    if(mIdx!==-1){ calMonth=mIdx; }
+    if(!isNaN(calDay)&&calMonth>=0){
+      const key=calYear+'-'+(calMonth+1)+'-'+calDay;
+      if(!calEvents[key])calEvents[key]=[];
+      calEvents[key].push(n+(t?' ('+t+')':''));
+      buildMonth();
+    }
+  } catch(e){}
   ['aN','aD','aT','aL'].forEach(id=>document.getElementById(id).value='');
 }
 
@@ -1344,15 +1540,31 @@ function rendNotes(){
   if(!activeCourse)return;
   const el=document.getElementById('noteList');
   if(!activeCourse.notes.length){el.innerHTML='<div class="empty">No notes yet.</div>';return;}
-  el.innerHTML=activeCourse.notes.map((n,i)=>`<div class="note-entry"><div class="note-date">${n.date}</div><div class="note-text">${n.text}</div></div>`).join('');
+  el.innerHTML=activeCourse.notes.map((n,i)=>`
+    <div class="note-entry" id="cnote-${i}">
+      <div class="note-header" onclick="toggleNote('cnote-${i}')">
+        <span class="note-arrow">▶</span>
+        <span class="note-title">${n.title||'Note'}</span>
+        <span class="note-date">${n.date}</span>
+        <span style="font-size:10px;color:var(--dim);cursor:pointer;padding:0 4px" onclick="event.stopPropagation();activeCourse.notes.splice(${i},1);rendNotes();rendCourseLanding()">✕</span>
+      </div>
+      <div class="note-body"><div class="note-text">${n.text}</div></div>
+    </div>`).join('');
 }
 function saveNote(){
   if(!activeCourse)return;
+  const titleEl=document.getElementById('noteTitleInput');
+  const title=(titleEl?titleEl.value.trim():'')||'Untitled note';
   const txt=document.getElementById('noteInput').value.trim(); if(!txt)return;
   const now=new Date();
-  activeCourse.notes.unshift({date:MONTHS[now.getMonth()]+' '+now.getDate()+', '+now.getFullYear(),text:txt});
+  activeCourse.notes.unshift({title,date:MONTHS[now.getMonth()]+' '+now.getDate()+', '+now.getFullYear(),text:txt});
   document.getElementById('noteInput').value='';
+  if(titleEl)titleEl.value='';
   rendNotes();rendCourseLanding();
+}
+function toggleNote(id){
+  const el=document.getElementById(id);
+  if(el)el.classList.toggle('open');
 }
 
 function deleteCourse(id){
@@ -1440,7 +1652,7 @@ function collectAllData() {
     done: el.classList.contains('done')
   }));
   data.calEvents = calEvents;
-  data.dailyPlanner = Array.from(document.querySelectorAll('#dayPlanner .dp-slot input')).map(i => i.value);
+  data.dailyPlanner = dpBlocks.map(b => ({...b}));
   data.appointments = Array.from(document.querySelectorAll('#apptList .appt-item')).map(el => ({
     day: el.querySelector('.appt-day') ? el.querySelector('.appt-day').textContent : '',
     mon: el.querySelector('.appt-mon') ? el.querySelector('.appt-mon').textContent : '',
@@ -1498,7 +1710,11 @@ function restoreAllData(data) {
     });
   }
   if (data.calEvents) { Object.assign(calEvents, data.calEvents); buildMonth(); }
-  if (data.dailyPlanner) { const inputs = document.querySelectorAll('#dayPlanner .dp-slot input'); data.dailyPlanner.forEach((v, i) => { if (inputs[i]) inputs[i].value = v; }); }
+  if (data.dailyPlanner && Array.isArray(data.dailyPlanner) && data.dailyPlanner.length && data.dailyPlanner[0] && typeof data.dailyPlanner[0] === 'object' && 'startSlot' in data.dailyPlanner[0]) {
+    dpBlocks.length = 0;
+    data.dailyPlanner.forEach(b => dpBlocks.push(b));
+    renderDpBlocks();
+  }
   if (data.groceries) { data.groceries.forEach(g => { groceries[g.id] = g; }); rendG(); }
   if (data.finance) {
     if (data.finance.income) { finData.income = data.finance.income; rendFin('income'); }
@@ -1594,8 +1810,9 @@ function archiveBrainDump() {
   const txt = document.getElementById('brainDump').value.trim();
   if (!txt) return;
   const now = new Date();
-  const entry = { date: MONTHS[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear(), text: txt };
-  brainDumpNotes.unshift(entry);
+  const title = prompt('Give this note a title:', MONTHS[now.getMonth()] + ' ' + now.getDate() + ' brain dump');
+  if (title === null) return;
+  brainDumpNotes.unshift({ title: title.trim() || 'Brain dump', date: MONTHS[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear(), text: txt });
   renderBrainDumpArchive();
   document.getElementById('brainDump').value = '';
 }
@@ -1603,21 +1820,24 @@ function renderBrainDumpArchive() {
   const el = document.getElementById('brainDumpArchive');
   if (!brainDumpNotes.length) { el.innerHTML = ''; return; }
   el.innerHTML = brainDumpNotes.map((n,i) => `
-    <div class="note-entry" style="margin-bottom:6px">
-      <div class="note-date" style="display:flex;justify-content:space-between">
-        <span>${n.date}</span>
-        <span style="cursor:pointer;color:var(--dim);font-size:10px" onclick="brainDumpNotes.splice(${i},1);renderBrainDumpArchive()">remove</span>
+    <div class="note-entry" id="bdnote-${i}">
+      <div class="note-header" onclick="toggleNote('bdnote-${i}')">
+        <span class="note-arrow">▶</span>
+        <span class="note-title">${n.title}</span>
+        <span class="note-date">${n.date}</span>
+        <span style="font-size:10px;color:var(--dim);cursor:pointer;padding:0 4px" onclick="event.stopPropagation();brainDumpNotes.splice(${i},1);renderBrainDumpArchive()">✕</span>
       </div>
-      <div class="note-text">${n.text}</div>
+      <div class="note-body"><div class="note-text">${n.text}</div></div>
     </div>`).join('');
 }
 
 // Clear day
 function clearDay() {
-  if (!confirm('Clear today\'s brain dump and uncheck all routines?')) return;
+  if (!confirm('Clear today\'s brain dump, time blocks, and uncheck all routines?')) return;
   document.getElementById('brainDump').value = '';
   document.querySelectorAll('#morList .r-item, #eveList .r-item').forEach(el => el.classList.remove('done'));
-  document.querySelectorAll('#dayPlanner .dp-slot input').forEach(el => el.value = '');
+  dpBlocks.length = 0;
+  renderDpBlocks();
 }
 
 // Reset routines
@@ -1631,7 +1851,9 @@ function archiveWorkNote(role) {
   const txt = document.getElementById('wk-'+role+'-notes').value.trim();
   if (!txt) return;
   const now = new Date();
-  workNoteArchive[role].unshift({ date: MONTHS[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear(), text: txt });
+  const title = prompt('Give this note a title:');
+  if (title === null) return;
+  workNoteArchive[role].unshift({ title: title.trim() || 'Note', date: MONTHS[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear(), text: txt });
   renderWorkArchive(role);
 }
 function renderWorkArchive(role) {
@@ -1639,12 +1861,14 @@ function renderWorkArchive(role) {
   if (!el || !workNoteArchive[role].length) return;
   el.innerHTML = '<div class="slbl" style="margin-bottom:8px"><span>Saved notes</span></div>' +
     workNoteArchive[role].map((n,i) => `
-      <div class="note-entry" style="margin-bottom:6px">
-        <div class="note-date" style="display:flex;justify-content:space-between">
-          <span>${n.date}</span>
-          <span style="cursor:pointer;color:var(--dim);font-size:10px" onclick="workNoteArchive['${role}'].splice(${i},1);renderWorkArchive('${role}')">remove</span>
+      <div class="note-entry" id="wknote-${role}-${i}">
+        <div class="note-header" onclick="toggleNote('wknote-${role}-${i}')">
+          <span class="note-arrow">▶</span>
+          <span class="note-title">${n.title}</span>
+          <span class="note-date">${n.date}</span>
+          <span style="font-size:10px;color:var(--dim);cursor:pointer;padding:0 4px" onclick="event.stopPropagation();workNoteArchive['${role}'].splice(${i},1);renderWorkArchive('${role}')">✕</span>
         </div>
-        <div class="note-text">${n.text}</div>
+        <div class="note-body"><div class="note-text">${n.text}</div></div>
       </div>`).join('');
 }
 
@@ -1670,7 +1894,53 @@ function renderAllWorkTasks() {
   el.innerHTML = html || '<div class="empty">No tasks yet across any role.</div>';
 }
 
-// Curriculum notes export
+// Copy grocery list
+function copyGroceryList() {
+  const grouped = {};
+  Object.values(groceries).forEach(it => { (grouped[it.c] = grouped[it.c] || []).push(it); });
+  let text = '🛒 Grocery List\n\n';
+  Object.entries(grouped).forEach(([cat, items]) => {
+    text += cat.toUpperCase() + '\n';
+    items.forEach(it => { text += (it.ck ? '✓ ' : '○ ') + it.n + (it.q && it.q !== '—' ? ' (' + it.q + ')' : '') + '\n'; });
+    text += '\n';
+  });
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.target;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy list', 2000);
+  }).catch(() => alert('Copy failed — try selecting the list manually.'));
+}
+
+// Render sprint tasks for a specific role
+function renderSprintsByRole() {
+  const roleIds = ['main','ra','spec','other'];
+  const sprintLabels = { urgent:'Urgent', deadline:'Deadline', admin:'Admin', creative:'Creative/Study' };
+  roleIds.forEach(role => {
+    const el = document.getElementById('wk-sprint-' + role);
+    if (!el) return;
+    const roleTasks = Object.values(tasks).filter(t => t.role === role);
+    if (!roleTasks.length) { el.innerHTML = `<div class="empty">No sprint tasks tagged to ${role === 'ra' ? 'RA' : role.charAt(0).toUpperCase() + role.slice(1)} yet.</div>`; return; }
+    el.innerHTML = roleTasks.map(t => `
+      <div class="ov-item ${t.done ? 'done' : ''}">
+        <div class="ov-ck">✓</div>
+        <div class="ov-txt">${t.title}${t.due ? `<span style="margin-left:10px;font-size:10px;color:var(--deadline)">due ${t.due}</span>` : ''}</div>
+        <span style="font-size:9px;padding:1px 6px;border-radius:3px;border:1px solid var(--bdr);color:var(--soft);flex-shrink:0">${sprintLabels[t.sprint] || t.sprint}</span>
+      </div>`).join('');
+  });
+  // also update the all-sprint panel
+  const allEl = document.getElementById('wk-all-sprint');
+  if (!allEl) return;
+  const allRoleTasks = Object.values(tasks).filter(t => t.role);
+  const roleLabels = { main:'Main Job', ra:'RA', spec:'SPEC', other:'Other' };
+  const roleColors = { main:'var(--admin)', ra:'var(--creative)', spec:'var(--deadline)', other:'var(--soft)' };
+  if (!allRoleTasks.length) { allEl.innerHTML = '<div class="empty">No sprint tasks tagged to a role yet.</div>'; return; }
+  allEl.innerHTML = allRoleTasks.map(t => `
+    <div class="ov-item ${t.done ? 'done' : ''}">
+      <div class="ov-ck">✓</div>
+      <div class="ov-txt">${t.title}${t.due ? `<span style="margin-left:10px;font-size:10px;color:var(--deadline)">due ${t.due}</span>` : ''}</div>
+      <span style="font-size:9px;padding:1px 6px;border-radius:3px;border:1px solid var(--bdr);color:${roleColors[t.role]};flex-shrink:0">${roleLabels[t.role]}</span>
+    </div>`).join('');
+}
 function exportCurriculumNotes() {
   if (!activeCourse) return;
   const notes = activeCourse.notes.map(n => n.date + '\n' + n.text).join('\n\n---\n\n');
