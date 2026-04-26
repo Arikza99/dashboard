@@ -401,10 +401,17 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
 
     <!-- Brain dump -->
     <div class="sec">
-      <div class="slbl">Brain dump</div>
+      <div class="slbl">
+        <span>Brain dump — <span id="todayDateLabel" style="color:var(--soft);font-weight:400"></span></span>
+        <div style="display:flex;gap:6px">
+          <button class="btn bsm" onclick="archiveBrainDump()">Save as note</button>
+          <button class="btn bsm" onclick="clearDay()">Clear day</button>
+        </div>
+      </div>
       <div class="brain-dump">
         <textarea id="brainDump" placeholder="Everything on your mind. Clear it out here before you start working."></textarea>
       </div>
+      <div id="brainDumpArchive" style="margin-top:10px"></div>
     </div>
 
     <!-- Sprint board -->
@@ -519,13 +526,18 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
 
 <!-- ══════ ROUTINES ══════ -->
 <div class="page" id="p-routines">
-  <div class="ph"><div class="pl">Planning</div><div class="pt">Routines</div><div class="psub">Tap to check off. Resets daily.</div></div>
-  <div class="tabs"><div class="tab active" onclick="stab('rt','morning',this)">Morning</div><div class="tab" onclick="stab('rt','evening',this)">Evening</div></div>
+  <div class="ph"><div class="pl">Planning</div><div class="pt">Routines</div><div class="psub">Tap to check off. Click Reset to start fresh each day.</div></div>
+  <div class="tabs">
+    <div class="tab active" onclick="stab('rt','morning',this)">Morning</div>
+    <div class="tab" onclick="stab('rt','evening',this)">Evening</div>
+  </div>
   <div class="tc active" id="rt-morning">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:10px"><button class="btn bsm" onclick="resetRoutine('morning')">Reset morning</button></div>
     <div id="morList"></div>
     <div class="ir" style="margin-top:10px"><input type="text" id="mrTime" placeholder="Time" style="flex:none;width:68px"><input type="text" id="mrStep" placeholder="Add a step..." onkeydown="if(event.key==='Enter')addStep('morning')"><button class="btn" onclick="addStep('morning')">+ Add</button></div>
   </div>
   <div class="tc" id="rt-evening">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:10px"><button class="btn bsm" onclick="resetRoutine('evening')">Reset evening</button></div>
     <div id="eveList"></div>
     <div class="ir" style="margin-top:10px"><input type="text" id="erTime" placeholder="Time" style="flex:none;width:68px"><input type="text" id="erStep" placeholder="Add a step..." onkeydown="if(event.key==='Enter')addStep('evening')"><button class="btn" onclick="addStep('evening')">+ Add</button></div>
   </div>
@@ -719,7 +731,8 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
       <div class="cd-tc" id="cd-notes">
         <div class="card" style="margin-bottom:10px">
           <textarea id="noteInput" placeholder="Write a note, reflection, or key concept..." style="width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:12.5px;color:var(--txt);outline:none;line-height:1.8;min-height:80px"></textarea>
-          <div style="display:flex;justify-content:flex-end;margin-top:6px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+            <button class="btn bsm" onclick="exportCurriculumNotes()">Export all notes</button>
             <button class="btn bsm" onclick="saveNote()">Save note</button>
           </div>
         </div>
@@ -759,42 +772,73 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
   <div class="ph"><div class="pl">Planning</div><div class="pt">Work</div><div class="psub">Track tasks, notes, and deadlines across all your roles.</div></div>
 
   <div class="tabs">
-    <div class="tab active" onclick="stab('wk','main',this)">Main Job</div>
+    <div class="tab active" onclick="stab('wk','all',this)">All Tasks</div>
+    <div class="tab" onclick="stab('wk','main',this)">Main Job</div>
     <div class="tab" onclick="stab('wk','ra',this)">RA</div>
     <div class="tab" onclick="stab('wk','spec',this)">SPEC</div>
     <div class="tab" onclick="stab('wk','other',this)">Other</div>
   </div>
 
+  <!-- ALL TASKS VIEW -->
+  <div class="tc active" id="wk-all">
+    <div class="slbl"><span>Everything across all roles</span></div>
+    <div id="wk-all-list"><div class="empty">Add tasks in each role tab and they will appear here.</div></div>
+  </div>
+
   <!-- MAIN JOB -->
-  <div class="tc active" id="wk-main">
+  <div class="tc" id="wk-main">
     <div class="card sec">
-      <div class="slbl" style="margin-bottom:10px"><span>Notes</span></div>
-      <textarea id="wk-main-notes" placeholder="Ongoing notes, context, things to remember for your main job..." style="width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:12.5px;color:var(--txt);outline:none;line-height:1.8;min-height:100px"></textarea>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div class="slbl" style="margin-bottom:0"><span>Notes</span></div>
+        <button class="btn bsm" onclick="archiveWorkNote('main')">Save as note</button>
+      </div>
+      <textarea id="wk-main-notes" placeholder="Ongoing notes, context, things to remember..." style="width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:12.5px;color:var(--txt);outline:none;line-height:1.8;min-height:100px"></textarea>
     </div>
-    <div class="slbl"><span>Tasks & deadlines</span><div style="display:flex;gap:6px"><input type="text" id="wk-main-ti" placeholder="Task..." onkeydown="if(event.key==='Enter')addWorkTask('main')" style="padding:4px 8px;font-size:11px;width:200px"><input type="text" id="wk-main-due" placeholder="Due" style="padding:4px 8px;font-size:11px;width:80px"><button class="btn bsm" onclick="addWorkTask('main')">+ add</button></div></div>
+    <div id="wk-main-archive"></div>
+    <div class="slbl"><span>Tasks & deadlines</span>
+      <div style="display:flex;gap:6px">
+        <input type="text" id="wk-main-ti" placeholder="Task..." onkeydown="if(event.key==='Enter')addWorkTask('main')" style="padding:4px 8px;font-size:11px;width:180px">
+        <input type="text" id="wk-main-due" placeholder="Due" style="padding:4px 8px;font-size:11px;width:70px">
+        <button class="btn bsm" onclick="addWorkTask('main')">+ add</button>
+      </div>
+    </div>
     <div id="wk-main-list"><div class="empty">No tasks yet.</div></div>
   </div>
 
   <!-- RA -->
   <div class="tc" id="wk-ra">
     <div class="card sec">
-      <div class="slbl" style="margin-bottom:10px"><span>Project context</span></div>
-      <textarea id="wk-ra-notes" placeholder="CLSA/IPV project — notes, literature threads, Dr. Gutman updates, ongoing tasks..." style="width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:12.5px;color:var(--txt);outline:none;line-height:1.8;min-height:100px"></textarea>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div class="slbl" style="margin-bottom:0"><span>Project context</span></div>
+        <button class="btn bsm" onclick="archiveWorkNote('ra')">Save as note</button>
+      </div>
+      <textarea id="wk-ra-notes" placeholder="CLSA/IPV project — notes, literature threads, Dr. Gutman updates..." style="width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:12.5px;color:var(--txt);outline:none;line-height:1.8;min-height:100px"></textarea>
     </div>
-    <div class="slbl"><span>Tasks & deadlines</span><div style="display:flex;gap:6px"><input type="text" id="wk-ra-ti" placeholder="Task..." onkeydown="if(event.key==='Enter')addWorkTask('ra')" style="padding:4px 8px;font-size:11px;width:200px"><input type="text" id="wk-ra-due" placeholder="Due" style="padding:4px 8px;font-size:11px;width:80px"><button class="btn bsm" onclick="addWorkTask('ra')">+ add</button></div></div>
+    <div id="wk-ra-archive"></div>
+    <div class="slbl"><span>Tasks & deadlines</span>
+      <div style="display:flex;gap:6px">
+        <input type="text" id="wk-ra-ti" placeholder="Task..." onkeydown="if(event.key==='Enter')addWorkTask('ra')" style="padding:4px 8px;font-size:11px;width:180px">
+        <input type="text" id="wk-ra-due" placeholder="Due" style="padding:4px 8px;font-size:11px;width:70px">
+        <button class="btn bsm" onclick="addWorkTask('ra')">+ add</button>
+      </div>
+    </div>
     <div id="wk-ra-list"><div class="empty">No tasks yet.</div></div>
   </div>
 
   <!-- SPEC -->
   <div class="tc" id="wk-spec">
     <div class="card sec">
-      <div class="slbl" style="margin-bottom:10px"><span>Paper & project notes</span></div>
-      <textarea id="wk-spec-notes" placeholder="SPEC volunteer work — paper outline, key arguments, deadlines, contacts, what you're currently working on..." style="width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:12.5px;color:var(--txt);outline:none;line-height:1.8;min-height:100px"></textarea>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div class="slbl" style="margin-bottom:0"><span>Paper & project notes</span></div>
+        <button class="btn bsm" onclick="archiveWorkNote('spec')">Save as note</button>
+      </div>
+      <textarea id="wk-spec-notes" placeholder="SPEC volunteer work — paper outline, key arguments, deadlines, contacts..." style="width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:12.5px;color:var(--txt);outline:none;line-height:1.8;min-height:100px"></textarea>
     </div>
+    <div id="wk-spec-archive"></div>
     <div class="sec">
       <div class="slbl" style="margin-bottom:8px"><span>Paper sections</span><button class="btn bsm" onclick="addSpecSection()">+ Section</button></div>
       <div id="specSections">
-        <div class="wk-section-card card" style="margin-bottom:8px">
+        <div class="card" style="margin-bottom:8px">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
             <div style="font-size:12px;font-weight:500">Introduction</div>
             <div style="font-size:9px;color:var(--soft)">draft</div>
@@ -803,17 +847,33 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
         </div>
       </div>
     </div>
-    <div class="slbl"><span>Tasks & deadlines</span><div style="display:flex;gap:6px"><input type="text" id="wk-spec-ti" placeholder="Task..." onkeydown="if(event.key==='Enter')addWorkTask('spec')" style="padding:4px 8px;font-size:11px;width:200px"><input type="text" id="wk-spec-due" placeholder="Due" style="padding:4px 8px;font-size:11px;width:80px"><button class="btn bsm" onclick="addWorkTask('spec')">+ add</button></div></div>
+    <div class="slbl"><span>Tasks & deadlines</span>
+      <div style="display:flex;gap:6px">
+        <input type="text" id="wk-spec-ti" placeholder="Task..." onkeydown="if(event.key==='Enter')addWorkTask('spec')" style="padding:4px 8px;font-size:11px;width:180px">
+        <input type="text" id="wk-spec-due" placeholder="Due" style="padding:4px 8px;font-size:11px;width:70px">
+        <button class="btn bsm" onclick="addWorkTask('spec')">+ add</button>
+      </div>
+    </div>
     <div id="wk-spec-list"><div class="empty">No tasks yet.</div></div>
   </div>
 
   <!-- OTHER -->
   <div class="tc" id="wk-other">
     <div class="card sec">
-      <div class="slbl" style="margin-bottom:10px"><span>Notes</span></div>
-      <textarea id="wk-other-notes" placeholder="Upcoming opportunities, volunteer roles, other commitments — anything that doesn't fit elsewhere..." style="width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:12.5px;color:var(--txt);outline:none;line-height:1.8;min-height:100px"></textarea>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div class="slbl" style="margin-bottom:0"><span>Notes</span></div>
+        <button class="btn bsm" onclick="archiveWorkNote('other')">Save as note</button>
+      </div>
+      <textarea id="wk-other-notes" placeholder="Upcoming opportunities, volunteer roles, other commitments..." style="width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:12.5px;color:var(--txt);outline:none;line-height:1.8;min-height:100px"></textarea>
     </div>
-    <div class="slbl"><span>Tasks & deadlines</span><div style="display:flex;gap:6px"><input type="text" id="wk-other-ti" placeholder="Task..." onkeydown="if(event.key==='Enter')addWorkTask('other')" style="padding:4px 8px;font-size:11px;width:200px"><input type="text" id="wk-other-due" placeholder="Due" style="padding:4px 8px;font-size:11px;width:80px"><button class="btn bsm" onclick="addWorkTask('other')">+ add</button></div></div>
+    <div id="wk-other-archive"></div>
+    <div class="slbl"><span>Tasks & deadlines</span>
+      <div style="display:flex;gap:6px">
+        <input type="text" id="wk-other-ti" placeholder="Task..." onkeydown="if(event.key==='Enter')addWorkTask('other')" style="padding:4px 8px;font-size:11px;width:180px">
+        <input type="text" id="wk-other-due" placeholder="Due" style="padding:4px 8px;font-size:11px;width:70px">
+        <button class="btn bsm" onclick="addWorkTask('other')">+ add</button>
+      </div>
+    </div>
     <div id="wk-other-list"><div class="empty">No tasks yet.</div></div>
   </div>
 </div>
@@ -1333,9 +1393,12 @@ function addWorkTask(role) {
   el.className = 'ov-item';
   el.onclick = () => el.classList.toggle('done');
   const dueText = due.value.trim();
-  el.innerHTML = `<div class="ov-ck">✓</div><div class="ov-txt">${ti.value.trim()}${dueText ? `<span style="margin-left:10px;font-size:10px;color:var(--deadline)">due ${dueText}</span>` : ''}</div><div class="ov-del" onclick="event.stopPropagation();this.parentElement.remove()">✕</div>`;
+  const roleLabels = { main:'Main Job', ra:'RA', spec:'SPEC', other:'Other' };
+  const roleColors = { main:'var(--admin)', ra:'var(--creative)', spec:'var(--deadline)', other:'var(--soft)' };
+  el.innerHTML = `<div class="ov-ck">✓</div><div class="ov-txt">${ti.value.trim()}${dueText ? `<span style="margin-left:10px;font-size:10px;color:var(--deadline)">due ${dueText}</span>` : ''}</div><span style="font-size:9px;padding:1px 6px;border-radius:3px;border:1px solid var(--bdr);color:${roleColors[role]};flex-shrink:0;margin-right:6px">${roleLabels[role]}</span><div class="ov-del" onclick="event.stopPropagation();this.parentElement.remove();renderAllWorkTasks()">✕</div>`;
   list.appendChild(el);
   ti.value = ''; due.value = '';
+  renderAllWorkTasks();
 }
 
 function addSpecSection() {
@@ -1514,6 +1577,108 @@ async function sbLoad() {
     setStatus('connected', 'Connected');
     document.getElementById('driveSaveBtn').style.display = 'block';
   }
+}
+
+// ── NEW FEATURES ──────────────────────────────────
+
+// Today's date label
+(function() {
+  const n = new Date();
+  const el = document.getElementById('todayDateLabel');
+  if (el) el.textContent = MONTHS[n.getMonth()] + ' ' + n.getDate() + ', ' + n.getFullYear();
+})();
+
+// Brain dump archive
+const brainDumpNotes = [];
+function archiveBrainDump() {
+  const txt = document.getElementById('brainDump').value.trim();
+  if (!txt) return;
+  const now = new Date();
+  const entry = { date: MONTHS[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear(), text: txt };
+  brainDumpNotes.unshift(entry);
+  renderBrainDumpArchive();
+  document.getElementById('brainDump').value = '';
+}
+function renderBrainDumpArchive() {
+  const el = document.getElementById('brainDumpArchive');
+  if (!brainDumpNotes.length) { el.innerHTML = ''; return; }
+  el.innerHTML = brainDumpNotes.map((n,i) => `
+    <div class="note-entry" style="margin-bottom:6px">
+      <div class="note-date" style="display:flex;justify-content:space-between">
+        <span>${n.date}</span>
+        <span style="cursor:pointer;color:var(--dim);font-size:10px" onclick="brainDumpNotes.splice(${i},1);renderBrainDumpArchive()">remove</span>
+      </div>
+      <div class="note-text">${n.text}</div>
+    </div>`).join('');
+}
+
+// Clear day
+function clearDay() {
+  if (!confirm('Clear today\'s brain dump and uncheck all routines?')) return;
+  document.getElementById('brainDump').value = '';
+  document.querySelectorAll('#morList .r-item, #eveList .r-item').forEach(el => el.classList.remove('done'));
+  document.querySelectorAll('#dayPlanner .dp-slot input').forEach(el => el.value = '');
+}
+
+// Reset routines
+function resetRoutine(type) {
+  document.querySelectorAll('#' + (type === 'morning' ? 'morList' : 'eveList') + ' .r-item').forEach(el => el.classList.remove('done'));
+}
+
+// Work note archive
+const workNoteArchive = { main: [], ra: [], spec: [], other: [] };
+function archiveWorkNote(role) {
+  const txt = document.getElementById('wk-'+role+'-notes').value.trim();
+  if (!txt) return;
+  const now = new Date();
+  workNoteArchive[role].unshift({ date: MONTHS[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear(), text: txt });
+  renderWorkArchive(role);
+}
+function renderWorkArchive(role) {
+  const el = document.getElementById('wk-'+role+'-archive');
+  if (!el || !workNoteArchive[role].length) return;
+  el.innerHTML = '<div class="slbl" style="margin-bottom:8px"><span>Saved notes</span></div>' +
+    workNoteArchive[role].map((n,i) => `
+      <div class="note-entry" style="margin-bottom:6px">
+        <div class="note-date" style="display:flex;justify-content:space-between">
+          <span>${n.date}</span>
+          <span style="cursor:pointer;color:var(--dim);font-size:10px" onclick="workNoteArchive['${role}'].splice(${i},1);renderWorkArchive('${role}')">remove</span>
+        </div>
+        <div class="note-text">${n.text}</div>
+      </div>`).join('');
+}
+
+// All work tasks view
+function renderAllWorkTasks() {
+  const el = document.getElementById('wk-all-list');
+  const roleLabels = { main: 'Main Job', ra: 'RA', spec: 'SPEC', other: 'Other' };
+  const roleColors = { main: 'var(--admin)', ra: 'var(--creative)', spec: 'var(--deadline)', other: 'var(--soft)' };
+  let html = '';
+  ['main','ra','spec','other'].forEach(role => {
+    const items = Array.from(document.querySelectorAll('#wk-'+role+'-list .ov-item'));
+    items.forEach(item => {
+      const txt = item.querySelector('.ov-txt');
+      if (txt) {
+        html += `<div class="ov-item ${item.classList.contains('done')?'done':''}">
+          <div class="ov-ck">✓</div>
+          <div class="ov-txt">${txt.innerHTML}</div>
+          <span style="font-size:9px;padding:1px 6px;border-radius:3px;border:1px solid var(--bdr);color:${roleColors[role]};flex-shrink:0">${roleLabels[role]}</span>
+        </div>`;
+      }
+    });
+  });
+  el.innerHTML = html || '<div class="empty">No tasks yet across any role.</div>';
+}
+
+// Curriculum notes export
+function exportCurriculumNotes() {
+  if (!activeCourse) return;
+  const notes = activeCourse.notes.map(n => n.date + '\n' + n.text).join('\n\n---\n\n');
+  const blob = new Blob([activeCourse.name + ' — Notes\n\n' + notes], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = activeCourse.name.replace(/\s+/g, '-') + '-notes.txt';
+  a.click();
 }
 
 // ── AUTO-SAVE every 2 minutes ─────────────────────
