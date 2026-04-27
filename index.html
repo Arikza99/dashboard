@@ -2135,9 +2135,11 @@ function clearDay() {
 // Reset routines
 function resetRoutine(type) {
   const listId = type === 'morning' ? 'morList' : 'eveList';
-  document.querySelectorAll('#' + listId + ' .r-item').forEach(el => {
-    el.classList.remove('done');
-  });
+  const list = document.getElementById(listId);
+  if (!list) return;
+  // remove done from all items and their children
+  list.querySelectorAll('*').forEach(el => el.classList.remove('done'));
+  list.querySelectorAll('.r-item').forEach(el => el.classList.remove('done'));
   scheduleAutoSave();
 }
 
