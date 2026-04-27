@@ -233,6 +233,9 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
 /* ══ APPOINTMENTS ══ */
 .appt-item{display:flex;gap:12px;align-items:flex-start;padding:10px 13px;background:var(--surf);border:1px solid var(--bdr);border-radius:4px;margin-bottom:5px;border-left:2px solid var(--bdr2);transition:border-left-color .12s}
 .appt-item:hover{border-left-color:var(--txt)}
+.appt-del{font-size:11px;color:var(--dim);cursor:pointer;padding:0 3px;opacity:0;transition:opacity .1s;align-self:flex-start;margin-top:2px}
+.appt-item:hover .appt-del{opacity:1}
+.appt-del:hover{color:var(--urgent)}
 .appt-date{text-align:center;min-width:32px}
 .appt-day{font-size:18px;font-weight:500;color:var(--txt);line-height:1}
 .appt-mon{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
@@ -1306,21 +1309,67 @@ function shiftMonth(d) { monthOffset += d; buildMonth(); }
 function addCalEvent(key, y, m, d) {
   const txt = prompt('Add event for ' + MONTHS[m] + ' ' + d + ':');
   if (!txt) return;
-  // add to calendar
   if (!calEvents[key]) calEvents[key] = [];
   calEvents[key].push(txt.trim());
   buildMonth();
-  // also add to appointments list
-  const el = document.createElement('div'); el.className = 'appt-item';
-  const monStr = MONTHS[m].slice(0,3);
-  el.innerHTML = `<div class="appt-date"><div class="appt-day">${d}</div><div class="appt-mon">${monStr}</div></div><div class="appt-body"><div class="appt-name">${txt.trim()}</div><div class="appt-meta">${MONTHS[m]} ${d}, ${y}</div></div><div class="appt-tag">other</div>`;
-  const apptList = document.getElementById('apptList');
-  if (apptList.querySelector('.empty')) apptList.innerHTML = '';
-  apptList.prepend(el);
+  appointments.unshift({ day: d, mon: MONTHS[m].slice(0,3), name: txt.trim(), meta: MONTHS[m]+' '+d+', '+y, tag: 'other', calKey: key, calEntry: txt.trim() });
+  renderAppts();
+  scheduleAutoSave();
 }
-buildMonth();
 
-// ── SPRINT BOARD ──────────────────────────────────
+// ── APPOINTMENTS ──────────────────────────────────
+const appointments = [];
+
+function renderAppts() {
+  const el = document.getElementById('apptList');
+  if (!appointments.length) { el.innerHTML = '<div class="empty">No events or appointments yet.</div>'; return; }
+  el.innerHTML = appointments.map((a, i) => `
+    <div class="appt-item">
+      <div class="appt-date"><div class="appt-day">${a.day}</div><div class="appt-mon">${a.mon}</div></div>
+      <div class="appt-body"><div class="appt-name">${a.name}</div><div class="appt-meta">${a.meta}</div></div>
+      <div class="appt-tag">${a.tag}</div>
+      <div class="appt-del" onclick="deleteAppt(${i})">✕</div>
+    </div>`).join('');
+}
+
+function deleteAppt(idx) {
+  const a = appointments[idx];
+  if (a && a.calKey && calEvents[a.calKey]) {
+    calEvents[a.calKey] = calEvents[a.calKey].filter(e => e !== a.calEntry);
+    if (!calEvents[a.calKey].length) delete calEvents[a.calKey];
+    buildMonth();
+  }
+  appointments.splice(idx, 1);
+  renderAppts();
+  scheduleAutoSave();
+}
+
+function addAppt() {
+  const n=document.getElementById('aN').value.trim(),d=document.getElementById('aD').value.trim(),t=document.getElementById('aT').value.trim(),l=document.getElementById('aL').value.trim(),tag=document.getElementById('aTag').value;
+  if(!n||!d)return;
+  const pts=d.split(' '),day=pts[1]||pts[0],mon=pts[0].length>2?pts[0].slice(0,3):pts[0];
+  const meta = t+(l?' · '+l:'');
+  const appt = { day, mon, name: n, meta, tag, calKey: null, calEntry: null };
+  try {
+    const shortNames=['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+    const now=new Date();
+    let calMonth=now.getMonth(),calYear=now.getFullYear(),calDay=parseInt(day);
+    const mIdx=shortNames.indexOf(pts[0].toLowerCase().slice(0,3));
+    if(mIdx!==-1){calMonth=mIdx;}
+    if(!isNaN(calDay)&&calMonth>=0){
+      const key=calYear+'-'+(calMonth+1)+'-'+calDay;
+      const entry=n+(t?' ('+t+')':'');
+      if(!calEvents[key])calEvents[key]=[];
+      calEvents[key].push(entry);
+      appt.calKey=key; appt.calEntry=entry;
+      buildMonth();
+    }
+  } catch(e){}
+  appointments.unshift(appt);
+  renderAppts();
+  ['aN','aD','aT','aL'].forEach(id=>document.getElementById(id).value='');
+  scheduleAutoSave();
+}
 let dragId = null;
 const tasks = {};
 let ldCount = 0;
@@ -1403,38 +1452,11 @@ function addOv() {
   document.getElementById('ovList').appendChild(el); inp.value='';
 }
 
-// ── APPOINTMENTS ──────────────────────────────────
-function addAppt() {
-  const n=document.getElementById('aN').value.trim(),d=document.getElementById('aD').value.trim(),t=document.getElementById('aT').value.trim(),l=document.getElementById('aL').value.trim(),tag=document.getElementById('aTag').value;
-  if(!n||!d)return;
-  const pts=d.split(' '),day=pts[1]||pts[0],mon=pts[0].length>2?pts[0].slice(0,3):pts[0];
-  const el=document.createElement('div'); el.className='appt-item';
-  el.innerHTML=`<div class="appt-date"><div class="appt-day">${day}</div><div class="appt-mon">${mon}</div></div><div class="appt-body"><div class="appt-name">${n}</div><div class="appt-meta">${t}${l?' · '+l:''}</div></div><div class="appt-tag">${tag}</div>`;
-  const apptList=document.getElementById('apptList');
-  if(apptList.querySelector('.empty'))apptList.innerHTML='';
-  apptList.prepend(el);
-  // also add to monthly calendar
-  try {
-    const monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
-    const shortNames=['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
-    const now=new Date();
-    let calMonth=now.getMonth(), calYear=now.getFullYear(), calDay=parseInt(day);
-    // try to parse month from date string
-    const monLower=pts[0].toLowerCase();
-    const mIdx=shortNames.indexOf(monLower.slice(0,3));
-    if(mIdx!==-1){ calMonth=mIdx; }
-    if(!isNaN(calDay)&&calMonth>=0){
-      const key=calYear+'-'+(calMonth+1)+'-'+calDay;
-      if(!calEvents[key])calEvents[key]=[];
-      calEvents[key].push(n+(t?' ('+t+')':''));
-      buildMonth();
-    }
-  } catch(e){}
-  ['aN','aD','aT','aL'].forEach(id=>document.getElementById(id).value='');
-  scheduleAutoSave();
-}
 
 // ── ROUTINES ──────────────────────────────────────
+buildMonth();
+
+// ── SPRINT BOARD ──────────────────────────────────
 function rendR(type,steps){document.getElementById(type+'List').innerHTML=steps.map(s=>`<div class="r-item" onclick="this.classList.toggle('done')"><div class="r-ck">✓</div><div class="r-time">${s.t}</div><div class="r-lbl">${s.l}</div></div>`).join('');}
 function addStep(type){const p=type==='morning'?'mr':'er',l=document.getElementById(p+'Step').value.trim(),t=document.getElementById(p+'Time').value.trim()||'—';if(!l)return;const r=document.createElement('div');r.className='r-item';r.onclick=()=>r.classList.toggle('done');r.innerHTML=`<div class="r-ck">✓</div><div class="r-time">${t}</div><div class="r-lbl">${l}</div>`;document.getElementById(type==='morning'?'morList':'eveList').appendChild(r);document.getElementById(p+'Step').value='';document.getElementById(p+'Time').value='';}
 rendR('mor',[]); rendR('eve',[]);
@@ -1828,13 +1850,7 @@ function collectAllData() {
   }));
   data.calEvents = calEvents;
   data.dailyPlanner = dpBlocks.map(b => ({...b}));
-  data.appointments = Array.from(document.querySelectorAll('#apptList .appt-item')).map(el => ({
-    day: el.querySelector('.appt-day') ? el.querySelector('.appt-day').textContent : '',
-    mon: el.querySelector('.appt-mon') ? el.querySelector('.appt-mon').textContent : '',
-    name: el.querySelector('.appt-name') ? el.querySelector('.appt-name').textContent : '',
-    meta: el.querySelector('.appt-meta') ? el.querySelector('.appt-meta').textContent : '',
-    tag: el.querySelector('.appt-tag') ? el.querySelector('.appt-tag').textContent : ''
-  }));
+  data.appointments = appointments.map(a => ({...a}));
   data.routines = {
     morning: Array.from(document.querySelectorAll('#morList .r-item')).map(el => ({
       time: el.querySelector('.r-time') ? el.querySelector('.r-time').textContent : '',
@@ -1905,13 +1921,9 @@ function restoreAllData(data) {
   }
   // restore appointments
   if (data.appointments && Array.isArray(data.appointments)) {
-    const apptList = document.getElementById('apptList');
-    apptList.innerHTML = '';
-    data.appointments.forEach(a => {
-      const el = document.createElement('div'); el.className = 'appt-item';
-      el.innerHTML = `<div class="appt-date"><div class="appt-day">${a.day}</div><div class="appt-mon">${a.mon}</div></div><div class="appt-body"><div class="appt-name">${a.name}</div><div class="appt-meta">${a.meta}</div></div><div class="appt-tag">${a.tag}</div>`;
-      apptList.appendChild(el);
-    });
+    appointments.length = 0;
+    data.appointments.forEach(a => appointments.push(a));
+    renderAppts();
   }
   // restore routines
   if (data.routines) {
