@@ -1094,7 +1094,7 @@ updateClock(); setInterval(updateClock, 30000);
 
 // ── BRAIN DUMP ────────────────────────────────────
 try { const bd = localStorage.getItem('brainDump'); if (bd) document.getElementById('brainDump').value = bd; } catch(e) {}
-document.getElementById('brainDump').addEventListener('input', function() { try { localStorage.setItem('brainDump', this.value); } catch(e) {} });
+document.getElementById('brainDump').addEventListener('input', function() { try { localStorage.setItem('brainDump', this.value); } catch(e) {} scheduleAutoSave(); });
 
 // ── VISUAL TIME BLOCK PLANNER ──────────────────────
 const DP_SLOT_HEIGHT = 36;
@@ -1206,6 +1206,7 @@ function saveDpBlock() {
   }
   closeDpModal();
   renderDpBlocks();
+  scheduleAutoSave();
 }
 
 function renderDpBlocks() {
@@ -1227,6 +1228,7 @@ function deleteDpBlock(id) {
   const idx = dpBlocks.findIndex(b => b.id === id);
   if (idx !== -1) dpBlocks.splice(idx, 1);
   renderDpBlocks();
+  scheduleAutoSave();
 }
 
 buildDayPlanner();
@@ -1372,10 +1374,10 @@ function mkCard(t) {
     </div>`;
   return el;
 }
-function addTask(t) { tasks[t.id]=t; const c=document.getElementById('sc-'+t.sprint); if(c){c.appendChild(mkCard(t));updCnts();} if(t.role) renderSprintsByRole(); }
-function togDone(id) { tasks[id].done=!tasks[id].done; document.getElementById('tc-'+id).replaceWith(mkCard(tasks[id])); }
+function addTask(t) { tasks[t.id]=t; const c=document.getElementById('sc-'+t.sprint); if(c){c.appendChild(mkCard(t));updCnts();} if(t.role) renderSprintsByRole(); scheduleAutoSave(); }
+function togDone(id) { tasks[id].done=!tasks[id].done; document.getElementById('tc-'+id).replaceWith(mkCard(tasks[id])); scheduleAutoSave(); }
 function dupTask(id) { const o=tasks[id]; addTask({...o,id:Date.now().toString(),done:false,leadDays:[...(o.leadDays||[])]}); }
-function remTask(id) { const c=document.getElementById('tc-'+id); if(c)c.remove(); delete tasks[id]; updCnts(); renderSprintsByRole(); }
+function remTask(id) { const c=document.getElementById('tc-'+id); if(c)c.remove(); delete tasks[id]; updCnts(); renderSprintsByRole(); scheduleAutoSave(); }
 function updCnts() { ['urgent','deadline','admin','creative'].forEach(s=>{ const c=document.getElementById('sc-'+s); document.getElementById('cnt-'+s).textContent=c?c.children.length:0; }); }
 function dov(e) { e.preventDefault(); e.currentTarget.classList.add('dov'); }
 document.addEventListener('dragleave', e => { if(e.target.classList&&e.target.classList.contains('scards')) e.target.classList.remove('dov'); });
@@ -1429,6 +1431,7 @@ function addAppt() {
     }
   } catch(e){}
   ['aN','aD','aT','aL'].forEach(id=>document.getElementById(id).value='');
+  scheduleAutoSave();
 }
 
 // ── ROUTINES ──────────────────────────────────────
@@ -1440,8 +1443,8 @@ rendR('mor',[]); rendR('eve',[]);
 const groceries={};
 function rendG(){const grouped={};Object.values(groceries).forEach(it=>{(grouped[it.c]=grouped[it.c]||[]).push(it);});document.getElementById('grocList').innerHTML=Object.entries(grouped).map(([cat,items])=>`<div class="g-cat">${cat}</div>`+items.map(it=>`<div class="g-item ${it.ck?'chk':''}" onclick="togG('${it.id}')"><div class="g-ck">✓</div><div class="g-lbl">${it.n}</div><div class="g-qty">${it.q}</div></div>`).join('')).join('');}
 function togG(id){if(groceries[id])groceries[id].ck=!groceries[id].ck;rendG();}
-function addGrocery(){const n=document.getElementById('gI').value.trim(),q=document.getElementById('gQ').value.trim()||'—',c=document.getElementById('gC').value;if(!n)return;const id=Date.now().toString();groceries[id]={id,n,q,c,ck:false};document.getElementById('gI').value='';document.getElementById('gQ').value='';rendG();}
-function clearG(only){Object.keys(groceries).forEach(id=>{if(!only||groceries[id].ck)delete groceries[id];});rendG();}
+function addGrocery(){const n=document.getElementById('gI').value.trim(),q=document.getElementById('gQ').value.trim()||'—',c=document.getElementById('gC').value;if(!n)return;const id=Date.now().toString();groceries[id]={id,n,q,c,ck:false};document.getElementById('gI').value='';document.getElementById('gQ').value='';rendG();scheduleAutoSave();}
+function clearG(only){Object.keys(groceries).forEach(id=>{if(!only||groceries[id].ck)delete groceries[id];});rendG();scheduleAutoSave();}
 rendG();
 
 // ── SHOPPING ──────────────────────────────────────
@@ -1747,7 +1750,7 @@ workRoles.forEach(role => {
   const el = document.getElementById('wk-'+role+'-notes');
   if (!el) return;
   try { const saved = localStorage.getItem('wk-notes-'+role); if (saved) el.value = saved; } catch(e) {}
-  el.addEventListener('input', function() { try { localStorage.setItem('wk-notes-'+role, this.value); } catch(e) {} });
+  el.addEventListener('input', function() { try { localStorage.setItem('wk-notes-'+role, this.value); } catch(e) {} scheduleAutoSave(); });
 });
 
 function addWorkTask(role) {
@@ -1766,6 +1769,7 @@ function addWorkTask(role) {
   list.appendChild(el);
   ti.value = ''; due.value = '';
   renderAllWorkTasks();
+  scheduleAutoSave();
 }
 
 function addSpecSection() {
@@ -1904,7 +1908,17 @@ function restoreAllData(data) {
 }
 
 // ── SUPABASE SAVE ─────────────────────────────────
+let sbIsLoading = false; // prevent saving during load
+let sbSaveTimer = null;
+
+function scheduleAutoSave() {
+  if (sbIsLoading) return;
+  clearTimeout(sbSaveTimer);
+  sbSaveTimer = setTimeout(sbSave, 3000); // save 3 seconds after last change
+}
+
 async function sbSave() {
+  if (sbIsLoading) return;
   setStatus('saving', 'Saving...');
   try {
     const payload = { id: 'main', data: collectAllData(), updated_at: new Date().toISOString() };
@@ -1930,6 +1944,7 @@ async function sbSave() {
 
 // ── SUPABASE LOAD ─────────────────────────────────
 async function sbLoad() {
+  sbIsLoading = true;
   setStatus('saving', 'Loading...');
   try {
     const res = await fetch(SB_URL + '/rest/v1/dashboard_data?id=eq.main&select=data', {
@@ -1947,6 +1962,8 @@ async function sbLoad() {
     console.error('Load error:', e);
     setStatus('connected', 'Connected');
     document.getElementById('driveSaveBtn').style.display = 'block';
+  } finally {
+    sbIsLoading = false;
   }
 }
 
@@ -2106,9 +2123,9 @@ function exportCurriculumNotes() {
   a.click();
 }
 
-// ── AUTO-SAVE every 2 minutes ─────────────────────
+// ── AUTO-SAVE every 2 minutes as backup ───────────
 setInterval(() => {
-  if (document.getElementById('driveStatusText').textContent.startsWith('Connected')) {
+  if (!sbIsLoading && document.getElementById('driveStatusText').textContent.startsWith('Connected')) {
     sbSave();
   }
 }, 120000);
