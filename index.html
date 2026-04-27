@@ -245,13 +245,15 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
 .appt-tag{font-size:9px;padding:1px 7px;border-radius:3px;border:1px solid var(--bdr);color:var(--soft);white-space:nowrap}
 
 /* ══ ROUTINES ══ */
-.r-item{display:flex;align-items:center;gap:10px;padding:8px 11px;background:var(--surf);border:1px solid var(--bdr);border-radius:4px;margin-bottom:3px;cursor:pointer}
+.r-item{display:flex;align-items:center;gap:10px;padding:8px 11px;background:var(--surf);border:1px solid var(--bdr);border-radius:4px;margin-bottom:3px}
 .r-item:hover{background:var(--bg)}
 .r-item.done .r-lbl{text-decoration:line-through;color:var(--dim)}
-.r-ck{width:13px;height:13px;border:1.5px solid var(--bdr2);border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:8px}
+.r-ck{width:13px;height:13px;border:1.5px solid var(--bdr2);border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:8px;color:transparent;cursor:pointer}
 .r-item.done .r-ck{background:var(--txt);border-color:var(--txt);color:#fff}
 .r-time{font-size:10px;color:var(--soft);min-width:44px}
-.r-lbl{flex:1;font-size:12px}
+.r-lbl{flex:1;font-size:12px;cursor:pointer}
+.r-item .ov-del{opacity:0;transition:opacity .1s}
+.r-item:hover .ov-del{opacity:1}
 
 /* ══ GROCERY ══ */
 .g-cat{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:12px 0 5px}
