@@ -1457,8 +1457,8 @@ function addOv() {
 buildMonth();
 
 // ── SPRINT BOARD ──────────────────────────────────
-function rendR(type,steps){document.getElementById(type+'List').innerHTML=steps.map(s=>`<div class="r-item" onclick="this.classList.toggle('done')"><div class="r-ck">✓</div><div class="r-time">${s.t}</div><div class="r-lbl">${s.l}</div></div>`).join('');}
-function addStep(type){const p=type==='morning'?'mr':'er',l=document.getElementById(p+'Step').value.trim(),t=document.getElementById(p+'Time').value.trim()||'—';if(!l)return;const r=document.createElement('div');r.className='r-item';r.onclick=()=>r.classList.toggle('done');r.innerHTML=`<div class="r-ck">✓</div><div class="r-time">${t}</div><div class="r-lbl">${l}</div>`;document.getElementById(type==='morning'?'morList':'eveList').appendChild(r);document.getElementById(p+'Step').value='';document.getElementById(p+'Time').value='';}
+function rendR(type,steps){document.getElementById(type+'List').innerHTML=steps.map(s=>`<div class="r-item ${s.done?'done':''}" onclick="this.classList.toggle('done');scheduleAutoSave()"><div class="r-ck">✓</div><div class="r-time">${s.t}</div><div class="r-lbl">${s.l}</div></div>`).join('');}
+function addStep(type){const p=type==='morning'?'mr':'er',l=document.getElementById(p+'Step').value.trim(),t=document.getElementById(p+'Time').value.trim()||'—';if(!l)return;const r=document.createElement('div');r.className='r-item';r.onclick=()=>{r.classList.toggle('done');scheduleAutoSave();};r.innerHTML=`<div class="r-ck">✓</div><div class="r-time">${t}</div><div class="r-lbl">${l}</div>`;document.getElementById(type==='morning'?'morList':'eveList').appendChild(r);document.getElementById(p+'Step').value='';document.getElementById(p+'Time').value='';scheduleAutoSave();}
 rendR('mor',[]); rendR('eve',[]);
 
 // ── GROCERY ───────────────────────────────────────
@@ -1931,7 +1931,7 @@ function restoreAllData(data) {
       document.getElementById('morList').innerHTML = '';
       data.routines.morning.forEach(s => {
         const r = document.createElement('div'); r.className = 'r-item' + (s.done ? ' done' : '');
-        r.onclick = () => r.classList.toggle('done');
+        r.onclick = () => { r.classList.toggle('done'); scheduleAutoSave(); };
         r.innerHTML = `<div class="r-ck">✓</div><div class="r-time">${s.time}</div><div class="r-lbl">${s.label}</div>`;
         document.getElementById('morList').appendChild(r);
       });
@@ -1940,7 +1940,7 @@ function restoreAllData(data) {
       document.getElementById('eveList').innerHTML = '';
       data.routines.evening.forEach(s => {
         const r = document.createElement('div'); r.className = 'r-item' + (s.done ? ' done' : '');
-        r.onclick = () => r.classList.toggle('done');
+        r.onclick = () => { r.classList.toggle('done'); scheduleAutoSave(); };
         r.innerHTML = `<div class="r-ck">✓</div><div class="r-time">${s.time}</div><div class="r-lbl">${s.label}</div>`;
         document.getElementById('eveList').appendChild(r);
       });
@@ -2114,7 +2114,11 @@ function clearDay() {
 
 // Reset routines
 function resetRoutine(type) {
-  document.querySelectorAll('#' + (type === 'morning' ? 'morList' : 'eveList') + ' .r-item').forEach(el => el.classList.remove('done'));
+  const listId = type === 'morning' ? 'morList' : 'eveList';
+  document.querySelectorAll('#' + listId + ' .r-item').forEach(el => {
+    el.classList.remove('done');
+  });
+  scheduleAutoSave();
 }
 
 // Work note archive
