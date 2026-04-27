@@ -903,9 +903,8 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
   <div class="tabs">
     <div class="tab active" onclick="stab('wk','all',this)">All Tasks</div>
     <div class="tab" onclick="stab('wk','main',this)">Main Job</div>
-    <div class="tab" onclick="stab('wk','ra',this)">RA</div>
-    <div class="tab" onclick="stab('wk','spec',this)">SPEC</div>
-    <div class="tab" onclick="stab('wk','other',this)">Other</div>
+    <div class="tab" onclick="stab('wk','roles',this)">Other Roles</div>
+    <div class="tab" onclick="stab('wk','refs',this)">References</div>
   </div>
 
   <!-- ALL TASKS VIEW -->
@@ -913,7 +912,7 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
     <div class="slbl"><span>Everything across all roles</span><button class="btn bsm" onclick="renderAllWorkTasks()">Refresh</button></div>
     <div id="wk-all-list"><div class="empty">Add tasks in each role tab and they will appear here.</div></div>
     <div class="slbl" style="margin-top:16px"><span>Sprint tasks tagged to a role</span></div>
-    <div id="wk-all-sprint"><div class="empty">No sprint tasks tagged to a role yet. Add a role when creating a sprint task.</div></div>
+    <div id="wk-all-sprint"><div class="empty">No sprint tasks tagged to a role yet.</div></div>
   </div>
 
   <!-- MAIN JOB -->
@@ -938,82 +937,35 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
     <div id="wk-sprint-main"><div class="empty">No sprint tasks tagged to Main Job yet.</div></div>
   </div>
 
-  <!-- RA -->
-  <div class="tc" id="wk-ra">
-    <div class="card sec">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <div class="slbl" style="margin-bottom:0"><span>Project context</span></div>
-        <button class="btn bsm" onclick="archiveWorkNote('ra')">Save as note</button>
-      </div>
-      <textarea id="wk-ra-notes" placeholder="CLSA/IPV project — notes, literature threads, Dr. Gutman updates..." style="width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:12.5px;color:var(--txt);outline:none;line-height:1.8;min-height:100px"></textarea>
+  <!-- OTHER ROLES — flexible sections -->
+  <div class="tc" id="wk-roles">
+    <div class="slbl">
+      <span>Roles & projects</span>
+      <button class="btn bsm" onclick="addWorkRole()">+ Add role</button>
     </div>
-    <div id="wk-ra-archive"></div>
-    <div class="slbl"><span>Tasks & deadlines</span>
-      <div style="display:flex;gap:6px">
-        <input type="text" id="wk-ra-ti" placeholder="Task..." onkeydown="if(event.key==='Enter')addWorkTask('ra')" style="padding:4px 8px;font-size:11px;width:180px">
-        <input type="text" id="wk-ra-due" placeholder="Due" style="padding:4px 8px;font-size:11px;width:70px">
-        <button class="btn bsm" onclick="addWorkTask('ra')">+ add</button>
-      </div>
-    </div>
-    <div id="wk-ra-list"><div class="empty">No tasks yet.</div></div>
-    <div class="slbl" style="margin-top:16px"><span>Sprint tasks — RA</span></div>
-    <div id="wk-sprint-ra"><div class="empty">No sprint tasks tagged to RA yet.</div></div>
+    <div id="wk-roles-list"><div class="empty">Click "+ Add role" to create a section for RA, SPEC, or any other role.</div></div>
   </div>
 
-  <!-- SPEC -->
-  <div class="tc" id="wk-spec">
-    <div class="card sec">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <div class="slbl" style="margin-bottom:0"><span>Paper & project notes</span></div>
-        <button class="btn bsm" onclick="archiveWorkNote('spec')">Save as note</button>
-      </div>
-      <textarea id="wk-spec-notes" placeholder="SPEC volunteer work — paper outline, key arguments, deadlines, contacts..." style="width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:12.5px;color:var(--txt);outline:none;line-height:1.8;min-height:100px"></textarea>
+  <!-- REFERENCES -->
+  <div class="tc" id="wk-refs">
+    <div class="slbl">
+      <span>Journal articles & references</span>
+      <button class="btn bsm" onclick="addRef()">+ Add reference</button>
     </div>
-    <div id="wk-spec-archive"></div>
-    <div class="sec">
-      <div class="slbl" style="margin-bottom:8px"><span>Paper sections</span><button class="btn bsm" onclick="addSpecSection()">+ Section</button></div>
-      <div id="specSections">
-        <div class="card" style="margin-bottom:8px">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-            <div style="font-size:12px;font-weight:500">Introduction</div>
-            <div style="font-size:9px;color:var(--soft)">draft</div>
-          </div>
-          <textarea placeholder="Notes on this section..." style="width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:11.5px;color:var(--txt);outline:none;line-height:1.7;min-height:60px"></textarea>
-        </div>
+    <div class="card" style="margin-bottom:12px" id="wk-refs-form" style="display:none">
+      <div style="display:flex;gap:7px;margin-bottom:7px">
+        <input type="text" id="refTitle" placeholder="Title of article or source" style="flex:2;padding:7px 9px">
+        <input type="text" id="refAuthor" placeholder="Author(s)" style="flex:1;padding:7px 9px">
+        <button class="btn" onclick="saveRef()">+ Save</button>
       </div>
-    </div>
-    <div class="slbl"><span>Tasks & deadlines</span>
-      <div style="display:flex;gap:6px">
-        <input type="text" id="wk-spec-ti" placeholder="Task..." onkeydown="if(event.key==='Enter')addWorkTask('spec')" style="padding:4px 8px;font-size:11px;width:180px">
-        <input type="text" id="wk-spec-due" placeholder="Due" style="padding:4px 8px;font-size:11px;width:70px">
-        <button class="btn bsm" onclick="addWorkTask('spec')">+ add</button>
+      <div style="display:flex;gap:7px;margin-bottom:7px">
+        <input type="text" id="refJournal" placeholder="Journal / source" style="flex:1;padding:7px 9px">
+        <input type="text" id="refYear" placeholder="Year" style="width:70px;flex:none;padding:7px 9px">
+        <input type="url" id="refUrl" placeholder="URL or DOI (optional)" style="flex:1;padding:7px 9px">
       </div>
+      <textarea id="refNotes" placeholder="Notes on this source — key arguments, relevance, quotes to remember..." style="width:100%;background:var(--bg);border:1px solid var(--bdr);border-radius:4px;padding:7px 9px;resize:none;font-family:var(--mono);font-size:12px;color:var(--txt);outline:none;line-height:1.7;min-height:70px"></textarea>
     </div>
-    <div id="wk-spec-list"><div class="empty">No tasks yet.</div></div>
-    <div class="slbl" style="margin-top:16px"><span>Sprint tasks — SPEC</span></div>
-    <div id="wk-sprint-spec"><div class="empty">No sprint tasks tagged to SPEC yet.</div></div>
-  </div>
-
-  <!-- OTHER -->
-  <div class="tc" id="wk-other">
-    <div class="card sec">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <div class="slbl" style="margin-bottom:0"><span>Notes</span></div>
-        <button class="btn bsm" onclick="archiveWorkNote('other')">Save as note</button>
-      </div>
-      <textarea id="wk-other-notes" placeholder="Upcoming opportunities, volunteer roles, other commitments..." style="width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:12.5px;color:var(--txt);outline:none;line-height:1.8;min-height:100px"></textarea>
-    </div>
-    <div id="wk-other-archive"></div>
-    <div class="slbl"><span>Tasks & deadlines</span>
-      <div style="display:flex;gap:6px">
-        <input type="text" id="wk-other-ti" placeholder="Task..." onkeydown="if(event.key==='Enter')addWorkTask('other')" style="padding:4px 8px;font-size:11px;width:180px">
-        <input type="text" id="wk-other-due" placeholder="Due" style="padding:4px 8px;font-size:11px;width:70px">
-        <button class="btn bsm" onclick="addWorkTask('other')">+ add</button>
-      </div>
-    </div>
-    <div id="wk-other-list"><div class="empty">No tasks yet.</div></div>
-    <div class="slbl" style="margin-top:16px"><span>Sprint tasks — Other</span></div>
-    <div id="wk-sprint-other"><div class="empty">No sprint tasks tagged to Other yet.</div></div>
+    <div id="wk-refs-list"><div class="empty">No references saved yet.</div></div>
   </div>
 </div>
 
@@ -1803,33 +1755,194 @@ function saveCourse(){
 }
 
 // ── WORK ──────────────────────────────────────────
-const workRoles = ['main','ra','spec','other'];
+const workRoles = ['main'];
 
-// persist notes
-workRoles.forEach(role => {
-  const el = document.getElementById('wk-'+role+'-notes');
-  if (!el) return;
-  try { const saved = localStorage.getItem('wk-notes-'+role); if (saved) el.value = saved; } catch(e) {}
-  el.addEventListener('input', function() { try { localStorage.setItem('wk-notes-'+role, this.value); } catch(e) {} scheduleAutoSave(); });
-});
+// persist main notes
+const mainNotesEl = document.getElementById('wk-main-notes');
+if (mainNotesEl) {
+  try { const saved = localStorage.getItem('wk-notes-main'); if (saved) mainNotesEl.value = saved; } catch(e) {}
+  mainNotesEl.addEventListener('input', function() { try { localStorage.setItem('wk-notes-main', this.value); } catch(e) {} scheduleAutoSave(); });
+}
 
 function addWorkTask(role) {
   const ti = document.getElementById('wk-'+role+'-ti');
   const due = document.getElementById('wk-'+role+'-due');
-  if (!ti.value.trim()) return;
+  if (!ti || !ti.value.trim()) return;
   const list = document.getElementById('wk-'+role+'-list');
+  if (!list) return;
   if (list.querySelector('.empty')) list.innerHTML = '';
   const el = document.createElement('div');
   el.className = 'ov-item';
   el.onclick = () => el.classList.toggle('done');
-  const dueText = due.value.trim();
-  const roleLabels = { main:'Main Job', ra:'RA', spec:'SPEC', other:'Other' };
-  const roleColors = { main:'var(--admin)', ra:'var(--creative)', spec:'var(--deadline)', other:'var(--soft)' };
-  el.innerHTML = `<div class="ov-ck">✓</div><div class="ov-txt">${ti.value.trim()}${dueText ? `<span style="margin-left:10px;font-size:10px;color:var(--deadline)">due ${dueText}</span>` : ''}</div><span style="font-size:9px;padding:1px 6px;border-radius:3px;border:1px solid var(--bdr);color:${roleColors[role]};flex-shrink:0;margin-right:6px">${roleLabels[role]}</span><div class="ov-del" onclick="event.stopPropagation();this.parentElement.remove();renderAllWorkTasks()">✕</div>`;
+  const dueText = due ? due.value.trim() : '';
+  el.innerHTML = `<div class="ov-ck">✓</div><div class="ov-txt">${ti.value.trim()}${dueText ? `<span style="margin-left:10px;font-size:10px;color:var(--deadline)">due ${dueText}</span>` : ''}</div><div class="ov-del" onclick="event.stopPropagation();this.parentElement.remove();scheduleAutoSave()">✕</div>`;
   list.appendChild(el);
-  ti.value = ''; due.value = '';
+  ti.value = ''; if(due) due.value = '';
   renderAllWorkTasks();
   scheduleAutoSave();
+}
+
+// ── FLEXIBLE ROLES ────────────────────────────────
+const workRoleData = []; // {id, name, notes, tasks, sections}
+
+function renderWorkRoles() {
+  const container = document.getElementById('wk-roles-list');
+  if (!workRoleData.length) { container.innerHTML = '<div class="empty">Click "+ Add role" to create a section for RA, SPEC, or any other role.</div>'; return; }
+  container.innerHTML = workRoleData.map((r, i) => `
+    <div class="card sec">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="font-size:14px;font-weight:500">${r.name}</div>
+        <div style="display:flex;gap:6px">
+          <button class="btn bsm" onclick="addRoleSection(${i})">+ Paper section</button>
+          <button class="btn bsm" onclick="archiveRoleNote(${i})">Save as note</button>
+          <button class="btn bsm" onclick="removeWorkRole(${i})" style="color:var(--urgent)">Remove</button>
+        </div>
+      </div>
+      <textarea id="wkrole-notes-${i}" placeholder="Notes, context, updates..." style="width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:12.5px;color:var(--txt);outline:none;line-height:1.8;min-height:80px" oninput="workRoleData[${i}].notes=this.value;scheduleAutoSave()">${r.notes||''}</textarea>
+      <div id="wkrole-archive-${i}" style="margin-top:8px"></div>
+      ${r.sections && r.sections.length ? `
+        <div style="margin-top:10px">
+          <div class="slbl" style="margin-bottom:8px"><span>Paper sections</span></div>
+          ${r.sections.map((s,si) => `
+            <div class="card" style="margin-bottom:7px">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
+                <div style="font-size:12px;font-weight:500">${s.name}</div>
+                <div style="display:flex;gap:6px;align-items:center">
+                  <select style="font-size:10px;padding:2px 20px 2px 6px" onchange="workRoleData[${i}].sections[${si}].status=this.value;scheduleAutoSave()">
+                    <option ${s.status==='draft'?'selected':''}>draft</option>
+                    <option ${s.status==='in progress'?'selected':''}>in progress</option>
+                    <option ${s.status==='done'?'selected':''}>done</option>
+                  </select>
+                  <button class="btn bsm" onclick="workRoleData[${i}].sections.splice(${si},1);renderWorkRoles();scheduleAutoSave()">Remove</button>
+                </div>
+              </div>
+              <textarea placeholder="Notes on this section..." style="width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:11.5px;color:var(--txt);outline:none;line-height:1.7;min-height:55px" oninput="workRoleData[${i}].sections[${si}].notes=this.value;scheduleAutoSave()">${s.notes||''}</textarea>
+            </div>`).join('')}
+        </div>` : ''}
+      <div style="margin-top:10px">
+        <div class="slbl" style="margin-bottom:6px"><span>Tasks</span>
+          <div style="display:flex;gap:6px">
+            <input type="text" id="wkrole-ti-${i}" placeholder="Task..." onkeydown="if(event.key==='Enter')addRoleTask(${i})" style="padding:4px 8px;font-size:11px;width:180px">
+            <input type="text" id="wkrole-due-${i}" placeholder="Due" style="padding:4px 8px;font-size:11px;width:70px">
+            <button class="btn bsm" onclick="addRoleTask(${i})">+ add</button>
+          </div>
+        </div>
+        <div id="wkrole-tasks-${i}">
+          ${r.tasks && r.tasks.length ? r.tasks.map((t,ti) => `
+            <div class="ov-item ${t.done?'done':''}" onclick="workRoleData[${i}].tasks[${ti}].done=!workRoleData[${i}].tasks[${ti}].done;this.classList.toggle('done');scheduleAutoSave()">
+              <div class="ov-ck">✓</div>
+              <div class="ov-txt">${t.text}${t.due?`<span style="margin-left:10px;font-size:10px;color:var(--deadline)">due ${t.due}</span>`:''}</div>
+              <div class="ov-del" onclick="event.stopPropagation();workRoleData[${i}].tasks.splice(${ti},1);renderWorkRoles();scheduleAutoSave()">✕</div>
+            </div>`).join('') : '<div class="empty">No tasks yet.</div>'}
+        </div>
+      </div>
+      ${r.savedNotes && r.savedNotes.length ? `
+        <div style="margin-top:10px">
+          <div class="slbl" style="margin-bottom:8px"><span>Saved notes</span></div>
+          ${r.savedNotes.map((n,ni) => `
+            <div class="note-entry" id="wkrole-note-${i}-${ni}">
+              <div class="note-header" onclick="toggleNote('wkrole-note-${i}-${ni}')">
+                <span class="note-arrow">▶</span>
+                <span class="note-title">${n.title}</span>
+                <span class="note-date">${n.date}</span>
+                <span style="font-size:10px;color:var(--dim);cursor:pointer;padding:0 4px" onclick="event.stopPropagation();workRoleData[${i}].savedNotes.splice(${ni},1);renderWorkRoles();scheduleAutoSave()">✕</span>
+              </div>
+              <div class="note-body"><div class="note-text">${n.text}</div></div>
+            </div>`).join('')}
+        </div>` : ''}
+    </div>`).join('');
+}
+
+function addWorkRole() {
+  const name = prompt('Role or project name (e.g. RA, SPEC, Volunteering):');
+  if (!name) return;
+  workRoleData.push({ id: Date.now().toString(), name: name.trim(), notes: '', tasks: [], sections: [], savedNotes: [] });
+  renderWorkRoles();
+  scheduleAutoSave();
+}
+
+function removeWorkRole(idx) {
+  if (!confirm('Remove this role and all its data?')) return;
+  workRoleData.splice(idx, 1);
+  renderWorkRoles();
+  scheduleAutoSave();
+}
+
+function addRoleTask(idx) {
+  const ti = document.getElementById('wkrole-ti-'+idx);
+  const due = document.getElementById('wkrole-due-'+idx);
+  if (!ti || !ti.value.trim()) return;
+  if (!workRoleData[idx].tasks) workRoleData[idx].tasks = [];
+  workRoleData[idx].tasks.push({ text: ti.value.trim(), due: due.value.trim(), done: false });
+  ti.value = ''; due.value = '';
+  renderWorkRoles();
+  scheduleAutoSave();
+}
+
+function addRoleSection(idx) {
+  const name = prompt('Section name (e.g. Introduction, Methods):');
+  if (!name) return;
+  if (!workRoleData[idx].sections) workRoleData[idx].sections = [];
+  workRoleData[idx].sections.push({ name: name.trim(), status: 'draft', notes: '' });
+  renderWorkRoles();
+  scheduleAutoSave();
+}
+
+function archiveRoleNote(idx) {
+  const ta = document.getElementById('wkrole-notes-'+idx);
+  if (!ta || !ta.value.trim()) return;
+  const title = prompt('Give this note a title:');
+  if (title === null) return;
+  const now = new Date();
+  if (!workRoleData[idx].savedNotes) workRoleData[idx].savedNotes = [];
+  workRoleData[idx].savedNotes.unshift({ title: title.trim()||'Note', date: MONTHS[now.getMonth()]+' '+now.getDate()+', '+now.getFullYear(), text: ta.value.trim() });
+  renderWorkRoles();
+  scheduleAutoSave();
+}
+
+// ── REFERENCES ────────────────────────────────────
+const references = [];
+
+function addRef() {
+  const form = document.getElementById('wk-refs-form');
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
+function saveRef() {
+  const title = document.getElementById('refTitle').value.trim();
+  if (!title) return;
+  references.unshift({
+    id: Date.now().toString(),
+    title,
+    author: document.getElementById('refAuthor').value.trim(),
+    journal: document.getElementById('refJournal').value.trim(),
+    year: document.getElementById('refYear').value.trim(),
+    url: document.getElementById('refUrl').value.trim(),
+    notes: document.getElementById('refNotes').value.trim()
+  });
+  ['refTitle','refAuthor','refJournal','refYear','refUrl','refNotes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('wk-refs-form').style.display = 'none';
+  renderRefs();
+  scheduleAutoSave();
+}
+
+function renderRefs() {
+  const el = document.getElementById('wk-refs-list');
+  if (!references.length) { el.innerHTML = '<div class="empty">No references saved yet.</div>'; return; }
+  el.innerHTML = references.map((r, i) => `
+    <div class="note-entry" id="ref-${i}">
+      <div class="note-header" onclick="toggleNote('ref-${i}')">
+        <span class="note-arrow">▶</span>
+        <span class="note-title">${r.title}</span>
+        <span class="note-date">${r.author ? r.author + (r.year ? ', '+r.year : '') : r.year||''}</span>
+        <span style="font-size:10px;color:var(--dim);cursor:pointer;padding:0 4px" onclick="event.stopPropagation();references.splice(${i},1);renderRefs();scheduleAutoSave()">✕</span>
+      </div>
+      <div class="note-body">
+        ${r.journal ? `<div style="font-size:11px;color:var(--soft);margin-bottom:4px">${r.journal}</div>` : ''}
+        ${r.url ? `<a href="${r.url}" target="_blank" style="font-size:11px;color:var(--admin);display:block;margin-bottom:6px;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.url}</a>` : ''}
+        ${r.notes ? `<div class="note-text">${r.notes}</div>` : ''}
+      </div>
+    </div>`).join('');
 }
 
 function addSpecSection() {
@@ -1837,9 +1950,11 @@ function addSpecSection() {
   if (!name) return;
   const el = document.createElement('div');
   el.className = 'card'; el.style.marginBottom = '8px';
-  el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-size:12px;font-weight:500">${name}</div><div style="display:flex;gap:6px;align-items:center"><select onchange="" style="font-size:10px;padding:2px 20px 2px 6px"><option>draft</option><option>in progress</option><option>done</option></select><button class="btn bsm" onclick="this.closest('.card').remove()">Remove</button></div></div><textarea placeholder="Notes on this section..." style="width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:11.5px;color:var(--txt);outline:none;line-height:1.7;min-height:60px"></textarea>`;
-  document.getElementById('specSections').appendChild(el);
+  el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-size:12px;font-weight:500">${name}</div><div style="display:flex;gap:6px;align-items:center"><select style="font-size:10px;padding:2px 20px 2px 6px"><option>draft</option><option>in progress</option><option>done</option></select><button class="btn bsm" onclick="this.closest('.card').remove()">Remove</button></div></div><textarea placeholder="Notes on this section..." style="width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:11.5px;color:var(--txt);outline:none;line-height:1.7;min-height:60px"></textarea>`;
+  const container = document.getElementById('specSections');
+  if (container) container.appendChild(el);
 }
+
 </script>
 
 <script>
@@ -1898,20 +2013,12 @@ function collectAllData() {
   });
   // brain dump archive
   data.brainDumpNotes = brainDumpNotes.map(n => ({...n}));
-  // work note archive
-  data.workNoteArchive = {};
-  ['main','ra','spec','other'].forEach(role => { data.workNoteArchive[role] = workNoteArchive[role].map(n => ({...n})); });
-  ['main','ra','spec','other'].forEach(role => {
-    const el = document.getElementById('wk-'+role+'-notes');
-    if (el) data['workNotes_'+role] = el.value;
-  });
-  data.workTasks = {};
-  ['main','ra','spec','other'].forEach(role => {
-    data.workTasks[role] = Array.from(document.querySelectorAll('#wk-'+role+'-list .ov-item')).map(el => ({
-      text: el.querySelector('.ov-txt') ? el.querySelector('.ov-txt').innerHTML : '',
-      done: el.classList.contains('done')
-    }));
-  });
+  // work
+  data.workNoteArchive = { main: workNoteArchive['main'] ? workNoteArchive['main'].map(n=>({...n})) : [] };
+  data['workNotes_main'] = document.getElementById('wk-main-notes') ? document.getElementById('wk-main-notes').value : '';
+  data.workTasks = { main: Array.from(document.querySelectorAll('#wk-main-list .ov-item')).map(el => ({ text: el.querySelector('.ov-txt') ? el.querySelector('.ov-txt').innerHTML : '', done: el.classList.contains('done') })) };
+  data.workRoleData = workRoleData.map(r => ({...r, tasks: [...(r.tasks||[])], sections: [...(r.sections||[])], savedNotes: [...(r.savedNotes||[])]}));
+  data.references = references.map(r => ({...r}));
   try { data.currNotes = document.getElementById('currNotes') ? document.getElementById('currNotes').value : ''; } catch(e) {}
   data.courses = courses;
   try { data.monthGoals = document.getElementById('monthGoals') ? document.getElementById('monthGoals').value : ''; } catch(e) {}
@@ -1975,22 +2082,36 @@ function restoreAllData(data) {
     updFinSum();
   }
   if (data.media) { Object.assign(media, data.media); ['books','films'].forEach(t => rendMedia(t)); }
-  ['main','ra','spec','other'].forEach(role => {
-    const el = document.getElementById('wk-'+role+'-notes');
-    if (el && data['workNotes_'+role] !== undefined) el.value = data['workNotes_'+role];
-  });
-  if (data.workTasks) {
-    ['main','ra','spec','other'].forEach(role => {
-      const list = document.getElementById('wk-'+role+'-list');
-      if (!list || !data.workTasks[role]) return;
+  // restore main job notes and tasks
+  const mainEl = document.getElementById('wk-main-notes');
+  if (mainEl && data['workNotes_main'] !== undefined) mainEl.value = data['workNotes_main'];
+  if (data.workTasks && data.workTasks.main) {
+    const list = document.getElementById('wk-main-list');
+    if (list) {
       list.innerHTML = '';
-      data.workTasks[role].forEach(t => {
+      data.workTasks.main.forEach(t => {
         const el = document.createElement('div'); el.className = 'ov-item' + (t.done ? ' done' : '');
         el.onclick = () => el.classList.toggle('done');
-        el.innerHTML = `<div class="ov-ck">✓</div><div class="ov-txt">${t.text}</div><div class="ov-del" onclick="event.stopPropagation();this.parentElement.remove()">✕</div>`;
+        el.innerHTML = `<div class="ov-ck">✓</div><div class="ov-txt">${t.text}</div><div class="ov-del" onclick="event.stopPropagation();this.parentElement.remove();scheduleAutoSave()">✕</div>`;
         list.appendChild(el);
       });
-    });
+    }
+  }
+  if (data.workNoteArchive && data.workNoteArchive.main) {
+    workNoteArchive['main'] = data.workNoteArchive.main;
+    renderWorkArchive('main');
+  }
+  // restore flexible roles
+  if (data.workRoleData && Array.isArray(data.workRoleData)) {
+    workRoleData.length = 0;
+    data.workRoleData.forEach(r => workRoleData.push(r));
+    renderWorkRoles();
+  }
+  // restore references
+  if (data.references && Array.isArray(data.references)) {
+    references.length = 0;
+    data.references.forEach(r => references.push(r));
+    renderRefs();
   }
   if (data.currNotes) { const el = document.getElementById('currNotes'); if (el) el.value = data.currNotes; }
   if (data.courses && Array.isArray(data.courses)) { courses.length = 0; data.courses.forEach(c => courses.push(c)); rendCourseLanding(); }
@@ -2143,20 +2264,22 @@ function resetRoutine(type) {
   scheduleAutoSave();
 }
 
-// Work note archive
-const workNoteArchive = { main: [], ra: [], spec: [], other: [] };
+// Work note archive (main job only — other roles use workRoleData)
+const workNoteArchive = { main: [] };
 function archiveWorkNote(role) {
   const txt = document.getElementById('wk-'+role+'-notes').value.trim();
   if (!txt) return;
   const now = new Date();
   const title = prompt('Give this note a title:');
   if (title === null) return;
+  if (!workNoteArchive[role]) workNoteArchive[role] = [];
   workNoteArchive[role].unshift({ title: title.trim() || 'Note', date: MONTHS[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear(), text: txt });
   renderWorkArchive(role);
 }
 function renderWorkArchive(role) {
   const el = document.getElementById('wk-'+role+'-archive');
-  if (!el || !workNoteArchive[role].length) return;
+  if (!el) return;
+  if (!workNoteArchive[role].length) { el.innerHTML = ''; return; }
   el.innerHTML = '<div class="slbl" style="margin-bottom:8px"><span>Saved notes</span></div>' +
     workNoteArchive[role].map((n,i) => `
       <div class="note-entry" id="wknote-${role}-${i}">
@@ -2164,29 +2287,32 @@ function renderWorkArchive(role) {
           <span class="note-arrow">▶</span>
           <span class="note-title">${n.title}</span>
           <span class="note-date">${n.date}</span>
-          <span style="font-size:10px;color:var(--dim);cursor:pointer;padding:0 4px" onclick="event.stopPropagation();workNoteArchive['${role}'].splice(${i},1);renderWorkArchive('${role}')">✕</span>
+          <span style="font-size:10px;color:var(--dim);cursor:pointer;padding:0 4px" onclick="event.stopPropagation();deleteWorkNote('${role}',${i})">✕</span>
         </div>
         <div class="note-body"><div class="note-text">${n.text}</div></div>
       </div>`).join('');
 }
 
+function deleteWorkNote(role, idx) {
+  workNoteArchive[role].splice(idx, 1);
+  renderWorkArchive(role);
+  scheduleAutoSave();
+}
+
 // All work tasks view
 function renderAllWorkTasks() {
   const el = document.getElementById('wk-all-list');
-  const roleLabels = { main: 'Main Job', ra: 'RA', spec: 'SPEC', other: 'Other' };
-  const roleColors = { main: 'var(--admin)', ra: 'var(--creative)', spec: 'var(--deadline)', other: 'var(--soft)' };
   let html = '';
-  ['main','ra','spec','other'].forEach(role => {
-    const items = Array.from(document.querySelectorAll('#wk-'+role+'-list .ov-item'));
-    items.forEach(item => {
-      const txt = item.querySelector('.ov-txt');
-      if (txt) {
-        html += `<div class="ov-item ${item.classList.contains('done')?'done':''}">
-          <div class="ov-ck">✓</div>
-          <div class="ov-txt">${txt.innerHTML}</div>
-          <span style="font-size:9px;padding:1px 6px;border-radius:3px;border:1px solid var(--bdr);color:${roleColors[role]};flex-shrink:0">${roleLabels[role]}</span>
-        </div>`;
-      }
+  // main job tasks
+  const mainItems = Array.from(document.querySelectorAll('#wk-main-list .ov-item'));
+  mainItems.forEach(item => {
+    const txt = item.querySelector('.ov-txt');
+    if (txt) html += `<div class="ov-item ${item.classList.contains('done')?'done':''}"><div class="ov-ck">✓</div><div class="ov-txt">${txt.innerHTML}</div><span style="font-size:9px;padding:1px 6px;border-radius:3px;border:1px solid var(--bdr);color:var(--admin);flex-shrink:0">Main Job</span></div>`;
+  });
+  // flexible role tasks
+  workRoleData.forEach(r => {
+    (r.tasks||[]).forEach(t => {
+      html += `<div class="ov-item ${t.done?'done':''}"><div class="ov-ck">✓</div><div class="ov-txt">${t.text}${t.due?`<span style="margin-left:10px;font-size:10px;color:var(--deadline)">due ${t.due}</span>`:''}</div><span style="font-size:9px;padding:1px 6px;border-radius:3px;border:1px solid var(--bdr);color:var(--creative);flex-shrink:0">${r.name}</span></div>`;
     });
   });
   el.innerHTML = html || '<div class="empty">No tasks yet across any role.</div>';
