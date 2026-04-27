@@ -1487,6 +1487,7 @@ function addShop(tab) {
   document.getElementById('sh-'+tab+'-note').value='';
   document.getElementById('sh-'+tab+'-url').value='';
   delete shopImgCache[tab];
+  scheduleAutoSave();
 }
 
 // ── FINANCE ───────────────────────────────────────
@@ -1604,7 +1605,22 @@ const media={books:[],films:[],music:[]};
 const mIco={books:'📖',films:'🎬',music:'🎵'};
 const mLbl={books:{done:'finished',progress:'reading',want:'want to read'},films:{done:'watched',progress:'watching',want:'want to watch'},music:{done:'listened',progress:'revisiting',want:'want to listen'}};
 const mF={books:{t:'bTi',s:'bAu',st:'bSt'},films:{t:'fTi',s:'fDi',st:'fSt'},music:{t:'aTi',s:'aAr',st:'aSt'}};
-function rendMedia(type){const el=document.getElementById('tr-'+type+'-list');if(!media[type].length&&type!=='films'){el.innerHTML=`<div class="empty">No ${type} yet.</div>`;return;}if(type==='films'&&!media.films.length)return;el.innerHTML=media[type].map(it=>`<div class="m-item"><div class="m-ico">${mIco[type]}</div><div class="m-body"><div class="m-title">${it.t}</div><div class="m-meta">${it.s}</div></div><div class="m-st ${it.st}">${mLbl[type][it.st]}</div></div>`).join('');}
+function rendMedia(type){
+  const el=document.getElementById('tr-'+type+'-list');
+  if(!media[type].length){el.innerHTML=`<div class="empty">No ${type} yet.</div>`;return;}
+  el.innerHTML=media[type].map((it,i)=>`
+    <div class="m-item">
+      <div class="m-ico">${mIco[type]}</div>
+      <div class="m-body"><div class="m-title">${it.t}</div><div class="m-meta">${it.s}</div></div>
+      <div class="m-st ${it.st}">${mLbl[type][it.st]}</div>
+      <div class="ov-del" style="opacity:.5;font-size:11px;cursor:pointer;padding:0 4px;align-self:flex-start;margin-top:2px" onclick="deleteMedia('${type}',${i})">✕</div>
+    </div>`).join('');
+}
+function deleteMedia(type, idx) {
+  media[type].splice(idx, 1);
+  rendMedia(type);
+  scheduleAutoSave();
+}
 function addMedia(type){const f=mF[type],t=document.getElementById(f.t).value.trim(),s=document.getElementById(f.s).value.trim(),st=document.getElementById(f.st).value;if(!t)return;media[type].unshift({t,s,st});document.getElementById(f.t).value='';document.getElementById(f.s).value='';rendMedia(type);}
 
 // ── CURRICULUM ────────────────────────────────────
@@ -1834,6 +1850,19 @@ function collectAllData() {
   data.groceries = Object.values(groceries);
   data.finance = { income: finData.income, expense: finData.expense, bills, ccData };
   data.media = media;
+  // shopping lists
+  data.shopping = {};
+  ['wish','clothing','home','other'].forEach(tab => {
+    data.shopping[tab] = Array.from(document.querySelectorAll('#sh-'+tab+'-list .ov-item')).map(el => ({
+      text: el.querySelector('.ov-txt') ? el.querySelector('.ov-txt').innerHTML : '',
+      done: el.classList.contains('done')
+    }));
+  });
+  // brain dump archive
+  data.brainDumpNotes = brainDumpNotes.map(n => ({...n}));
+  // work note archive
+  data.workNoteArchive = {};
+  ['main','ra','spec','other'].forEach(role => { data.workNoteArchive[role] = workNoteArchive[role].map(n => ({...n})); });
   ['main','ra','spec','other'].forEach(role => {
     const el = document.getElementById('wk-'+role+'-notes');
     if (el) data['workNotes_'+role] = el.value;
@@ -1874,6 +1903,37 @@ function restoreAllData(data) {
     data.dailyPlanner.forEach(b => dpBlocks.push(b));
     renderDpBlocks();
   }
+  // restore appointments
+  if (data.appointments && Array.isArray(data.appointments)) {
+    const apptList = document.getElementById('apptList');
+    apptList.innerHTML = '';
+    data.appointments.forEach(a => {
+      const el = document.createElement('div'); el.className = 'appt-item';
+      el.innerHTML = `<div class="appt-date"><div class="appt-day">${a.day}</div><div class="appt-mon">${a.mon}</div></div><div class="appt-body"><div class="appt-name">${a.name}</div><div class="appt-meta">${a.meta}</div></div><div class="appt-tag">${a.tag}</div>`;
+      apptList.appendChild(el);
+    });
+  }
+  // restore routines
+  if (data.routines) {
+    if (data.routines.morning && data.routines.morning.length) {
+      document.getElementById('morList').innerHTML = '';
+      data.routines.morning.forEach(s => {
+        const r = document.createElement('div'); r.className = 'r-item' + (s.done ? ' done' : '');
+        r.onclick = () => r.classList.toggle('done');
+        r.innerHTML = `<div class="r-ck">✓</div><div class="r-time">${s.time}</div><div class="r-lbl">${s.label}</div>`;
+        document.getElementById('morList').appendChild(r);
+      });
+    }
+    if (data.routines.evening && data.routines.evening.length) {
+      document.getElementById('eveList').innerHTML = '';
+      data.routines.evening.forEach(s => {
+        const r = document.createElement('div'); r.className = 'r-item' + (s.done ? ' done' : '');
+        r.onclick = () => r.classList.toggle('done');
+        r.innerHTML = `<div class="r-ck">✓</div><div class="r-time">${s.time}</div><div class="r-lbl">${s.label}</div>`;
+        document.getElementById('eveList').appendChild(r);
+      });
+    }
+  }
   if (data.groceries) { data.groceries.forEach(g => { groceries[g.id] = g; }); rendG(); }
   if (data.finance) {
     if (data.finance.income) { finData.income = data.finance.income; rendFin('income'); }
@@ -1905,6 +1965,34 @@ function restoreAllData(data) {
   if (data.monthGoals) { const el = document.getElementById('monthGoals'); if (el) el.value = data.monthGoals; }
   if (data.monthIntentions) { const el = document.getElementById('monthIntentions'); if (el) el.value = data.monthIntentions; }
   if (data.curCal) { try { Object.entries(data.curCal).forEach(([k,v]) => localStorage.setItem(k, v)); } catch(e) {} buildCurCal(); }
+  // restore shopping lists
+  if (data.shopping) {
+    ['wish','clothing','home','other'].forEach(tab => {
+      const list = document.getElementById('sh-'+tab+'-list');
+      if (!list || !data.shopping[tab]) return;
+      data.shopping[tab].forEach(it => {
+        const el = document.createElement('div'); el.className = 'ov-item' + (it.done ? ' done' : '');
+        el.onclick = () => el.classList.toggle('done');
+        el.innerHTML = `<div class="ov-ck">✓</div><div class="ov-txt">${it.text}</div><div class="ov-del" onclick="event.stopPropagation();this.parentElement.remove()">✕</div>`;
+        list.appendChild(el);
+      });
+    });
+  }
+  // restore brain dump archive
+  if (data.brainDumpNotes && Array.isArray(data.brainDumpNotes)) {
+    brainDumpNotes.length = 0;
+    data.brainDumpNotes.forEach(n => brainDumpNotes.push(n));
+    renderBrainDumpArchive();
+  }
+  // restore work note archive
+  if (data.workNoteArchive) {
+    ['main','ra','spec','other'].forEach(role => {
+      if (data.workNoteArchive[role]) {
+        workNoteArchive[role] = data.workNoteArchive[role];
+        renderWorkArchive(role);
+      }
+    });
+  }
 }
 
 // ── SUPABASE SAVE ─────────────────────────────────
