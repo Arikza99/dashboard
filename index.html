@@ -439,6 +439,7 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
     <div class="ni" onclick="nav('grocery',this)"><div class="nd"></div>Grocery</div>
     <div class="ni" onclick="nav('shopping',this)"><div class="nd"></div>Shopping</div>
     <div class="nl">Growth</div>
+    <div class="ni" onclick="nav('fitness',this)"><div class="nd"></div>Fitness & Meals</div>
     <div class="ni" onclick="nav('finance',this)"><div class="nd"></div>Finance</div>
     <div class="ni" onclick="nav('tracker',this)"><div class="nd"></div>Media Tracker</div>
     <div class="ni" onclick="nav('curriculum',this)"><div class="nd"></div>Curriculum</div>
@@ -446,6 +447,10 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
   <div class="drive-bar">
     <div class="drive-status"><div class="drive-dot" id="driveDot"></div><span id="driveStatusText">Connecting...</span></div>
     <div id="driveSaveBtn" class="drive-btn primary" onclick="sbSave()" style="display:none">Save</div>
+    <div style="display:flex;gap:6px">
+      <div class="drive-btn" onclick="exportAllData()" style="flex:1;text-align:center;font-size:9.5px">Export backup</div>
+      <label class="drive-btn" style="flex:1;text-align:center;cursor:pointer;font-size:9.5px">Import backup<input type="file" accept=".json" style="display:none" onchange="importAllData(event)"></label>
+    </div>
   </div>
   <div class="sb-foot" id="sbClock">—</div>
 </nav>
@@ -966,6 +971,108 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
       <textarea id="refNotes" placeholder="Notes on this source — key arguments, relevance, quotes to remember..." style="width:100%;background:var(--bg);border:1px solid var(--bdr);border-radius:4px;padding:7px 9px;resize:none;font-family:var(--mono);font-size:12px;color:var(--txt);outline:none;line-height:1.7;min-height:70px"></textarea>
     </div>
     <div id="wk-refs-list"><div class="empty">No references saved yet.</div></div>
+  </div>
+</div>
+
+<!-- ══════ FITNESS & MEALS ══════ -->
+<div class="page" id="p-fitness">
+  <div class="ph"><div class="pl">Growth</div><div class="pt">Fitness & Meals</div><div class="psub">Plan your week ahead — workouts and meals so you go in with a clear intention.</div></div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="stab('fit','workouts',this)">Weekly Workouts</div>
+    <div class="tab" onclick="stab('fit','meals',this)">Weekly Meals</div>
+    <div class="tab" onclick="stab('fit','goals',this)">Goals & Notes</div>
+    <div class="tab" onclick="stab('fit','timeline',this)">Goal Timeline</div>
+  </div>
+
+  <!-- WEEKLY WORKOUTS -->
+  <div class="tc active" id="fit-workouts">
+    <div class="notice" style="margin-bottom:16px">Plan your workouts for the week. Click any day to fill in what you intend to do.</div>
+    <div id="fitWorkoutGrid"></div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn bsm" onclick="clearFitWeek('workout')">Clear week</button>
+      <button class="btn bsm" onclick="copyLastFitWeek('workout')">Copy last week's plan</button>
+    </div>
+  </div>
+
+  <!-- WEEKLY MEALS -->
+  <div class="tc" id="fit-meals">
+    <div class="notice" style="margin-bottom:16px">Plan your meals for the week. Fill in as much or as little detail as you want.</div>
+    <div id="fitMealGrid"></div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn bsm" onclick="clearFitWeek('meal')">Clear week</button>
+      <button class="btn bsm" onclick="copyLastFitWeek('meal')">Copy last week's plan</button>
+    </div>
+  </div>
+
+  <!-- GOALS & NOTES -->
+  <div class="tc" id="fit-goals">
+    <div class="g2" style="margin-bottom:16px">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div class="slbl" style="margin-bottom:0"><span>Fitness goals this week</span></div>
+          <button class="btn bsm" onclick="saveFitGoal('fitness')">Save as goal</button>
+        </div>
+        <textarea id="fitGoals" placeholder="e.g. 3 lifting sessions, 2 incline walks, hit 10k steps daily..." style="width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:12.5px;color:var(--txt);outline:none;line-height:1.8;min-height:90px" oninput="scheduleAutoSave()"></textarea>
+        <div id="fitGoalsArchive" style="margin-top:10px"></div>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div class="slbl" style="margin-bottom:0"><span>Nutrition focus this week</span></div>
+          <button class="btn bsm" onclick="saveFitGoal('nutrition')">Save as goal</button>
+        </div>
+        <textarea id="fitNutrition" placeholder="e.g. hit 120g protein daily, prep lunches Sunday, reduce processed food..." style="width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:12.5px;color:var(--txt);outline:none;line-height:1.8;min-height:90px" oninput="scheduleAutoSave()"></textarea>
+        <div id="fitNutritionArchive" style="margin-top:10px"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div class="slbl" style="margin-bottom:0"><span>Body measurements</span></div>
+        <button class="btn bsm" onclick="addMeasurement()">+ Log measurement</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px">
+        <div><div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:4px">Weight</div><input type="text" id="mWeight" placeholder="e.g. 135 lbs" style="width:100%;padding:6px 8px"></div>
+        <div><div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:4px">Chest</div><input type="text" id="mChest" placeholder='e.g. 36"' style="width:100%;padding:6px 8px"></div>
+        <div><div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:4px">Waist</div><input type="text" id="mWaist" placeholder='e.g. 28"' style="width:100%;padding:6px 8px"></div>
+        <div><div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:4px">Hips</div><input type="text" id="mHips" placeholder='e.g. 38"' style="width:100%;padding:6px 8px"></div>
+        <div><div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:4px">Thighs</div><input type="text" id="mThighs" placeholder='e.g. 22"' style="width:100%;padding:6px 8px"></div>
+        <div><div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:4px">Arms</div><input type="text" id="mArms" placeholder='e.g. 12"' style="width:100%;padding:6px 8px"></div>
+        <div style="grid-column:span 2"><div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:4px">Notes</div><input type="text" id="mNotes" placeholder="Any notes on this measurement..." style="width:100%;padding:6px 8px"></div>
+      </div>
+      <div id="measurementLog"><div class="empty">No measurements logged yet.</div></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="slbl" style="margin-bottom:0"><span>Longer term goals & notes</span></div>
+        <button class="btn bsm" onclick="saveFitGoal('longterm')">Save as goal</button>
+      </div>
+      <textarea id="fitLongGoals" placeholder="Body composition goals, strength targets, dietary intentions, things you are working toward..." style="width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:12.5px;color:var(--txt);outline:none;line-height:1.8;min-height:120px" oninput="scheduleAutoSave()"></textarea>
+      <div id="fitLongGoalsArchive" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+  <!-- GOAL TIMELINE -->
+  <div class="tc" id="fit-timeline">
+    <div class="card sec">
+      <div class="slbl" style="margin-bottom:14px"><span>Weight loss timeline calculator</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">
+        <div><div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:4px">Current weight</div><div style="display:flex;gap:5px"><input type="number" id="tlCurrent" placeholder="e.g. 165" style="flex:1;padding:7px 9px" oninput="calcTimeline()"><select id="tlUnit" style="padding:7px 9px" onchange="calcTimeline()"><option>lbs</option><option>kg</option></select></div></div>
+        <div><div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:4px">Goal weight</div><input type="number" id="tlGoal" placeholder="e.g. 140" style="width:100%;padding:7px 9px" oninput="calcTimeline()"></div>
+        <div><div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:4px">Loss per week</div><input type="number" id="tlRate" placeholder="e.g. 0.5" step="0.25" min="0.25" max="2" style="width:100%;padding:7px 9px" oninput="calcTimeline()"></div>
+      </div>
+      <div id="tlResult" style="display:none">
+        <div style="background:var(--bg);border:1px solid var(--bdr);border-radius:5px;padding:16px 18px;margin-bottom:14px">
+          <div id="tlSummary" style="font-size:13px;font-weight:500;margin-bottom:6px"></div>
+          <div id="tlDate" style="font-size:11.5px;color:var(--soft);margin-bottom:14px"></div>
+          <div class="pb" style="height:6px"><div class="pbf" id="tlBar" style="width:0%;background:var(--creative)"></div></div>
+          <div style="display:flex;justify-content:space-between;margin-top:5px;font-size:10px;color:var(--soft)">
+            <span id="tlStart"></span><span id="tlEnd"></span>
+          </div>
+        </div>
+        <div id="tlMilestones" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"></div>
+        <div class="notice" style="margin-top:14px">This is an estimate based on consistent weekly loss. Actual results vary. Always listen to your body.</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2019,6 +2126,13 @@ function collectAllData() {
   data.workTasks = { main: Array.from(document.querySelectorAll('#wk-main-list .ov-item')).map(el => ({ text: el.querySelector('.ov-txt') ? el.querySelector('.ov-txt').innerHTML : '', done: el.classList.contains('done') })) };
   data.workRoleData = workRoleData.map(r => ({...r, tasks: [...(r.tasks||[])], sections: [...(r.sections||[])], savedNotes: [...(r.savedNotes||[])]}));
   data.references = references.map(r => ({...r}));
+  // fitness
+  data.fitData = JSON.parse(JSON.stringify(fitData));
+  data.measurements = measurements.map(m => ({...m}));
+  data.fitGoalArchives = JSON.parse(JSON.stringify(fitGoalArchives));
+  try { data.fitGoals = document.getElementById('fitGoals').value; } catch(e) {}
+  try { data.fitNutrition = document.getElementById('fitNutrition').value; } catch(e) {}
+  try { data.fitLongGoals = document.getElementById('fitLongGoals').value; } catch(e) {}
   try { data.currNotes = document.getElementById('currNotes') ? document.getElementById('currNotes').value : ''; } catch(e) {}
   data.courses = courses;
   try { data.monthGoals = document.getElementById('monthGoals') ? document.getElementById('monthGoals').value : ''; } catch(e) {}
@@ -2112,6 +2226,31 @@ function restoreAllData(data) {
     references.length = 0;
     data.references.forEach(r => references.push(r));
     renderRefs();
+  }
+  // restore fitness
+  if (data.fitData) {
+    if (data.fitData.workout) Object.assign(fitData.workout, data.fitData.workout);
+    if (data.fitData.meal) DAY_KEYS.forEach(d => { if (data.fitData.meal[d]) Object.assign(fitData.meal[d], data.fitData.meal[d]); });
+    if (data.fitData.lastWorkout) fitData.lastWorkout = data.fitData.lastWorkout;
+    if (data.fitData.lastMeal) fitData.lastMeal = data.fitData.lastMeal;
+    buildFitWorkoutGrid();
+    buildFitMealGrid();
+  }
+  try { if (data.fitGoals) document.getElementById('fitGoals').value = data.fitGoals; } catch(e) {}
+  try { if (data.fitNutrition) document.getElementById('fitNutrition').value = data.fitNutrition; } catch(e) {}
+  try { if (data.fitLongGoals) document.getElementById('fitLongGoals').value = data.fitLongGoals; } catch(e) {}
+  if (data.fitGoalArchives) {
+    ['fitness','nutrition','longterm'].forEach(type => {
+      if (data.fitGoalArchives[type]) {
+        fitGoalArchives[type] = data.fitGoalArchives[type];
+        renderFitGoalArchive(type);
+      }
+    });
+  }
+  if (data.measurements && Array.isArray(data.measurements)) {
+    measurements.length = 0;
+    data.measurements.forEach(m => measurements.push(m));
+    renderMeasurements();
   }
   if (data.currNotes) { const el = document.getElementById('currNotes'); if (el) el.value = data.currNotes; }
   if (data.courses && Array.isArray(data.courses)) { courses.length = 0; data.courses.forEach(c => courses.push(c)); rendCourseLanding(); }
@@ -2375,6 +2514,42 @@ function exportCurriculumNotes() {
   a.click();
 }
 
+// ── EXPORT / IMPORT BACKUP ────────────────────────
+function exportAllData() {
+  const data = collectAllData();
+  const now = new Date();
+  const dateStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'dashboard-backup-' + dateStr + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function importAllData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (!confirm('This will replace all your current data with the backup. Are you sure?')) {
+    event.target.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      restoreAllData(data);
+      sbSave();
+      setStatus('connected', 'Backup restored');
+      setTimeout(() => setStatus('connected', 'Connected'), 3000);
+    } catch(err) {
+      alert('Could not read backup file. Make sure it is a valid dashboard backup.');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
 // ── AUTO-SAVE every 2 minutes as backup ───────────
 setInterval(() => {
   if (!sbIsLoading && document.getElementById('driveStatusText').textContent.startsWith('Connected')) {
@@ -2383,6 +2558,229 @@ setInterval(() => {
 }, 120000);
 
 // init on page load
+// ── FITNESS & MEALS ───────────────────────────────
+const DAYS_SHORT = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const MEAL_SLOTS = ['Breakfast','Lunch','Dinner','Snacks'];
+const fitData = {
+  workout: { Mon:'', Tue:'', Wed:'', Thu:'', Fri:'', Sat:'', Sun:'' },
+  meal: { Mon:{Breakfast:'',Lunch:'',Dinner:'',Snacks:''}, Tue:{Breakfast:'',Lunch:'',Dinner:'',Snacks:''}, Wed:{Breakfast:'',Lunch:'',Dinner:'',Snacks:''}, Thu:{Breakfast:'',Lunch:'',Dinner:'',Snacks:''}, Fri:{Breakfast:'',Lunch:'',Dinner:'',Snacks:''}, Sat:{Breakfast:'',Lunch:'',Dinner:'',Snacks:''}, Sun:{Breakfast:'',Lunch:'',Dinner:'',Snacks:''} },
+  lastWorkout: null,
+  lastMeal: null
+};
+const DAY_KEYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+function buildFitWorkoutGrid() {
+  const container = document.getElementById('fitWorkoutGrid');
+  container.innerHTML = DAY_KEYS.map(day => `
+    <div class="card" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="font-size:12px;font-weight:500">${day}</div>
+          <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--soft);cursor:pointer">
+            <input type="checkbox" id="fit-wdone-${day}" ${fitData.workout[day+'_done']?'checked':''} onchange="fitData.workout['${day}_done']=this.checked;scheduleAutoSave()" style="accent-color:var(--creative)"> Done
+          </label>
+        </div>
+        <select id="fit-wtype-${day}" style="font-size:10px;padding:2px 20px 2px 6px" onchange="fitData.workout['${day}_type']=this.value;scheduleAutoSave()">
+          <option value="">Type...</option>
+          <option value="Push">Push</option>
+          <option value="Pull">Pull</option>
+          <option value="Legs">Legs</option>
+          <option value="Upper">Upper</option>
+          <option value="Lower">Lower</option>
+          <option value="Full body">Full body</option>
+          <option value="Cardio">Cardio</option>
+          <option value="Incline walk">Incline walk</option>
+          <option value="Rest">Rest</option>
+          <option value="Active recovery">Active recovery</option>
+        </select>
+      </div>
+      <textarea id="fit-w-${day}" placeholder="What's the plan for ${day}? Exercises, sets, reps, duration..." style="width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:12px;color:var(--txt);outline:none;line-height:1.7;min-height:70px" oninput="fitData.workout['${day}']=this.value;scheduleAutoSave()">${fitData.workout[day]||''}</textarea>
+    </div>`).join('');
+  DAY_KEYS.forEach(day => {
+    const sel = document.getElementById('fit-wtype-'+day);
+    if (sel && fitData.workout[day+'_type']) sel.value = fitData.workout[day+'_type'];
+  });
+}
+
+function buildFitMealGrid() {
+  const container = document.getElementById('fitMealGrid');
+  container.innerHTML = DAY_KEYS.map(day => `
+    <div class="card" style="margin-bottom:10px">
+      <div style="font-size:12px;font-weight:500;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">
+        <span>${day}</span>
+        <span style="font-size:10px;color:var(--soft)">Daily total: <strong id="fit-cal-total-${day}" style="color:var(--txt)">${getDayCalories(day)} kcal</strong></span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        ${MEAL_SLOTS.map(slot => `
+          <div style="background:var(--bg);border:1px solid var(--bdr);border-radius:5px;padding:8px 10px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+              <div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft)">${slot}</div>
+              <label style="display:flex;align-items:center;gap:4px;font-size:9.5px;color:var(--soft);cursor:pointer">
+                <input type="checkbox" id="fit-mdone-${day}-${slot}" ${(fitData.meal[day]&&fitData.meal[day][slot+'_done'])?'checked':''} onchange="fitData.meal['${day}']['${slot}_done']=this.checked;scheduleAutoSave()" style="accent-color:var(--creative)"> Done
+              </label>
+            </div>
+            <textarea id="fit-m-${day}-${slot}" placeholder="${slot}..." style="width:100%;background:transparent;border:none;resize:none;font-family:var(--mono);font-size:11.5px;color:var(--txt);outline:none;line-height:1.6;min-height:48px" oninput="fitData.meal['${day}']['${slot}']=this.value;scheduleAutoSave()">${(fitData.meal[day]&&fitData.meal[day][slot])||''}</textarea>
+            <div style="display:flex;align-items:center;gap:5px;margin-top:5px;border-top:1px solid var(--bdr);padding-top:5px">
+              <span style="font-size:9px;color:var(--soft)">kcal:</span>
+              <input type="number" id="fit-mcal-${day}-${slot}" placeholder="0" min="0" style="width:65px;padding:3px 6px;font-size:11px" value="${(fitData.meal[day]&&fitData.meal[day][slot+'_cal'])||''}" oninput="fitData.meal['${day}']['${slot}_cal']=parseInt(this.value)||0;updateDayCalories('${day}');scheduleAutoSave()">
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function getDayCalories(day) {
+  if (!fitData.meal[day]) return 0;
+  return MEAL_SLOTS.reduce((sum, slot) => sum + (parseInt(fitData.meal[day][slot+'_cal'])||0), 0);
+}
+
+function updateDayCalories(day) {
+  const el = document.getElementById('fit-cal-total-'+day);
+  if (el) el.textContent = getDayCalories(day) + ' kcal';
+}
+
+function clearFitWeek(type) {
+  if (!confirm('Clear this week\'s ' + type + ' plan?')) return;
+  if (type === 'workout') {
+    DAY_KEYS.forEach(d => { fitData.workout[d] = ''; fitData.workout[d+'_type'] = ''; });
+    buildFitWorkoutGrid();
+  } else {
+    DAY_KEYS.forEach(d => { MEAL_SLOTS.forEach(s => { fitData.meal[d][s] = ''; }); });
+    buildFitMealGrid();
+  }
+  scheduleAutoSave();
+}
+
+function copyLastFitWeek(type) {
+  if (type === 'workout' && fitData.lastWorkout) {
+    Object.assign(fitData.workout, fitData.lastWorkout);
+    buildFitWorkoutGrid();
+    scheduleAutoSave();
+  } else if (type === 'meal' && fitData.lastMeal) {
+    DAY_KEYS.forEach(d => { MEAL_SLOTS.forEach(s => { fitData.meal[d][s] = fitData.lastMeal[d][s]; }); });
+    buildFitMealGrid();
+    scheduleAutoSave();
+  } else {
+    alert('No previous week saved yet. Fill in this week first, then it will be available to copy next week.');
+  }
+}
+
+// ── FITNESS GOAL ARCHIVES ─────────────────────────
+const fitGoalArchives = { fitness: [], nutrition: [], longterm: [] };
+const fitGoalIds = { fitness: 'fitGoals', nutrition: 'fitNutrition', longterm: 'fitLongGoals' };
+const fitGoalArchiveIds = { fitness: 'fitGoalsArchive', nutrition: 'fitNutritionArchive', longterm: 'fitLongGoalsArchive' };
+
+function saveFitGoal(type) {
+  const txt = document.getElementById(fitGoalIds[type]).value.trim();
+  if (!txt) return;
+  const title = prompt('Give this goal a title (e.g. "Week of Apr 28"):');
+  if (title === null) return;
+  const now = new Date();
+  fitGoalArchives[type].unshift({ title: title.trim() || MONTHS[now.getMonth()]+' '+now.getDate(), date: MONTHS[now.getMonth()]+' '+now.getDate()+', '+now.getFullYear(), text: txt });
+  renderFitGoalArchive(type);
+  scheduleAutoSave();
+}
+
+function renderFitGoalArchive(type) {
+  const el = document.getElementById(fitGoalArchiveIds[type]);
+  if (!el || !fitGoalArchives[type].length) return;
+  el.innerHTML = fitGoalArchives[type].map((g,i) => `
+    <div class="note-entry" id="fga-${type}-${i}">
+      <div class="note-header" onclick="toggleNote('fga-${type}-${i}')">
+        <span class="note-arrow">▶</span>
+        <span class="note-title">${g.title}</span>
+        <span class="note-date">${g.date}</span>
+        <span style="font-size:10px;color:var(--dim);cursor:pointer;padding:0 4px" onclick="event.stopPropagation();fitGoalArchives['${type}'].splice(${i},1);renderFitGoalArchive('${type}');scheduleAutoSave()">✕</span>
+      </div>
+      <div class="note-body"><div class="note-text">${g.text}</div></div>
+    </div>`).join('');
+}
+
+// ── GOAL TIMELINE CALCULATOR ──────────────────────
+function calcTimeline() {
+  const current = parseFloat(document.getElementById('tlCurrent').value);
+  const goal = parseFloat(document.getElementById('tlGoal').value);
+  const rate = parseFloat(document.getElementById('tlRate').value);
+  const unit = document.getElementById('tlUnit').value;
+  const result = document.getElementById('tlResult');
+  if (isNaN(current) || isNaN(goal) || isNaN(rate) || rate <= 0 || current <= goal) { result.style.display='none'; return; }
+  const totalToLose = current - goal;
+  const weeksNeeded = Math.ceil(totalToLose / rate);
+  const daysNeeded = weeksNeeded * 7;
+  const targetDate = new Date();
+  targetDate.setDate(targetDate.getDate() + daysNeeded);
+  const months = Math.floor(weeksNeeded / 4.33);
+  const remainWeeks = Math.round(weeksNeeded % 4.33);
+  const timeStr = months > 0 ? `${months} month${months>1?'s':''} ${remainWeeks > 0 ? 'and '+remainWeeks+' week'+(remainWeeks>1?'s':'') : ''}` : `${weeksNeeded} week${weeksNeeded>1?'s':''}`;
+  document.getElementById('tlSummary').textContent = `${totalToLose} ${unit} to lose at ${rate} ${unit}/week = ${timeStr}`;
+  document.getElementById('tlDate').textContent = `Estimated target date: ${MONTHS[targetDate.getMonth()]} ${targetDate.getDate()}, ${targetDate.getFullYear()}`;
+  document.getElementById('tlStart').textContent = `Now: ${current} ${unit}`;
+  document.getElementById('tlEnd').textContent = `Goal: ${goal} ${unit}`;
+  // milestones at 25%, 50%, 75%
+  const milestones = [0.25, 0.5, 0.75].map(pct => {
+    const w = Math.round(weeksNeeded * pct);
+    const d = new Date(); d.setDate(d.getDate() + w * 7);
+    const wt = (current - totalToLose * pct).toFixed(1);
+    return { pct: Math.round(pct*100), weight: wt, date: MONTHS[d.getMonth()]+' '+d.getDate(), weeks: w };
+  });
+  document.getElementById('tlMilestones').innerHTML = milestones.map(m => `
+    <div class="fin-chip">
+      <div class="fc-lbl">${m.pct}% there</div>
+      <div class="fc-val" style="font-size:18px">${m.weight} ${unit}</div>
+      <div style="font-size:10px;color:var(--soft);margin-top:4px">${m.date} · week ${m.weeks}</div>
+    </div>`).join('');
+  result.style.display = 'block';
+}
+
+// ── BODY MEASUREMENTS ────────────────────────────
+const measurements = [];
+
+function addMeasurement() {
+  const fields = { weight:'mWeight', chest:'mChest', waist:'mWaist', hips:'mHips', thighs:'mThighs', arms:'mArms', notes:'mNotes' };
+  const entry = { date: '' };
+  const now = new Date();
+  entry.date = MONTHS[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
+  let hasData = false;
+  Object.entries(fields).forEach(([key, id]) => {
+    const val = document.getElementById(id).value.trim();
+    if (val) { entry[key] = val; hasData = true; }
+    document.getElementById(id).value = '';
+  });
+  if (!hasData) return;
+  measurements.unshift(entry);
+  renderMeasurements();
+  scheduleAutoSave();
+}
+
+function renderMeasurements() {
+  const el = document.getElementById('measurementLog');
+  if (!measurements.length) { el.innerHTML = '<div class="empty">No measurements logged yet.</div>'; return; }
+  el.innerHTML = measurements.map((m, i) => `
+    <div class="note-entry" id="meas-${i}">
+      <div class="note-header" onclick="toggleNote('meas-${i}')">
+        <span class="note-arrow">▶</span>
+        <span class="note-title">${m.date}</span>
+        <span class="note-date">${m.weight ? m.weight : ''}</span>
+        <span style="font-size:10px;color:var(--dim);cursor:pointer;padding:0 4px" onclick="event.stopPropagation();measurements.splice(${i},1);renderMeasurements();scheduleAutoSave()">✕</span>
+      </div>
+      <div class="note-body">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding-top:8px">
+          ${m.weight?`<div><div style="font-size:9px;color:var(--soft);margin-bottom:2px">Weight</div><div style="font-size:12px">${m.weight}</div></div>`:''}
+          ${m.chest?`<div><div style="font-size:9px;color:var(--soft);margin-bottom:2px">Chest</div><div style="font-size:12px">${m.chest}</div></div>`:''}
+          ${m.waist?`<div><div style="font-size:9px;color:var(--soft);margin-bottom:2px">Waist</div><div style="font-size:12px">${m.waist}</div></div>`:''}
+          ${m.hips?`<div><div style="font-size:9px;color:var(--soft);margin-bottom:2px">Hips</div><div style="font-size:12px">${m.hips}</div></div>`:''}
+          ${m.thighs?`<div><div style="font-size:9px;color:var(--soft);margin-bottom:2px">Thighs</div><div style="font-size:12px">${m.thighs}</div></div>`:''}
+          ${m.arms?`<div><div style="font-size:9px;color:var(--soft);margin-bottom:2px">Arms</div><div style="font-size:12px">${m.arms}</div></div>`:''}
+        </div>
+        ${m.notes?`<div style="margin-top:8px;font-size:11.5px;color:var(--soft)">${m.notes}</div>`:''}
+      </div>
+    </div>`).join('');
+}
+
+// build grids on load
+buildFitWorkoutGrid();
+buildFitMealGrid();
+
 window.addEventListener('load', () => { setTimeout(sbLoad, 500); });
 </script>
 </body>
