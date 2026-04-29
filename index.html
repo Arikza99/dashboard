@@ -1381,15 +1381,32 @@ function addCalEvent(key, y, m, d) {
 // ── APPOINTMENTS ──────────────────────────────────
 const appointments = [];
 
+function parseApptDate(a) {
+  // parse mon and day into a sortable date
+  const monthMap = { Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11 };
+  const now = new Date();
+  const month = monthMap[a.mon] !== undefined ? monthMap[a.mon] : now.getMonth();
+  const day = parseInt(a.day) || 1;
+  // assume current year, bump to next year if the date has already passed
+  let year = now.getFullYear();
+  const d = new Date(year, month, day);
+  if (d < new Date(now.getFullYear(), now.getMonth(), now.getDate())) {
+    year += 1;
+  }
+  return new Date(year, month, day).getTime();
+}
+
 function renderAppts() {
   const el = document.getElementById('apptList');
   if (!appointments.length) { el.innerHTML = '<div class="empty">No events or appointments yet.</div>'; return; }
-  el.innerHTML = appointments.map((a, i) => `
+  // sort by date ascending — soonest first
+  const sorted = appointments.map((a, i) => ({...a, _origIdx: i})).sort((a, b) => parseApptDate(a) - parseApptDate(b));
+  el.innerHTML = sorted.map(a => `
     <div class="appt-item">
       <div class="appt-date"><div class="appt-day">${a.day}</div><div class="appt-mon">${a.mon}</div></div>
       <div class="appt-body"><div class="appt-name">${a.name}</div><div class="appt-meta">${a.meta}</div></div>
       <div class="appt-tag">${a.tag}</div>
-      <div class="appt-del" onclick="deleteAppt(${i})">✕</div>
+      <div class="appt-del" onclick="deleteAppt(${a._origIdx})">✕</div>
     </div>`).join('');
 }
 
