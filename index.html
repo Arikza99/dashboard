@@ -245,15 +245,32 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
 .appt-tag{font-size:9px;padding:1px 7px;border-radius:3px;border:1px solid var(--bdr);color:var(--soft);white-space:nowrap}
 
 /* ══ ROUTINES ══ */
-.r-item{display:flex;align-items:center;gap:10px;padding:8px 11px;background:var(--surf);border:1px solid var(--bdr);border-radius:4px;margin-bottom:3px}
-.r-item:hover{background:var(--bg)}
+.r-item{background:var(--surf);border:1px solid var(--bdr);border-radius:4px;margin-bottom:3px}
+.r-item-header{display:flex;align-items:center;gap:10px;padding:8px 11px;cursor:default}
+.r-item:hover .r-item-header{background:var(--bg);border-radius:4px}
 .r-item.done .r-lbl{text-decoration:line-through;color:var(--dim)}
 .r-ck{width:13px;height:13px;border:1.5px solid var(--bdr2);border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:8px;color:transparent;cursor:pointer}
 .r-item.done .r-ck{background:var(--txt);border-color:var(--txt);color:#fff}
 .r-time{font-size:10px;color:var(--soft);min-width:44px}
 .r-lbl{flex:1;font-size:12px;cursor:pointer}
+.r-expand{font-size:9px;color:var(--dim);cursor:pointer;padding:0 4px;transition:transform .15s;display:inline-block}
+.r-item.open .r-expand{transform:rotate(90deg)}
 .r-item .ov-del{opacity:0;transition:opacity .1s}
 .r-item:hover .ov-del{opacity:1}
+.r-item .r-edit-btn{font-size:10px;color:var(--dim);cursor:pointer;opacity:0;transition:opacity .1s;padding:0 3px}
+.r-item:hover .r-edit-btn{opacity:1}
+.r-substeps{display:none;padding:6px 12px 10px 36px;border-top:1px solid var(--bdr)}
+.r-item.open .r-substeps{display:block}
+.r-sub{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:11.5px;color:var(--txt)}
+.r-sub-ck{width:11px;height:11px;border:1.5px solid var(--bdr2);border-radius:2px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:7px;color:transparent}
+.r-sub.done .r-sub-ck{background:var(--txt);border-color:var(--txt);color:#fff}
+.r-sub.done .r-sub-lbl{text-decoration:line-through;color:var(--dim)}
+.r-sub-lbl{flex:1}
+.r-sub-del{font-size:10px;color:var(--dim);cursor:pointer;opacity:0;padding:0 3px}
+.r-sub:hover .r-sub-del{opacity:1}
+.r-add-sub{display:flex;gap:5px;margin-top:6px}
+.r-add-sub input{flex:1;padding:4px 7px;font-size:11px;background:var(--bg);border:1px solid var(--bdr);border-radius:3px;font-family:var(--mono);color:var(--txt);outline:none}
+.r-add-sub button{padding:4px 8px;font-size:10px}
 
 /* ══ GROCERY ══ */
 .g-cat{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:12px 0 5px}
@@ -1616,28 +1633,87 @@ function addOv() {
 buildMonth();
 
 // ── SPRINT BOARD ──────────────────────────────────
-function rendR(type,steps){
-  const listId = type==='morning'?'morList':'eveList';
-  document.getElementById(listId).innerHTML=steps.map((s,i)=>`
-    <div class="r-item ${s.done?'done':''}" id="ritem-${type}-${i}">
+// ── ROUTINE HELPERS ───────────────────────────────
+function mkRItem(label, time, done, subs) {
+  const id = 'r-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+  const wrap = document.createElement('div');
+  wrap.className = 'r-item' + (done ? ' done' : '');
+  wrap.id = id;
+  const hasSubs = subs && subs.length > 0;
+  wrap.innerHTML = `
+    <div class="r-item-header">
       <div class="r-ck" onclick="this.closest('.r-item').classList.toggle('done');scheduleAutoSave()">✓</div>
-      <div class="r-time">${s.t||s.time||''}</div>
-      <div class="r-lbl" onclick="this.closest('.r-item').classList.toggle('done');scheduleAutoSave()">${s.l||s.label||''}</div>
+      <div class="r-time">${time||'—'}</div>
+      <div class="r-lbl" onclick="this.closest('.r-item').classList.toggle('done');scheduleAutoSave()">${label}</div>
+      <div class="r-expand" onclick="this.closest('.r-item').classList.toggle('open')">▶</div>
+      <div class="r-edit-btn" onclick="editRStepEl(this)">edit</div>
       <div class="ov-del" onclick="this.closest('.r-item').remove();scheduleAutoSave()">✕</div>
-    </div>`).join('');
+    </div>
+    <div class="r-substeps">
+      <div class="r-sub-list">
+        ${(subs||[]).map((s,i) => `
+          <div class="r-sub ${s.done?'done':''}">
+            <div class="r-sub-ck" onclick="this.closest('.r-sub').classList.toggle('done');scheduleAutoSave()">✓</div>
+            <div class="r-sub-lbl">${s.text}</div>
+            <div class="r-sub-del" onclick="this.closest('.r-sub').remove();scheduleAutoSave()">✕</div>
+          </div>`).join('')}
+      </div>
+      <div class="r-add-sub">
+        <input type="text" placeholder="Add a sub-step..." onkeydown="if(event.key==='Enter')addSubStep(this)">
+        <button class="btn bsm" onclick="addSubStep(this.previousElementSibling)">+ Add</button>
+      </div>
+    </div>`;
+  if (hasSubs) wrap.classList.add('open');
+  return wrap;
 }
-function addStep(type){
-  const p=type==='morning'?'mr':'er';
-  const l=document.getElementById(p+'Step').value.trim();
-  const t=document.getElementById(p+'Time').value.trim()||'—';
-  if(!l)return;
-  const r=document.createElement('div'); r.className='r-item';
-  r.innerHTML=`<div class="r-ck" onclick="this.closest('.r-item').classList.toggle('done');scheduleAutoSave()">✓</div><div class="r-time">${t}</div><div class="r-lbl" onclick="this.closest('.r-item').classList.toggle('done');scheduleAutoSave()">${l}</div><div class="ov-del" onclick="this.closest('.r-item').remove();scheduleAutoSave()">✕</div>`;
-  document.getElementById(type==='morning'?'morList':'eveList').appendChild(r);
+
+function addSubStep(input) {
+  const val = input.value.trim();
+  if (!val) return;
+  const subList = input.closest('.r-substeps').querySelector('.r-sub-list');
+  const sub = document.createElement('div');
+  sub.className = 'r-sub';
+  sub.innerHTML = `<div class="r-sub-ck" onclick="this.closest('.r-sub').classList.toggle('done');scheduleAutoSave()">✓</div><div class="r-sub-lbl">${val}</div><div class="r-sub-del" onclick="this.closest('.r-sub').remove();scheduleAutoSave()">✕</div>`;
+  subList.appendChild(sub);
+  input.value = '';
+  input.closest('.r-item').classList.add('open');
+  scheduleAutoSave();
+}
+
+function rendR(type, steps) {
+  const listId = type==='morning'?'morList':'eveList';
+  const list = document.getElementById(listId);
+  list.innerHTML = '';
+  (steps||[]).forEach(s => {
+    list.appendChild(mkRItem(s.l||s.label||'', s.t||s.time||'', s.done, s.subs||[]));
+  });
+}
+
+function addStep(type) {
+  const p = type==='morning'?'mr':'er';
+  const l = document.getElementById(p+'Step').value.trim();
+  const t = document.getElementById(p+'Time').value.trim()||'—';
+  if (!l) return;
+  document.getElementById(type==='morning'?'morList':'eveList').appendChild(mkRItem(l, t, false, []));
   document.getElementById(p+'Step').value='';
   document.getElementById(p+'Time').value='';
   scheduleAutoSave();
 }
+
+function editRStepEl(btn) {
+  const item = btn.closest('.r-item');
+  const timeEl = item.querySelector('.r-time');
+  const lblEl = item.querySelector('.r-lbl');
+  if (!timeEl || !lblEl) return;
+  const newTime = prompt('Edit time:', timeEl.textContent);
+  if (newTime === null) return;
+  const newLbl = prompt('Edit step:', lblEl.textContent);
+  if (newLbl === null) return;
+  timeEl.textContent = newTime.trim() || '—';
+  lblEl.textContent = newLbl.trim();
+  scheduleAutoSave();
+}
+
 rendR('mor',[]); rendR('eve',[]);
 
 // ── GROCERY ───────────────────────────────────────
@@ -2273,12 +2349,20 @@ function collectAllData() {
     morning: Array.from(document.querySelectorAll('#morList .r-item')).map(el => ({
       time: el.querySelector('.r-time') ? el.querySelector('.r-time').textContent : '',
       label: el.querySelector('.r-lbl') ? el.querySelector('.r-lbl').textContent : '',
-      done: el.classList.contains('done')
+      done: el.classList.contains('done'),
+      subs: Array.from(el.querySelectorAll('.r-sub')).map(sub => ({
+        text: sub.querySelector('.r-sub-lbl') ? sub.querySelector('.r-sub-lbl').textContent : '',
+        done: sub.classList.contains('done')
+      }))
     })),
     evening: Array.from(document.querySelectorAll('#eveList .r-item')).map(el => ({
       time: el.querySelector('.r-time') ? el.querySelector('.r-time').textContent : '',
       label: el.querySelector('.r-lbl') ? el.querySelector('.r-lbl').textContent : '',
-      done: el.classList.contains('done')
+      done: el.classList.contains('done'),
+      subs: Array.from(el.querySelectorAll('.r-sub')).map(sub => ({
+        text: sub.querySelector('.r-sub-lbl') ? sub.querySelector('.r-sub-lbl').textContent : '',
+        done: sub.classList.contains('done')
+      }))
     }))
   };
   data.groceries = Object.values(groceries);
@@ -2347,17 +2431,13 @@ function restoreAllData(data) {
     if (data.routines.morning && data.routines.morning.length) {
       document.getElementById('morList').innerHTML = '';
       data.routines.morning.forEach(s => {
-        const r = document.createElement('div'); r.className = 'r-item' + (s.done ? ' done' : '');
-        r.innerHTML = `<div class="r-ck" onclick="this.closest('.r-item').classList.toggle('done');scheduleAutoSave()">✓</div><div class="r-time">${s.time||s.t||''}</div><div class="r-lbl" onclick="this.closest('.r-item').classList.toggle('done');scheduleAutoSave()">${s.label||s.l||''}</div><div class="ov-del" onclick="this.closest('.r-item').remove();scheduleAutoSave()">✕</div>`;
-        document.getElementById('morList').appendChild(r);
+        document.getElementById('morList').appendChild(mkRItem(s.label||s.l||'', s.time||s.t||'', s.done, s.subs||[]));
       });
     }
     if (data.routines.evening && data.routines.evening.length) {
       document.getElementById('eveList').innerHTML = '';
       data.routines.evening.forEach(s => {
-        const r = document.createElement('div'); r.className = 'r-item' + (s.done ? ' done' : '');
-        r.innerHTML = `<div class="r-ck" onclick="this.closest('.r-item').classList.toggle('done');scheduleAutoSave()">✓</div><div class="r-time">${s.time||s.t||''}</div><div class="r-lbl" onclick="this.closest('.r-item').classList.toggle('done');scheduleAutoSave()">${s.label||s.l||''}</div><div class="ov-del" onclick="this.closest('.r-item').remove();scheduleAutoSave()">✕</div>`;
-        document.getElementById('eveList').appendChild(r);
+        document.getElementById('eveList').appendChild(mkRItem(s.label||s.l||'', s.time||s.t||'', s.done, s.subs||[]));
       });
     }
   }
@@ -2578,9 +2658,8 @@ function resetRoutine(type) {
   const listId = type === 'morning' ? 'morList' : 'eveList';
   const list = document.getElementById(listId);
   if (!list) return;
-  // remove done from all items and their children
-  list.querySelectorAll('*').forEach(el => el.classList.remove('done'));
   list.querySelectorAll('.r-item').forEach(el => el.classList.remove('done'));
+  list.querySelectorAll('.r-sub').forEach(el => el.classList.remove('done'));
   scheduleAutoSave();
 }
 
