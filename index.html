@@ -376,7 +376,25 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
 .mat-item:hover .mat-del{opacity:1}
 
 /* notes */
-.note-entry{background:var(--bg);border:1px solid var(--bdr);border-radius:4px;margin-bottom:5px;overflow:hidden}
+.tt-session{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surf);border:1px solid var(--bdr);border-radius:4px;margin-bottom:5px}
+.tt-cat{font-size:9px;padding:2px 8px;border-radius:3px;font-weight:500;flex-shrink:0;text-transform:uppercase;letter-spacing:.05em}
+.tt-cat-work{background:rgba(42,100,128,.12);color:#2a6480}
+.tt-cat-deepwork{background:rgba(80,60,140,.12);color:#503c8c}
+.tt-cat-school{background:rgba(61,122,82,.12);color:#3d7a52}
+.tt-cat-fitness{background:rgba(184,50,50,.12);color:#b83232}
+.tt-cat-hygiene{background:rgba(196,125,14,.12);color:#c47d0e}
+.tt-cat-leisure{background:rgba(150,120,180,.12);color:#9678b4}
+.tt-cat-travel{background:rgba(80,120,180,.12);color:#4a78b4}
+.tt-cat-cleaning{background:rgba(130,100,60,.12);color:#7a5e32}
+.tt-cat-social{background:rgba(180,80,140,.12);color:#b4508c}
+.tt-cat-rest{background:rgba(100,160,130,.12);color:#4a9070}
+.tt-dur{font-size:12px;font-weight:500;color:var(--txt);flex-shrink:0}
+.tt-note{font-size:11.5px;color:var(--soft);flex:1}
+.tt-time{font-size:10px;color:var(--dim);flex-shrink:0}
+.tt-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.tt-bar-lbl{font-size:11px;color:var(--txt);width:80px;flex-shrink:0;text-transform:capitalize}
+.tt-bar-wrap{flex:1;background:var(--bdr);border-radius:3px;height:8px;overflow:hidden}
+.tt-bar-fill{height:100%;border-radius:3px;transition:width .3s}
 .note-header{display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;transition:background .12s;user-select:none}
 .note-header:hover{background:var(--surf2)}
 .note-arrow{font-size:9px;color:var(--dim);transition:transform .2s;flex-shrink:0}
@@ -435,6 +453,7 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
     <div class="ni" onclick="nav('appt',this)"><div class="nd"></div>Events & Appts</div>
     <div class="ni" onclick="nav('routines',this)"><div class="nd"></div>Routines</div>
     <div class="ni" onclick="nav('work',this)"><div class="nd"></div>Work</div>
+    <div class="ni" onclick="nav('timetracker',this)"><div class="nd"></div>Time Tracker</div>
     <div class="nl">Lists</div>
     <div class="ni" onclick="nav('grocery',this)"><div class="nd"></div>Grocery</div>
     <div class="ni" onclick="nav('shopping',this)"><div class="nd"></div>Shopping</div>
@@ -708,61 +727,66 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
 
 <!-- ══════ FINANCE ══════ -->
 <div class="page" id="p-finance">
-  <div class="ph"><div class="pl">Growth</div><div class="pt">Finance</div><div class="psub">Monthly overview — income, expenses, bills, credit cards.</div></div>
-  <div class="fin-sum">
+  <div class="ph"><div class="pl">Growth</div><div class="pt">Finance</div><div class="psub">Your monthly budget — income, fixed costs, envelopes, and credit cards.</div></div>
+
+  <!-- SUMMARY BAR -->
+  <div class="fin-sum" style="grid-template-columns:1fr 1fr 1fr 1fr">
     <div class="fin-chip"><div class="fc-lbl">Monthly income</div><div class="fc-val pos" id="finInc">$0.00</div></div>
-    <div class="fin-chip"><div class="fc-lbl">Monthly expenses</div><div class="fc-val neg" id="finExp">$0.00</div></div>
-    <div class="fin-chip"><div class="fc-lbl">Remaining</div><div class="fc-val" id="finRem">$0.00</div></div>
+    <div class="fin-chip"><div class="fc-lbl">Fixed expenses</div><div class="fc-val neg" id="finExp">$0.00</div></div>
+    <div class="fin-chip"><div class="fc-lbl">In envelopes</div><div class="fc-val neg" id="finEnv">$0.00</div></div>
+    <div class="fin-chip"><div class="fc-lbl">Unallocated</div><div class="fc-val" id="finRem">$0.00</div></div>
   </div>
+
   <div class="tabs">
     <div class="tab active" onclick="stab('fin','income',this)">Income</div>
-    <div class="tab" onclick="stab('fin','expenses',this)">Expenses</div>
-    <div class="tab" onclick="stab('fin','bills',this)">Bills</div>
-    <div class="tab" onclick="stab('fin','savings',this)">Savings goals</div>
-    <div class="tab" onclick="stab('fin','cc',this)">Credit cards</div>
+    <div class="tab" onclick="stab('fin','fixed',this)">Fixed Expenses</div>
+    <div class="tab" onclick="stab('fin','envelopes',this)">Budget Envelopes</div>
+    <div class="tab" onclick="stab('fin','cc',this)">Credit Cards</div>
   </div>
 
+  <!-- INCOME -->
   <div class="tc active" id="fin-income">
-    <div class="card sec"><div style="display:flex;gap:7px">
-      <input type="text" id="incN" placeholder="Source" style="flex:2;padding:7px 9px">
-      <input type="text" id="incC" placeholder="Category" style="flex:1;padding:7px 9px">
-      <input type="number" id="incA" placeholder="Amount" style="flex:1;padding:7px 9px" min="0">
-      <button class="btn bd" onclick="addFin('income')">+ Add</button>
-    </div></div>
-    <div id="incList"><div class="empty">No income entries.</div></div>
+    <div class="notice">Add each income source, the amount, and the date it arrives each month.</div>
+    <div class="card sec">
+      <div style="display:flex;gap:7px;flex-wrap:wrap">
+        <input type="text" id="incN" placeholder="Source name" style="flex:2;min-width:120px;padding:7px 9px">
+        <input type="number" id="incA" placeholder="Amount ($)" style="flex:1;padding:7px 9px" min="0">
+        <input type="text" id="incDate" placeholder="Arrives (e.g. 1st, 15th, last Friday)" style="flex:1;padding:7px 9px">
+        <button class="btn bd" onclick="addIncome()">+ Add</button>
+      </div>
+    </div>
+    <div id="incList"><div class="empty">No income added yet.</div></div>
   </div>
 
-  <div class="tc" id="fin-expenses">
-    <div class="card sec"><div style="display:flex;gap:7px">
-      <input type="text" id="expN" placeholder="Expense" style="flex:2;padding:7px 9px">
-      <input type="text" id="expC" placeholder="Category" style="flex:1;padding:7px 9px">
-      <input type="number" id="expA" placeholder="Amount" style="flex:1;padding:7px 9px" min="0">
-      <button class="btn" onclick="addFin('expense')">+ Add</button>
-    </div></div>
-    <div id="expList"><div class="empty">No expense entries.</div></div>
+  <!-- FIXED EXPENSES -->
+  <div class="tc" id="fin-fixed">
+    <div class="notice">Fixed expenses are the same every month — rent, phone, subscriptions. Mark them paid each month.</div>
+    <div class="card sec">
+      <div style="display:flex;gap:7px;flex-wrap:wrap">
+        <input type="text" id="fixN" placeholder="Expense name" style="flex:2;min-width:120px;padding:7px 9px">
+        <input type="number" id="fixA" placeholder="Amount ($)" style="flex:1;padding:7px 9px" min="0">
+        <input type="text" id="fixDue" placeholder="Due date (e.g. 1st, 15th)" style="flex:1;padding:7px 9px">
+        <select id="fixFreq" style="padding:7px 9px"><option>monthly</option><option>annual</option><option>one-time</option></select>
+        <button class="btn" onclick="addFixed()">+ Add</button>
+      </div>
+    </div>
+    <div id="fixedList"><div class="empty">No fixed expenses added yet.</div></div>
   </div>
 
-  <div class="tc" id="fin-bills">
-    <div class="card sec"><div style="display:flex;gap:7px;flex-wrap:wrap">
-      <input type="text" id="billN" placeholder="Bill name" style="flex:2;min-width:120px;padding:7px 9px">
-      <input type="text" id="billDue" placeholder="Due date (e.g. 1st, May 15)" style="flex:1;padding:7px 9px">
-      <input type="number" id="billA" placeholder="Amount" style="flex:1;padding:7px 9px" min="0">
-      <select id="billFreq"><option>monthly</option><option>annual</option><option>one-time</option></select>
-      <button class="btn" onclick="addBill()">+ Add</button>
-    </div></div>
-    <div id="billList"><div class="empty">No bills added.</div></div>
+  <!-- BUDGET ENVELOPES -->
+  <div class="tc" id="fin-envelopes">
+    <div class="notice">Envelopes are for variable spending. Set a monthly limit for each category and track roughly what you've spent. The bar fills up as you spend.</div>
+    <div class="card sec">
+      <div style="display:flex;gap:7px;flex-wrap:wrap">
+        <input type="text" id="envN" placeholder="Category (e.g. Groceries, Eating out)" style="flex:2;min-width:140px;padding:7px 9px">
+        <input type="number" id="envBudget" placeholder="Monthly limit ($)" style="flex:1;padding:7px 9px" min="0">
+        <button class="btn" onclick="addEnvelope()">+ Add</button>
+      </div>
+    </div>
+    <div id="envelopeList"><div class="empty">No budget envelopes yet.</div></div>
   </div>
 
-  <div class="tc" id="fin-savings">
-    <div class="card sec"><div style="display:flex;gap:7px;flex-wrap:wrap">
-      <input type="text" id="savN" placeholder="Saving for..." style="flex:2;min-width:130px;padding:7px 9px">
-      <input type="number" id="savT" placeholder="Goal ($)" style="flex:1;padding:7px 9px" min="0">
-      <input type="number" id="savC" placeholder="Saved so far ($)" style="flex:1;padding:7px 9px" min="0">
-      <button class="btn" onclick="addSaving()">+ Add</button>
-    </div></div>
-    <div id="savList"><div class="empty">No savings goals.</div></div>
-  </div>
-
+  <!-- CREDIT CARDS -->
   <div class="tc" id="fin-cc">
     <div class="card sec"><div style="display:flex;gap:7px;flex-wrap:wrap">
       <input type="text" id="ccN" placeholder="Card name" style="flex:2;min-width:120px;padding:7px 9px">
@@ -1073,6 +1097,63 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
         <div class="notice" style="margin-top:14px">This is an estimate based on consistent weekly loss. Actual results vary. Always listen to your body.</div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ══════ TIME TRACKER ══════ -->
+<div class="page" id="p-timetracker">
+  <div class="ph"><div class="pl">Planning</div><div class="pt">Time Tracker</div><div class="psub">Track where your time actually goes. Start a timer, stop it, and log the session.</div></div>
+
+  <!-- STOPWATCH -->
+  <div class="card" style="margin-bottom:16px;text-align:center">
+    <div id="ttDisplay" style="font-size:48px;font-weight:300;letter-spacing:.05em;color:var(--txt);margin-bottom:16px;font-family:var(--mono)">00:00:00</div>
+    <div style="display:flex;justify-content:center;gap:10px;margin-bottom:16px">
+      <button class="btn bd" id="ttStartBtn" onclick="ttStart()" style="padding:10px 28px;font-size:13px">Start</button>
+      <button class="btn" id="ttStopBtn" onclick="ttStop()" style="padding:10px 28px;font-size:13px;display:none">Stop & Log</button>
+      <button class="btn" onclick="ttReset()" style="padding:10px 18px;font-size:12px">Reset</button>
+    </div>
+    <div id="ttLogForm" style="display:none;border-top:1px solid var(--bdr);padding-top:14px">
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:10px">
+        <select id="ttCategory" style="padding:7px 12px;font-size:12px">
+          <option value="work">Work</option>
+          <option value="deepwork">Deep Work</option>
+          <option value="school">School</option>
+          <option value="fitness">Fitness</option>
+          <option value="hygiene">Hygiene</option>
+          <option value="leisure">Leisure</option>
+          <option value="travel">Travel</option>
+          <option value="cleaning">Cleaning</option>
+          <option value="social">Social</option>
+          <option value="rest">Rest</option>
+        </select>
+        <input type="text" id="ttNote" placeholder="Note (optional)" style="padding:7px 12px;font-size:12px;width:200px">
+        <button class="btn bd" onclick="ttLog()">Save session</button>
+        <button class="btn" onclick="ttDiscard()">Discard</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TODAY SUMMARY -->
+  <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap" id="ttTodayChips">
+    <div class="fin-chip"><div class="fc-lbl">Tracked today</div><div class="fc-val" id="ttTodayTotal">0h 0m</div></div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="stab('tt','log',this)">Session Log</div>
+    <div class="tab" onclick="stab('tt','week',this);renderTTWeekSummary()">Weekly Summary</div>
+  </div>
+
+  <!-- SESSION LOG -->
+  <div class="tc active" id="tt-log">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+      <button class="btn bsm" onclick="clearTTLog()">Clear all sessions</button>
+    </div>
+    <div id="ttSessionList"><div class="empty">No sessions logged yet. Start a timer above.</div></div>
+  </div>
+
+  <!-- WEEKLY SUMMARY -->
+  <div class="tc" id="tt-week">
+    <div id="ttWeekSummary"><div class="empty">No sessions this week yet.</div></div>
   </div>
 </div>
 
@@ -1611,70 +1692,146 @@ function addShop(tab) {
 }
 
 // ── FINANCE ───────────────────────────────────────
-const finData = {income:[], expense:[]};
 function fmt(n){ return '$'+Math.abs(n).toLocaleString('en-CA',{minimumFractionDigits:2,maximumFractionDigits:2}); }
-function updFinSum(){
-  const inc=finData.income.reduce((s,r)=>s+r.amt,0);
-  const exp=finData.expense.reduce((s,r)=>s+r.amt,0);
-  const rem=inc-exp;
-  document.getElementById('finInc').textContent=fmt(inc);
-  document.getElementById('finExp').textContent=fmt(exp);
-  const r=document.getElementById('finRem'); r.textContent=(rem<0?'-':'')+fmt(rem); r.className='fc-val '+(rem<0?'neg':rem>0?'pos':'');
-}
-function rendFin(type){
-  const el=document.getElementById(type==='income'?'incList':'expList');
-  if(!finData[type].length){el.innerHTML=`<div class="empty">No ${type} entries.</div>`;return;}
-  el.innerHTML=finData[type].map((r,i)=>`<div class="fin-row"><div class="fin-name">${r.name}</div><div class="fin-cat">${r.cat}</div><div class="fin-amt ${type==='income'?'inc':'exp'}">${type==='income'?'+':'-'}${fmt(r.amt)}</div><div class="fin-del" onclick="remFin('${type}',${i})">✕</div></div>`).join('');
-}
-function addFin(type){
-  const nId=type==='income'?'incN':'expN',cId=type==='income'?'incC':'expC',aId=type==='income'?'incA':'expA';
-  const name=document.getElementById(nId).value.trim(),cat=document.getElementById(cId).value.trim()||'other',amt=parseFloat(document.getElementById(aId).value);
-  if(!name||isNaN(amt)||amt<=0)return;
-  finData[type].push({name,cat,amt});
-  [nId,cId,aId].forEach(id=>document.getElementById(id).value='');
-  rendFin(type); updFinSum();
-}
-function remFin(type,i){finData[type].splice(i,1);rendFin(type);updFinSum();}
 
-// bills
-const bills=[];
-function rendBills(){
-  const el=document.getElementById('billList');
-  if(!bills.length){el.innerHTML='<div class="empty">No bills added.</div>';return;}
-  const today=new Date();
-  el.innerHTML=bills.map((b,i)=>{
-    const dueClass=b.freq==='monthly'?'coming':'ok';
-    return `<div class="bill-row">
-      <div class="bill-name">${b.name}</div>
-      <div class="bill-due ${dueClass}">Due: ${b.due}</div>
-      <div style="font-size:10px;color:var(--soft)">${b.freq}</div>
-      <div class="bill-amt">${fmt(b.amt)}</div>
-      <div class="bill-paid ${b.paid?'paid':''}" onclick="togBill(${i})">${b.paid?'Paid':'Mark paid'}</div>
-      <div class="bill-del" onclick="remBill(${i})">✕</div>
+// income
+const incomeData = [];
+function updFinSum() {
+  const inc = incomeData.reduce((s,r) => s + r.amt, 0);
+  const fix = fixedData.reduce((s,r) => s + (r.freq==='annual' ? r.amt/12 : r.amt), 0);
+  const env = envelopes.reduce((s,e) => s + e.budget, 0);
+  const rem = inc - fix - env;
+  document.getElementById('finInc').textContent = fmt(inc);
+  document.getElementById('finExp').textContent = fmt(fix);
+  document.getElementById('finEnv').textContent = fmt(env);
+  const remEl = document.getElementById('finRem');
+  remEl.textContent = (rem < 0 ? '-' : '') + fmt(rem);
+  remEl.className = 'fc-val ' + (rem < 0 ? 'neg' : rem > 0 ? 'pos' : '');
+}
+function rendIncome() {
+  const el = document.getElementById('incList');
+  if (!incomeData.length) { el.innerHTML = '<div class="empty">No income added yet.</div>'; return; }
+  // sort by day of month
+  const sorted = [...incomeData].sort((a,b) => (parseInt(a.arrives)||99) - (parseInt(b.arrives)||99));
+  el.innerHTML = sorted.map((r,i) => `
+    <div class="fin-row">
+      <div class="fin-name">${r.name}</div>
+      <div class="fin-due ok">${r.arrives ? 'Arrives: '+r.arrives : ''}</div>
+      <div class="fin-amt inc">+${fmt(r.amt)}</div>
+      <div class="fin-del" onclick="remIncome(${incomeData.indexOf(r)})">✕</div>
+    </div>`).join('');
+}
+function addIncome() {
+  const name = document.getElementById('incN').value.trim();
+  const amt = parseFloat(document.getElementById('incA').value);
+  const arrives = document.getElementById('incDate').value.trim();
+  if (!name || isNaN(amt) || amt <= 0) return;
+  incomeData.push({name, amt, arrives});
+  ['incN','incA','incDate'].forEach(id => document.getElementById(id).value = '');
+  rendIncome(); updFinSum(); scheduleAutoSave();
+}
+function remIncome(i) { incomeData.splice(i,1); rendIncome(); updFinSum(); scheduleAutoSave(); }
+
+// fixed expenses
+const fixedData = [];
+function rendFixed() {
+  const el = document.getElementById('fixedList');
+  if (!fixedData.length) { el.innerHTML = '<div class="empty">No fixed expenses yet.</div>'; return; }
+  el.innerHTML = fixedData.map((b,i) => `
+    <div class="fin-row">
+      <div class="fin-name">${b.name}</div>
+      <div class="fin-due ${b.paid?'ok':'coming'}">Due: ${b.due} · ${b.freq}</div>
+      <div class="fin-amt exp">${b.freq==='annual'?fmt(b.amt)+'/yr ('+fmt(b.amt/12)+'/mo)':'-'+fmt(b.amt)}</div>
+      <div class="bill-paid ${b.paid?'paid':''}" onclick="togFixed(${i})" style="font-size:10px;cursor:pointer;padding:2px 7px;border:1px solid var(--bdr);border-radius:3px;color:var(--soft);transition:all .12s">${b.paid?'Paid':'Mark paid'}</div>
+      <div class="fin-del" onclick="remFixed(${i})">✕</div>
+    </div>`).join('');
+}
+function addFixed() {
+  const name = document.getElementById('fixN').value.trim();
+  const amt = parseFloat(document.getElementById('fixA').value);
+  const due = document.getElementById('fixDue').value.trim();
+  const freq = document.getElementById('fixFreq').value;
+  if (!name || isNaN(amt) || amt <= 0) return;
+  fixedData.push({name, amt, due, freq, paid: false});
+  ['fixN','fixA','fixDue'].forEach(id => document.getElementById(id).value = '');
+  rendFixed(); updFinSum(); scheduleAutoSave();
+}
+function togFixed(i) { fixedData[i].paid = !fixedData[i].paid; rendFixed(); scheduleAutoSave(); }
+function remFixed(i) { fixedData.splice(i,1); rendFixed(); updFinSum(); scheduleAutoSave(); }
+
+// budget envelopes
+const envelopes = [];
+function rendEnvelopes() {
+  const el = document.getElementById('envelopeList');
+  if (!envelopes.length) { el.innerHTML = '<div class="empty">No budget envelopes yet.</div>'; return; }
+  el.innerHTML = envelopes.map((e,i) => {
+    const pct = Math.min(100, Math.round((e.spent / e.budget) * 100));
+    const barColor = pct >= 90 ? 'var(--urgent)' : pct >= 70 ? 'var(--deadline)' : 'var(--creative)';
+    const left = e.budget - e.spent;
+    const history = e.history || [];
+    return `<div class="sav-item">
+      <div class="sav-head">
+        <div><div class="sav-name">${e.name}</div><div class="sav-meta">${fmt(e.spent)} spent of ${fmt(e.budget)} · ${fmt(Math.max(0,left))} left</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="sav-pct" style="color:${barColor}">${pct}%</div>
+          <button class="btn bsm" onclick="remEnvelope(${i})">Remove</button>
+        </div>
+      </div>
+      <div class="pb"><div class="pbf" style="width:${pct}%;background:${barColor}"></div></div>
+      <div style="display:flex;gap:6px;margin-top:10px;align-items:center">
+        <span style="font-size:10px;color:var(--soft)">Log spending:</span>
+        <input type="number" id="envSpend-${i}" placeholder="Amount ($)" min="0" style="flex:1;padding:5px 8px;font-size:11px">
+        <button class="btn bsm" onclick="logEnvSpend(${i})">+ Add</button>
+        <button class="btn bsm" onclick="closeEnvMonth(${i})" style="color:var(--admin)">Close month</button>
+      </div>
+      ${history.length ? `
+        <div style="margin-top:12px;border-top:1px solid var(--bdr);padding-top:10px">
+          <div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:6px">Month history</div>
+          ${history.map(h => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--bdr)">
+              <span style="font-size:11px;color:var(--txt)">${h.month}</span>
+              <span style="font-size:11px;color:${h.spent<=h.budget?'var(--creative)':'var(--urgent)'}">${fmt(h.spent)} of ${fmt(h.budget)}</span>
+              <span style="font-size:10px;color:var(--soft)">${h.spent<=h.budget?'✓ under budget':'over by '+fmt(h.spent-h.budget)}</span>
+            </div>`).join('')}
+        </div>` : ''}
     </div>`;
   }).join('');
 }
-function addBill(){
-  const name=document.getElementById('billN').value.trim(),due=document.getElementById('billDue').value.trim(),amt=parseFloat(document.getElementById('billA').value),freq=document.getElementById('billFreq').value;
-  if(!name||isNaN(amt)||amt<=0)return;
-  bills.push({name,due,amt,freq,paid:false});
-  ['billN','billDue','billA'].forEach(id=>document.getElementById(id).value='');
-  rendBills();
-}
-function togBill(i){bills[i].paid=!bills[i].paid;rendBills();}
-function remBill(i){bills.splice(i,1);rendBills();}
 
-// savings
-function addSaving(){
-  const name=document.getElementById('savN').value.trim(),target=parseFloat(document.getElementById('savT').value),current=parseFloat(document.getElementById('savC').value)||0;
-  if(!name||isNaN(target)||target<=0)return;
-  const pct=Math.min(100,Math.round((current/target)*100));
-  const el=document.getElementById('savList'); if(el.querySelector('.empty'))el.innerHTML='';
-  const item=document.createElement('div'); item.className='sav-item';
-  item.innerHTML=`<div class="sav-head"><div><div class="sav-name">${name}</div><div class="sav-meta">${fmt(current)} saved of ${fmt(target)}</div></div><div class="sav-pct">${pct}%</div></div><div class="pb"><div class="pbf" style="width:${pct}%"></div></div><div style="margin-top:8px"><button class="btn bsm" onclick="this.closest('.sav-item').remove()">Remove</button></div>`;
-  el.appendChild(item);
-  ['savN','savT','savC'].forEach(id=>document.getElementById(id).value='');
+function closeEnvMonth(i) {
+  const now = new Date();
+  const monthName = MONTHS[now.getMonth()] + ' ' + now.getFullYear();
+  if (!confirm('Close ' + monthName + ' for "' + envelopes[i].name + '"? This will save a snapshot and reset spending to $0.')) return;
+  if (!envelopes[i].history) envelopes[i].history = [];
+  envelopes[i].history.unshift({ month: monthName, spent: envelopes[i].spent, budget: envelopes[i].budget });
+  envelopes[i].spent = 0;
+  rendEnvelopes();
+  scheduleAutoSave();
 }
+
+function resetEnvelope(i) {
+  if (!confirm('Reset this envelope to $0 spent?')) return;
+  envelopes[i].spent = 0;
+  rendEnvelopes(); scheduleAutoSave();
+}
+
+function addEnvelope() {
+  const name = document.getElementById('envN').value.trim();
+  const budget = parseFloat(document.getElementById('envBudget').value);
+  if (!name || isNaN(budget) || budget <= 0) return;
+  envelopes.push({name, budget, spent: 0, history: []});
+  ['envN','envBudget'].forEach(id => document.getElementById(id).value = '');
+  rendEnvelopes(); updFinSum(); scheduleAutoSave();
+}
+
+function logEnvSpend(i) {
+  const amt = parseFloat(document.getElementById('envSpend-'+i).value) || 0;
+  if (amt <= 0) return;
+  envelopes[i].spent = Math.max(0, envelopes[i].spent + amt);
+  rendEnvelopes(); scheduleAutoSave();
+}
+
+function remEnvelope(i) { envelopes.splice(i,1); rendEnvelopes(); updFinSum(); scheduleAutoSave(); }
 
 // credit cards
 const ccData=[];
@@ -1716,9 +1873,9 @@ function logPayment(i){
   if(amt<=0)return;
   ccData[i].bal=Math.max(0,ccData[i].bal-amt);
   ccData[i].payments.unshift({date,amt,balAfter:ccData[i].bal});
-  rendCC();
+  rendCC(); scheduleAutoSave();
 }
-function remCC(i){ccData.splice(i,1);rendCC();}
+function remCC(i){ccData.splice(i,1);rendCC(); scheduleAutoSave();}
 
 // ── MEDIA ─────────────────────────────────────────
 const media={books:[],films:[],music:[]};
@@ -2125,7 +2282,7 @@ function collectAllData() {
     }))
   };
   data.groceries = Object.values(groceries);
-  data.finance = { income: finData.income, expense: finData.expense, bills, ccData };
+  data.finance = { incomeData, fixedData, envelopes, ccData };
   data.media = media;
   // shopping lists
   data.shopping = {};
@@ -2141,7 +2298,7 @@ function collectAllData() {
   data.workNoteArchive = { main: workNoteArchive['main'] ? workNoteArchive['main'].map(n=>({...n})) : [] };
   data['workNotes_main'] = document.getElementById('wk-main-notes') ? document.getElementById('wk-main-notes').value : '';
   data.workTasks = { main: Array.from(document.querySelectorAll('#wk-main-list .ov-item')).map(el => ({ text: el.querySelector('.ov-txt') ? el.querySelector('.ov-txt').innerHTML : '', done: el.classList.contains('done') })) };
-  data.workRoleData = workRoleData.map(r => ({...r, tasks: [...(r.tasks||[])], sections: [...(r.sections||[])], savedNotes: [...(r.savedNotes||[])]}));
+  data.ttSessions = ttSessions.map(s => ({...s}));
   data.references = references.map(r => ({...r}));
   // fitness
   data.fitData = JSON.parse(JSON.stringify(fitData));
@@ -2206,9 +2363,9 @@ function restoreAllData(data) {
   }
   if (data.groceries) { data.groceries.forEach(g => { groceries[g.id] = g; }); rendG(); }
   if (data.finance) {
-    if (data.finance.income) { finData.income = data.finance.income; rendFin('income'); }
-    if (data.finance.expense) { finData.expense = data.finance.expense; rendFin('expense'); }
-    if (data.finance.bills) { bills.length = 0; data.finance.bills.forEach(b => bills.push(b)); rendBills(); }
+    if (data.finance.incomeData) { incomeData.length = 0; data.finance.incomeData.forEach(r => incomeData.push(r)); rendIncome(); }
+    if (data.finance.fixedData) { fixedData.length = 0; data.finance.fixedData.forEach(r => fixedData.push(r)); rendFixed(); }
+    if (data.finance.envelopes) { envelopes.length = 0; data.finance.envelopes.forEach(e => envelopes.push(e)); rendEnvelopes(); }
     if (data.finance.ccData) { ccData.length = 0; data.finance.ccData.forEach(c => ccData.push(c)); rendCC(); }
     updFinSum();
   }
@@ -2301,6 +2458,13 @@ function restoreAllData(data) {
         renderWorkArchive(role);
       }
     });
+  }
+  // restore time tracker sessions
+  if (data.ttSessions && Array.isArray(data.ttSessions)) {
+    ttSessions.length = 0;
+    data.ttSessions.forEach(s => ttSessions.push(s));
+    renderTTSessions();
+    updateTTToday();
   }
 }
 
@@ -2797,6 +2961,174 @@ function renderMeasurements() {
 // build grids on load
 buildFitWorkoutGrid();
 buildFitMealGrid();
+
+// ── TIME TRACKER ──────────────────────────────────
+const TT_CATS = {
+  work: { label: 'Work', color: '#2a6480' },
+  deepwork: { label: 'Deep Work', color: '#503c8c' },
+  school: { label: 'School', color: '#3d7a52' },
+  fitness: { label: 'Fitness', color: '#b83232' },
+  hygiene: { label: 'Hygiene', color: '#c47d0e' },
+  leisure: { label: 'Leisure', color: '#9678b4' },
+  travel: { label: 'Travel', color: '#4a78b4' },
+  cleaning: { label: 'Cleaning', color: '#7a5e32' },
+  social: { label: 'Social', color: '#b4508c' },
+  rest: { label: 'Rest', color: '#4a9070' }
+};
+
+let ttRunning = false;
+let ttStartTime = null;
+let ttElapsed = 0;
+let ttInterval = null;
+let ttPendingMs = 0;
+const ttSessions = [];
+
+function ttTick() {
+  ttElapsed = Date.now() - ttStartTime;
+  const h = Math.floor(ttElapsed / 3600000);
+  const m = Math.floor((ttElapsed % 3600000) / 60000);
+  const s = Math.floor((ttElapsed % 60000) / 1000);
+  document.getElementById('ttDisplay').textContent =
+    String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+
+function ttStart() {
+  if (ttRunning) return;
+  ttRunning = true;
+  ttStartTime = Date.now() - ttElapsed;
+  ttInterval = setInterval(ttTick, 500);
+  document.getElementById('ttStartBtn').style.display = 'none';
+  document.getElementById('ttStopBtn').style.display = 'block';
+  document.getElementById('ttLogForm').style.display = 'none';
+}
+
+function ttStop() {
+  if (!ttRunning) return;
+  clearInterval(ttInterval);
+  ttRunning = false;
+  ttPendingMs = ttElapsed;
+  document.getElementById('ttStopBtn').style.display = 'none';
+  document.getElementById('ttLogForm').style.display = 'block';
+}
+
+function ttReset() {
+  clearInterval(ttInterval);
+  ttRunning = false;
+  ttElapsed = 0;
+  ttPendingMs = 0;
+  document.getElementById('ttDisplay').textContent = '00:00:00';
+  document.getElementById('ttStartBtn').style.display = 'block';
+  document.getElementById('ttStopBtn').style.display = 'none';
+  document.getElementById('ttLogForm').style.display = 'none';
+}
+
+function ttLog() {
+  if (!ttPendingMs) return;
+  const cat = document.getElementById('ttCategory').value;
+  const note = document.getElementById('ttNote').value.trim();
+  const now = new Date();
+  const session = {
+    id: Date.now().toString(),
+    cat,
+    note,
+    ms: ttPendingMs,
+    date: now.toISOString(),
+    dateLabel: MONTHS[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear(),
+    timeLabel: String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0')
+  };
+  ttSessions.unshift(session);
+  document.getElementById('ttNote').value = '';
+  ttReset();
+  renderTTSessions();
+  updateTTToday();
+  scheduleAutoSave();
+}
+
+function ttDiscard() {
+  ttReset();
+}
+
+function ttFmtMs(ms) {
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  const s = Math.floor((ms % 60000) / 1000);
+  if (h > 0) return h + 'h ' + m + 'm';
+  if (m > 0) return m + 'm ' + s + 's';
+  return s + 's';
+}
+
+function renderTTSessions() {
+  const el = document.getElementById('ttSessionList');
+  if (!ttSessions.length) { el.innerHTML = '<div class="empty">No sessions logged yet. Start a timer above.</div>'; return; }
+  el.innerHTML = ttSessions.map((s,i) => `
+    <div class="tt-session">
+      <div class="tt-cat tt-cat-${s.cat}">${TT_CATS[s.cat]?.label || s.cat}</div>
+      <div class="tt-dur">${ttFmtMs(s.ms)}</div>
+      <div class="tt-note">${s.note || ''}</div>
+      <div class="tt-time">${s.dateLabel} · ${s.timeLabel}</div>
+      <div class="ov-del" onclick="deleteTTSession(${i})">✕</div>
+    </div>`).join('');
+}
+
+function deleteTTSession(i) {
+  ttSessions.splice(i, 1);
+  renderTTSessions();
+  updateTTToday();
+  scheduleAutoSave();
+}
+
+function clearTTLog() {
+  if (!confirm('Clear all tracked sessions?')) return;
+  ttSessions.length = 0;
+  renderTTSessions();
+  updateTTToday();
+  scheduleAutoSave();
+}
+
+function updateTTToday() {
+  const today = new Date().toDateString();
+  const todayMs = ttSessions.filter(s => new Date(s.date).toDateString() === today).reduce((sum,s) => sum + s.ms, 0);
+  const h = Math.floor(todayMs / 3600000);
+  const m = Math.floor((todayMs % 3600000) / 60000);
+  document.getElementById('ttTodayTotal').textContent = h + 'h ' + m + 'm';
+}
+
+function renderTTWeekSummary() {
+  const el = document.getElementById('ttWeekSummary');
+  const now = new Date();
+  const weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - now.getDay() + 1);
+  weekStart.setHours(0,0,0,0);
+  const weekSessions = ttSessions.filter(s => new Date(s.date) >= weekStart);
+  if (!weekSessions.length) { el.innerHTML = '<div class="empty">No sessions this week yet.</div>'; return; }
+  // tally by category
+  const totals = {};
+  let grandTotal = 0;
+  weekSessions.forEach(s => {
+    totals[s.cat] = (totals[s.cat] || 0) + s.ms;
+    grandTotal += s.ms;
+  });
+  const sorted = Object.entries(totals).sort((a,b) => b[1] - a[1]);
+  const h = Math.floor(grandTotal / 3600000);
+  const m = Math.floor((grandTotal % 3600000) / 60000);
+  el.innerHTML = `
+    <div class="fin-chip" style="margin-bottom:16px;display:inline-block">
+      <div class="fc-lbl">Total this week</div>
+      <div class="fc-val">${h}h ${m}m</div>
+    </div>
+    <div style="margin-bottom:16px">
+      ${sorted.map(([cat, ms]) => {
+        const pct = Math.round((ms / grandTotal) * 100);
+        const color = TT_CATS[cat]?.color || 'var(--soft)';
+        return `<div class="tt-bar-row">
+          <div class="tt-bar-lbl">${TT_CATS[cat]?.label || cat}</div>
+          <div class="tt-bar-wrap"><div class="tt-bar-fill" style="width:${pct}%;background:${color}"></div></div>
+          <div style="font-size:11px;color:var(--soft);flex-shrink:0;min-width:60px;text-align:right">${ttFmtMs(ms)} · ${pct}%</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="font-size:10px;color:var(--dim)">Week starting ${MONTHS[weekStart.getMonth()]} ${weekStart.getDate()}</div>`;
+}
 
 window.addEventListener('load', () => { setTimeout(sbLoad, 500); });
 </script>
