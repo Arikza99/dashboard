@@ -654,13 +654,29 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
   <div class="htc" id="ht-weekly">
     <div class="slbl" style="margin-bottom:12px">
       <span id="weekRangeLabel">This week</span>
-      <div style="display:flex;gap:6px">
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
         <button class="btn bsm" onclick="shiftWeek(-1)">← Prev</button>
         <button class="btn bsm" onclick="shiftWeek(1)">Next →</button>
+        <button class="btn bsm" onclick="applyTypicalWeek()" style="color:var(--admin)">Apply typical week</button>
+        <button class="btn bsm" onclick="saveTypicalWeek()" style="color:var(--creative)">Save as typical week</button>
       </div>
     </div>
-    <div style="overflow-x:auto">
-      <div class="week-grid" id="weekGrid" style="min-width:700px"></div>
+
+    <!-- Day selector -->
+    <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap" id="weekDayBtns"></div>
+
+    <!-- Selected day time blocks -->
+    <div id="weekDayPlanner" style="margin-bottom:20px">
+      <div style="display:grid;grid-template-columns:52px 1fr;background:var(--surf);border:1px solid var(--bdr);border-radius:5px;overflow:hidden" id="weekDayGrid"></div>
+    </div>
+
+    <!-- Recurring items section -->
+    <div class="slbl" style="margin-bottom:10px"><span>Recurring — things that always happen this day</span></div>
+    <div class="notice" style="margin-bottom:10px">These don't change week to week. Click a day above then add your fixed items for that day.</div>
+    <div id="weekRecurringList"></div>
+    <div style="display:flex;gap:6px;margin-top:8px">
+      <input type="text" id="weekRecurringInput" placeholder="Add a recurring item for this day..." style="flex:1;padding:6px 9px;font-size:12px" onkeydown="if(event.key==='Enter')addWeekRecurring()">
+      <button class="btn bsm" onclick="addWeekRecurring()">+ Add</button>
     </div>
   </div>
 
@@ -1162,8 +1178,26 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
 
   <!-- SESSION LOG -->
   <div class="tc active" id="tt-log">
-    <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:10px;gap:6px">
+      <button class="btn bsm" onclick="toggleManualEntry()">+ Log manually</button>
       <button class="btn bsm" onclick="clearTTLog()">Clear all sessions</button>
+    </div>
+    <div id="ttManualEntry" style="display:none" class="card" style="margin-bottom:10px">
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:7px">
+        <select id="ttManCat" style="padding:7px 9px;font-size:12px">
+          <option value="work">Work</option><option value="deepwork">Deep Work</option>
+          <option value="school">School</option><option value="fitness">Fitness</option>
+          <option value="hygiene">Hygiene</option><option value="leisure">Leisure</option>
+          <option value="travel">Travel</option><option value="cleaning">Cleaning</option>
+          <option value="social">Social</option><option value="rest">Rest</option>
+        </select>
+        <input type="number" id="ttManHours" placeholder="Hours" min="0" max="24" style="width:70px;padding:7px 9px">
+        <input type="number" id="ttManMins" placeholder="Mins" min="0" max="59" style="width:70px;padding:7px 9px">
+        <input type="text" id="ttManNote" placeholder="Note (optional)" style="flex:1;padding:7px 9px">
+        <input type="text" id="ttManDate" placeholder="Date (e.g. May 1)" style="width:100px;padding:7px 9px">
+        <button class="btn bd" onclick="logManualSession()">Save</button>
+        <button class="btn" onclick="toggleManualEntry()">Cancel</button>
+      </div>
     </div>
     <div id="ttSessionList"><div class="empty">No sessions logged yet. Start a timer above.</div></div>
   </div>
@@ -1419,8 +1453,53 @@ function renderNowLine() {
 renderNowLine();
 setInterval(renderNowLine, 60000); // update every minute
 
-// ── WEEKLY CALENDAR ────────────────────────────────
+function toggleManualEntry() {
+  const el = document.getElementById('ttManualEntry');
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+function logManualSession() {
+  const cat = document.getElementById('ttManCat').value;
+  const h = parseInt(document.getElementById('ttManHours').value) || 0;
+  const m = parseInt(document.getElementById('ttManMins').value) || 0;
+  const ms = (h * 3600 + m * 60) * 1000;
+  if (ms <= 0) { alert('Please enter a duration.'); return; }
+  const note = document.getElementById('ttManNote').value.trim();
+  const dateStr = document.getElementById('ttManDate').value.trim();
+  const now = new Date();
+  const session = {
+    id: Date.now().toString(),
+    cat, note, ms,
+    date: now.toISOString(),
+    dateLabel: dateStr || (MONTHS[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear()),
+    timeLabel: 'manual'
+  };
+  ttSessions.unshift(session);
+  ['ttManHours','ttManMins','ttManNote','ttManDate'].forEach(id => document.getElementById(id).value = '');
+  toggleManualEntry();
+  renderTTSessions();
+  updateTTToday();
+  scheduleAutoSave();
+}
+
+// ── WEEKLY VIEW ────────────────────────────────────
+const WEEK_DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const weekBlocks = { Mon:[], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[], Sun:[] };
+const weekRecurring = { Mon:[], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[], Sun:[] };
+let typicalWeek = null;
 let weekOffset = 0;
+let selectedWeekDay = 'Mon';
+
+const WEEK_SLOT_HEIGHT = 32;
+function weekSlotToLabel(slot) {
+  const totalMins = 4 * 60 + 30 + slot * 30;
+  const h = Math.floor(totalMins / 60);
+  const m = totalMins % 60;
+  const ampm = h >= 12 ? 'pm' : 'am';
+  const h12 = h > 12 ? h - 12 : h === 0 ? 12 : h;
+  return h12 + (m ? ':' + String(m).padStart(2,'0') : '') + ampm;
+}
+const WEEK_TOTAL_SLOTS = 38; // 4:30am to 11pm in 30-min slots
+
 function buildWeek() {
   const now = new Date();
   const monday = new Date(now);
@@ -1428,14 +1507,152 @@ function buildWeek() {
   monday.setDate(now.getDate() - dow + (weekOffset * 7));
   const days = Array.from({length:7}, (_,i) => { const d = new Date(monday); d.setDate(monday.getDate()+i); return d; });
   document.getElementById('weekRangeLabel').textContent = MONTHS[days[0].getMonth()].slice(0,3) + ' ' + days[0].getDate() + ' – ' + MONTHS[days[6].getMonth()].slice(0,3) + ' ' + days[6].getDate();
-  const hours = ['6am','7am','8am','9am','10am','11am','12pm','1pm','2pm','3pm','4pm','5pm','6pm','7pm','8pm','9pm','10pm'];
-  const grid = document.getElementById('weekGrid');
-  const today = new Date();
-  const headRow = '<div class="wg-head"></div>' + days.map(d => `<div class="wg-head">${DSHORT[d.getDay()]}<br><span style="font-size:12px;font-weight:500;color:${d.toDateString()===today.toDateString()?'var(--txt)':'var(--mid)'}">${d.getDate()}</span></div>`).join('');
-  const bodyRows = hours.map(h =>
-    `<div class="wg-time">${h}</div>` + days.map(() => `<div class="wg-cell"><input type="text" placeholder=""></div>`).join('')
-  ).join('');
-  grid.innerHTML = headRow + bodyRows;
+  // day buttons
+  const btnEl = document.getElementById('weekDayBtns');
+  btnEl.innerHTML = WEEK_DAYS.map((d,i) => `
+    <button class="btn bsm ${d===selectedWeekDay?'bd':''}" onclick="selectWeekDay('${d}')" style="${d===selectedWeekDay?'background:var(--txt);color:var(--surf)':''}">${d} ${days[i].getDate()}</button>`).join('');
+  buildWeekDayGrid();
+  renderWeekRecurring();
+}
+function selectWeekDay(day) {
+  selectedWeekDay = day;
+  buildWeek();
+}
+function buildWeekDayGrid() {
+  const grid = document.getElementById('weekDayGrid');
+  let html = '';
+  for (let i = 0; i < WEEK_TOTAL_SLOTS; i++) {
+    const isHour = i % 2 === 0;
+    const label = isHour ? weekSlotToLabel(i) : '';
+    html += `<div style="height:${WEEK_SLOT_HEIGHT}px;font-size:9.5px;color:var(--dim);padding:0 8px;text-align:right;padding-top:4px;border-right:1px solid var(--bdr);border-bottom:${isHour?'1px solid var(--bdr)':'1px dashed var(--bdr)'};flex-shrink:0">${label}</div>`;
+    html += `<div style="height:${WEEK_SLOT_HEIGHT}px;position:relative;cursor:pointer;border-bottom:${isHour?'1px solid var(--bdr)':'1px dashed var(--bdr)'};transition:background .1s" data-wslot="${i}" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''" onclick="clickWeekSlot(${i})"></div>`;
+  }
+  grid.innerHTML = html;
+  renderWeekBlocks();
+}
+function clickWeekSlot(slot) {
+  dpPendingSlot = slot;
+  dpEditId = null;
+  const label = weekSlotToLabel(slot);
+  document.getElementById('dpModalTitle').textContent = 'Add block — ' + selectedWeekDay + ' from ' + label;
+  document.getElementById('dpBlockLabel').value = '';
+  document.getElementById('dpStartRow').style.display = 'none';
+  document.getElementById('dpSaveBtn').textContent = 'Add block';
+  document.querySelectorAll('.dp-cat-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.dp-dur-btn').forEach(b => b.classList.toggle('selected', parseFloat(b.dataset.dur) === dpSelectedDur));
+  dpSelectedCat = 'other';
+  // override saveDpBlock to save to weekBlocks instead
+  document.getElementById('dpSaveBtn').onclick = saveWeekBlock;
+  document.getElementById('dpModal').style.display = 'flex';
+  setTimeout(() => document.getElementById('dpBlockLabel').focus(), 50);
+}
+function saveWeekBlock() {
+  const label = document.getElementById('dpBlockLabel').value.trim();
+  if (!label) return;
+  const durSlots = dpSelectedDur * 2;
+  if (!weekBlocks[selectedWeekDay]) weekBlocks[selectedWeekDay] = [];
+  weekBlocks[selectedWeekDay].push({ id: Date.now().toString(), startSlot: dpPendingSlot, durSlots, label, cat: dpSelectedCat });
+  closeDpModal();
+  // restore normal saveDpBlock
+  document.getElementById('dpSaveBtn').onclick = saveDpBlock;
+  renderWeekBlocks();
+  scheduleAutoSave();
+}
+function renderWeekBlocks() {
+  document.querySelectorAll('[data-wslot]').forEach(el => { while(el.querySelector('.dp-block')) el.querySelector('.dp-block').remove(); });
+  (weekBlocks[selectedWeekDay]||[]).forEach(block => {
+    const slot = document.querySelector(`[data-wslot="${block.startSlot}"]`);
+    if (!slot) return;
+    const el = document.createElement('div');
+    el.className = 'dp-block dp-cat-' + block.cat;
+    el.style.top = '1px';
+    el.style.height = (block.durSlots * WEEK_SLOT_HEIGHT - 3) + 'px';
+    const endLabel = weekSlotToLabel(block.startSlot + block.durSlots);
+    el.innerHTML = `<span class="dp-block-text" style="cursor:pointer" onclick="event.stopPropagation();editWeekBlock('${block.id}')">${block.label}<span style="font-size:9px;opacity:.6;margin-left:5px;display:block">${weekSlotToLabel(block.startSlot)}–${endLabel}</span></span><span class="dp-block-del" onclick="event.stopPropagation();deleteWeekBlock('${block.id}')">✕</span>`;
+    slot.appendChild(el);
+  });
+}
+function editWeekBlock(id) {
+  const block = (weekBlocks[selectedWeekDay]||[]).find(b => b.id === id);
+  if (!block) return;
+  dpEditId = id;
+  dpPendingSlot = block.startSlot;
+  dpSelectedCat = block.cat;
+  dpSelectedDur = block.durSlots / 2;
+  document.getElementById('dpModalTitle').textContent = 'Edit block — ' + selectedWeekDay;
+  document.getElementById('dpBlockLabel').value = block.label;
+  document.getElementById('dpStartRow').style.display = 'block';
+  buildStartSelect(block.startSlot);
+  document.getElementById('dpSaveBtn').textContent = 'Save changes';
+  document.querySelectorAll('.dp-cat-btn').forEach(b => b.classList.toggle('selected', b.dataset.cat === block.cat));
+  document.querySelectorAll('.dp-dur-btn').forEach(b => b.classList.toggle('selected', parseFloat(b.dataset.dur) === dpSelectedDur));
+  document.getElementById('dpSaveBtn').onclick = () => {
+    const label = document.getElementById('dpBlockLabel').value.trim();
+    if (!label) return;
+    block.label = label;
+    block.cat = dpSelectedCat;
+    block.durSlots = dpSelectedDur * 2;
+    block.startSlot = parseInt(document.getElementById('dpStartSelect').value);
+    closeDpModal();
+    document.getElementById('dpSaveBtn').onclick = saveDpBlock;
+    renderWeekBlocks();
+    scheduleAutoSave();
+  };
+  document.getElementById('dpModal').style.display = 'flex';
+  setTimeout(() => document.getElementById('dpBlockLabel').focus(), 50);
+}
+function deleteWeekBlock(id) {
+  if (!weekBlocks[selectedWeekDay]) return;
+  weekBlocks[selectedWeekDay] = weekBlocks[selectedWeekDay].filter(b => b.id !== id);
+  renderWeekBlocks();
+  scheduleAutoSave();
+}
+function renderWeekRecurring() {
+  const el = document.getElementById('weekRecurringList');
+  const items = weekRecurring[selectedWeekDay] || [];
+  if (!items.length) { el.innerHTML = '<div class="empty" style="margin-bottom:8px">No recurring items for ' + selectedWeekDay + ' yet.</div>'; return; }
+  el.innerHTML = items.map((item, i) => `
+    <div class="ov-item" style="margin-bottom:4px">
+      <div class="ov-ck" onclick="this.closest('.ov-item').classList.toggle('done')">✓</div>
+      <div class="ov-txt" contenteditable="true" onblur="weekRecurring['${selectedWeekDay}'][${i}].text=this.textContent;scheduleAutoSave()">${item.text}</div>
+      <div class="ov-del" onclick="weekRecurring['${selectedWeekDay}'].splice(${i},1);renderWeekRecurring();scheduleAutoSave()">✕</div>
+    </div>`).join('');
+}
+function addWeekRecurring() {
+  const val = document.getElementById('weekRecurringInput').value.trim();
+  if (!val) return;
+  if (!weekRecurring[selectedWeekDay]) weekRecurring[selectedWeekDay] = [];
+  weekRecurring[selectedWeekDay].push({ text: val });
+  document.getElementById('weekRecurringInput').value = '';
+  renderWeekRecurring();
+  scheduleAutoSave();
+}
+function saveTypicalWeek() {
+  if (!confirm('Save this week\'s blocks and recurring items as your typical week template?')) return;
+  typicalWeek = {
+    blocks: JSON.parse(JSON.stringify(weekBlocks)),
+    recurring: JSON.parse(JSON.stringify(weekRecurring))
+  };
+  scheduleAutoSave();
+  alert('Typical week saved. You can apply it any time with "Apply typical week".');
+}
+function applyTypicalWeek() {
+  if (!typicalWeek) { alert('No typical week saved yet. Set up your week then click "Save as typical week" first.'); return; }
+  if (!confirm('Apply your typical week template? This will add those blocks to the current view.')) return;
+  WEEK_DAYS.forEach(d => {
+    if (typicalWeek.blocks[d]) {
+      typicalWeek.blocks[d].forEach(b => {
+        weekBlocks[d].push({...b, id: Date.now().toString() + Math.random()});
+      });
+    }
+    if (typicalWeek.recurring[d]) {
+      typicalWeek.recurring[d].forEach(item => {
+        weekRecurring[d].push({...item});
+      });
+    }
+  });
+  buildWeek();
+  scheduleAutoSave();
 }
 function shiftWeek(d) { weekOffset += d; buildWeek(); }
 buildWeek();
@@ -1593,11 +1810,24 @@ function mkCard(t) {
     <div class="tc-actions">
       <button class="tca ${t.done?'act':''}" onclick="togDone('${t.id}')">${t.done?'✓ done':'mark done'}</button>
       <span class="tcsep">·</span>
+      <button class="tca" onclick="editTask('${t.id}')">edit</button>
+      <span class="tcsep">·</span>
       <button class="tca" onclick="dupTask('${t.id}')">duplicate</button>
       <span class="tcsep">·</span>
       <button class="tca" onclick="remTask('${t.id}')">remove</button>
     </div>`;
   return el;
+}
+function editTask(id) {
+  const t = tasks[id]; if (!t) return;
+  const newTitle = prompt('Edit task:', t.title); if (newTitle === null) return;
+  const newDue = prompt('Edit due date:', t.due || ''); if (newDue === null) return;
+  const newTime = prompt('Edit est. time:', t.time || ''); if (newTime === null) return;
+  t.title = newTitle.trim() || t.title;
+  t.due = newDue.trim();
+  t.time = newTime.trim();
+  document.getElementById('tc-'+id).replaceWith(mkCard(t));
+  scheduleAutoSave();
 }
 function addTask(t) { tasks[t.id]=t; const c=document.getElementById('sc-'+t.sprint); if(c){c.appendChild(mkCard(t));updCnts();} if(t.role) renderSprintsByRole(); scheduleAutoSave(); }
 function togDone(id) { tasks[id].done=!tasks[id].done; document.getElementById('tc-'+id).replaceWith(mkCard(tasks[id])); scheduleAutoSave(); }
@@ -1718,8 +1948,34 @@ rendR('mor',[]); rendR('eve',[]);
 
 // ── GROCERY ───────────────────────────────────────
 const groceries={};
-function rendG(){const grouped={};Object.values(groceries).forEach(it=>{(grouped[it.c]=grouped[it.c]||[]).push(it);});document.getElementById('grocList').innerHTML=Object.entries(grouped).map(([cat,items])=>`<div class="g-cat">${cat}</div>`+items.map(it=>`<div class="g-item ${it.ck?'chk':''}" onclick="togG('${it.id}')"><div class="g-ck">✓</div><div class="g-lbl">${it.n}</div><div class="g-qty">${it.q}</div></div>`).join('')).join('');}
-function togG(id){if(groceries[id])groceries[id].ck=!groceries[id].ck;rendG();}
+function rendG(){
+  const grouped={};
+  Object.values(groceries).forEach(it=>{(grouped[it.c]=grouped[it.c]||[]).push(it);});
+  document.getElementById('grocList').innerHTML=Object.entries(grouped).map(([cat,items])=>
+    `<div class="g-cat">${cat}</div>`+items.map(it=>`
+      <div class="g-item ${it.ck?'chk':''}" onclick="togG('${it.id}')">
+        <div class="g-ck">✓</div>
+        <div class="g-lbl">${it.n}</div>
+        <div class="g-qty">${it.q}</div>
+        <div style="font-size:10px;color:var(--dim);cursor:pointer;opacity:0;transition:opacity .1s" class="g-edit" onclick="event.stopPropagation();editGrocery('${it.id}')">edit</div>
+        <div class="ov-del" onclick="event.stopPropagation();deleteGrocery('${it.id}')" style="opacity:0;transition:opacity .1s">✕</div>
+      </div>`).join('')
+  ).join('');
+  document.querySelectorAll('.g-item').forEach(el => {
+    el.addEventListener('mouseenter', () => { el.querySelector('.g-edit').style.opacity='1'; el.querySelector('.ov-del').style.opacity='1'; });
+    el.addEventListener('mouseleave', () => { el.querySelector('.g-edit').style.opacity='0'; el.querySelector('.ov-del').style.opacity='0'; });
+  });
+}
+function togG(id){if(groceries[id]){groceries[id].ck=!groceries[id].ck;rendG();scheduleAutoSave();}}
+function deleteGrocery(id){delete groceries[id];rendG();scheduleAutoSave();}
+function editGrocery(id){
+  const it = groceries[id]; if(!it) return;
+  const newName = prompt('Edit item:', it.n); if(newName===null) return;
+  const newQty = prompt('Edit quantity:', it.q); if(newQty===null) return;
+  it.n = newName.trim()||it.n;
+  it.q = newQty.trim()||'—';
+  rendG(); scheduleAutoSave();
+}
 function addGrocery(){const n=document.getElementById('gI').value.trim(),q=document.getElementById('gQ').value.trim()||'—',c=document.getElementById('gC').value;if(!n)return;const id=Date.now().toString();groceries[id]={id,n,q,c,ck:false};document.getElementById('gI').value='';document.getElementById('gQ').value='';rendG();scheduleAutoSave();}
 function clearG(only){Object.keys(groceries).forEach(id=>{if(!only||groceries[id].ck)delete groceries[id];});rendG();scheduleAutoSave();}
 rendG();
@@ -1728,9 +1984,11 @@ rendG();
 ['wish','clothing','home','other'].forEach(tab => {
   const formEl = document.getElementById('sh-' + tab + '-form');
   formEl.innerHTML = `<div class="card" style="margin-bottom:10px">
-    <div style="display:flex;gap:7px;margin-bottom:7px">
-      <input type="text" id="sh-${tab}-name" placeholder="Item name..." style="flex:2;padding:7px 9px">
+    <div style="display:flex;gap:7px;margin-bottom:7px;flex-wrap:wrap">
+      <input type="text" id="sh-${tab}-name" placeholder="Item name..." style="flex:2;min-width:120px;padding:7px 9px">
       <input type="text" id="sh-${tab}-note" placeholder="Notes / link" style="flex:1;padding:7px 9px">
+      <input type="text" id="sh-${tab}-price" placeholder="Price (e.g. $29)" style="width:90px;flex:none;padding:7px 9px">
+      <select id="sh-${tab}-priority" style="padding:7px 9px"><option value="want">Want</option><option value="need">Need</option></select>
       <button class="btn" onclick="addShop('${tab}')">+ Add</button>
     </div>
     <div style="display:flex;gap:7px;align-items:center">
@@ -1751,19 +2009,44 @@ function handleShopImg(evt, tab) {
 function addShop(tab) {
   const name = document.getElementById('sh-'+tab+'-name').value.trim(); if (!name) return;
   const note = document.getElementById('sh-'+tab+'-note').value.trim();
+  const price = document.getElementById('sh-'+tab+'-price').value.trim();
+  const priority = document.getElementById('sh-'+tab+'-priority').value;
   const url = document.getElementById('sh-'+tab+'-url').value.trim();
   const img = shopImgCache[tab] || url || '';
   const el = document.createElement('div'); el.className = 'shop-item';
   el.innerHTML = `${img ? `<img class="shop-img" src="${img}" alt="" onerror="this.style.display='none'">` : `<div class="shop-img-placeholder">🛍</div>`}
-    <div class="shop-body"><div class="shop-name">${name}</div>${note?`<div class="shop-note">${note}</div>`:''}</div>
-    <div class="shop-ck" onclick="event.stopPropagation();this.closest('.shop-item').classList.toggle('done')">✓</div>
-    <div class="shop-del" onclick="this.closest('.shop-item').remove()">✕</div>`;
+    <div class="shop-body">
+      <div class="shop-name">${name}</div>
+      ${note?`<div class="shop-note">${note}</div>`:''}
+      <div style="display:flex;gap:6px;margin-top:4px;align-items:center">
+        ${price?`<span style="font-size:11px;font-weight:500;color:var(--creative)">${price}</span>`:''}
+        <span style="font-size:9px;padding:1px 6px;border-radius:3px;border:1px solid var(--bdr);color:${priority==='need'?'var(--urgent)':'var(--soft)'}">${priority}</span>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
+      <div class="shop-del" onclick="this.closest('.shop-item').remove();scheduleAutoSave()">✕</div>
+      <div style="font-size:10px;color:var(--dim);cursor:pointer" onclick="editShopItem(this)">edit</div>
+    </div>
+    <div class="shop-ck" onclick="event.stopPropagation();this.closest('.shop-item').classList.toggle('done');scheduleAutoSave()">✓</div>`;
   el.onclick = () => el.classList.toggle('done');
   document.getElementById('sh-'+tab+'-list').appendChild(el);
-  document.getElementById('sh-'+tab+'-name').value='';
-  document.getElementById('sh-'+tab+'-note').value='';
-  document.getElementById('sh-'+tab+'-url').value='';
+  ['name','note','price','url'].forEach(f => { const el = document.getElementById('sh-'+tab+'-'+f); if(el) el.value=''; });
   delete shopImgCache[tab];
+  scheduleAutoSave();
+}
+
+function editShopItem(btn) {
+  const item = btn.closest('.shop-item');
+  const nameEl = item.querySelector('.shop-name');
+  const noteEl = item.querySelector('.shop-note');
+  const priceEl = item.querySelector('[style*="var(--creative)"]');
+  const newName = prompt('Edit item name:', nameEl ? nameEl.textContent : '');
+  if (newName === null) return;
+  if (newName.trim()) nameEl.textContent = newName.trim();
+  const newNote = prompt('Edit note:', noteEl ? noteEl.textContent : '');
+  if (newNote !== null && noteEl) noteEl.textContent = newNote;
+  const newPrice = prompt('Edit price:', priceEl ? priceEl.textContent : '');
+  if (newPrice !== null && priceEl) priceEl.textContent = newPrice;
   scheduleAutoSave();
 }
 
@@ -2013,7 +2296,18 @@ let activeCourse = null;
 
 function rendCourseLanding(){
   const el=document.getElementById('courseLanding');
-  el.innerHTML=courses.map(c=>`
+  // summary bar
+  const total = courses.length;
+  const avgProg = total ? Math.round(courses.reduce((s,c)=>s+c.prog,0)/total) : 0;
+  const inProgress = courses.filter(c=>c.status==='In Progress').length;
+  const done = courses.filter(c=>c.status==='Completed').length;
+  const summaryBar = total ? `<div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+    <div class="fin-chip"><div class="fc-lbl">Courses</div><div class="fc-val">${total}</div></div>
+    <div class="fin-chip"><div class="fc-lbl">In progress</div><div class="fc-val">${inProgress}</div></div>
+    <div class="fin-chip"><div class="fc-lbl">Completed</div><div class="fc-val">${done}</div></div>
+    <div class="fin-chip"><div class="fc-lbl">Avg progress</div><div class="fc-val">${avgProg}%</div></div>
+  </div>` : '';
+  el.innerHTML=summaryBar+courses.map(c=>`
     <div class="course-card ${activeCourse&&activeCourse.id===c.id?'active-course':''}" >
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
         <div class="cc-tag">${c.tag}</div>
@@ -2382,6 +2676,9 @@ function collectAllData() {
   data.workNoteArchive = { main: workNoteArchive['main'] ? workNoteArchive['main'].map(n=>({...n})) : [] };
   data['workNotes_main'] = document.getElementById('wk-main-notes') ? document.getElementById('wk-main-notes').value : '';
   data.workTasks = { main: Array.from(document.querySelectorAll('#wk-main-list .ov-item')).map(el => ({ text: el.querySelector('.ov-txt') ? el.querySelector('.ov-txt').innerHTML : '', done: el.classList.contains('done') })) };
+  data.weekBlocks = JSON.parse(JSON.stringify(weekBlocks));
+  data.weekRecurring = JSON.parse(JSON.stringify(weekRecurring));
+  data.typicalWeek = typicalWeek ? JSON.parse(JSON.stringify(typicalWeek)) : null;
   data.ttSessions = ttSessions.map(s => ({...s}));
   data.references = references.map(r => ({...r}));
   // fitness
@@ -2546,6 +2843,11 @@ function restoreAllData(data) {
     renderTTSessions();
     updateTTToday();
   }
+  // restore weekly view
+  if (data.weekBlocks) { WEEK_DAYS.forEach(d => { if (data.weekBlocks[d]) weekBlocks[d] = data.weekBlocks[d]; }); }
+  if (data.weekRecurring) { WEEK_DAYS.forEach(d => { if (data.weekRecurring[d]) weekRecurring[d] = data.weekRecurring[d]; }); }
+  if (data.typicalWeek) typicalWeek = data.typicalWeek;
+  buildWeek();
 }
 
 // ── SUPABASE SAVE ─────────────────────────────────
