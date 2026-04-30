@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kira's Summer Plan</title>
+<style>
+  :root {
+    --bg: #f7f5f0;
+    --surface: #ffffff;
+    --surface2: #f0ede6;
+    --border: #e0dbd0;
+    --border2: #ccc8bc;
+    --text: #1a1916;
+    --text2: #5a5750;
+    --text3: #9a9590;
+    --amber: #c8850a;
+    --amber-bg: #fdf3e0;
+    --teal: #0f7a5a;
+    --teal-bg: #e6f5ef;
+    --purple: #5a4ab0;
+    --purple-bg: #eeedf8;
+    --coral: #b84020;
+    --coral-bg: #faeee9;
+    --green: #3a6a10;
+    --green-bg: #eaf2e0;
+    --font: 'Georgia', serif;
+    --mono: 'Courier New', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.6; }
+
+  .sidebar {
+    position: fixed; top: 0; left: 0; width: 200px; height: 100vh;
+    background: var(--surface); border-right: 1px solid var(--border);
+    padding: 2rem 1.25rem; overflow-y: auto; z-index: 100;
+  }
+  .sidebar-title { font-size: 11px; font-weight: normal; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); margin-bottom: 1.5rem; }
+  .sidebar-date { font-size: 13px; color: var(--text2); margin-bottom: 2rem; }
+  .nav-section { margin-bottom: 1.5rem; }
+  .nav-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.5rem; }
+  .nav-item { display: block; font-size: 12px; color: var(--text2); padding: 4px 0; cursor: pointer; text-decoration: none; border: none; background: none; width: 100%; text-align: left; font-family: var(--font); transition: color 0.15s; }
+  .nav-item:hover, .nav-item.active { color: var(--text); }
+  .nav-item.active { font-weight: bold; }
+
+  .main { margin-left: 200px; padding: 2.5rem 2rem; max-width: 960px; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  h1 { font-size: 28px; font-weight: normal; margin-bottom: 0.25rem; }
+  h2 { font-size: 18px; font-weight: normal; color: var(--text2); margin: 2rem 0 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+  h3 { font-size: 14px; font-weight: bold; margin-bottom: 0.5rem; }
+  .subtitle { font-size: 13px; color: var(--text3); margin-bottom: 2rem; }
+  p { margin-bottom: 0.75rem; font-size: 13px; color: var(--text2); }
+
+  .phase-badge { display: inline-block; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; margin-bottom: 1.5rem; }
+  .badge-amber { background: var(--amber-bg); color: var(--amber); }
+  .badge-teal { background: var(--teal-bg); color: var(--teal); }
+  .badge-purple { background: var(--purple-bg); color: var(--purple); }
+
+  .week-grid { display: grid; gap: 8px; margin-bottom: 2rem; }
+  .grid-7 { grid-template-columns: repeat(7, 1fr); }
+  .grid-5 { grid-template-columns: repeat(5, 1fr); }
+  @media (max-width: 800px) { .grid-7, .grid-5 { grid-template-columns: repeat(3, 1fr); } }
+
+  .day-col { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: var(--surface); }
+  .day-header { padding: 8px 10px; background: var(--surface2); border-bottom: 1px solid var(--border); }
+  .day-name { font-size: 12px; font-weight: bold; color: var(--text); }
+  .day-sub { font-size: 10px; color: var(--text3); margin-top: 1px; }
+  .block { padding: 6px 10px; border-bottom: 1px solid var(--border); }
+  .block:last-child { border-bottom: none; }
+  .block-time { font-size: 10px; color: var(--text3); font-family: var(--mono); margin-bottom: 1px; }
+  .block-label { font-size: 11px; color: var(--text); font-weight: bold; }
+  .block-note { font-size: 10px; color: var(--text2); margin-top: 1px; line-height: 1.4; }
+  .b-morning { background: #fdf6e8; }
+  .b-work { background: #f8f8f6; }
+  .b-study { background: #eef7f3; }
+  .b-fitness { background: #fdf0ec; }
+  .b-evening { background: #f4f2fb; }
+  .b-vol { background: #eef5e4; }
+  .b-free { background: var(--surface); }
+
+  .time-block-list { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 1.5rem; }
+  .tb-row { display: flex; border-bottom: 1px solid var(--border); }
+  .tb-row:last-child { border-bottom: none; }
+  .tb-time { width: 90px; flex-shrink: 0; padding: 8px 12px; font-size: 10px; color: var(--text3); font-family: var(--mono); border-right: 1px solid var(--border); display: flex; align-items: center; background: var(--surface2); }
+  .tb-content { flex: 1; padding: 8px 12px; }
+  .tb-label { font-size: 12px; font-weight: bold; color: var(--text); }
+  .tb-detail { font-size: 11px; color: var(--text2); margin-top: 2px; line-height: 1.5; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.5rem; }
+  @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+  .card { border: 1px solid var(--border); border-radius: 6px; padding: 1rem 1.25rem; background: var(--surface); }
+  .card h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 0.75rem; font-weight: normal; }
+  .card ul { padding-left: 1rem; }
+  .card li { font-size: 12px; color: var(--text2); margin-bottom: 4px; line-height: 1.5; }
+
+  .cur-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
+  .cur-card { border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; background: var(--surface); }
+  .cur-day { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 4px; }
+  .cur-module { font-size: 13px; font-weight: bold; color: var(--text); margin-bottom: 4px; }
+  .cur-detail { font-size: 11px; color: var(--text2); line-height: 1.5; }
+
+  .pill { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 20px; margin: 2px; }
+  .pill-amber { background: var(--amber-bg); color: var(--amber); }
+  .pill-teal { background: var(--teal-bg); color: var(--teal); }
+  .pill-purple { background: var(--purple-bg); color: var(--purple); }
+  .pill-coral { background: var(--coral-bg); color: var(--coral); }
+
+  .practice-block { border-left: 3px solid var(--border2); padding: 0.75rem 1rem; margin-bottom: 1rem; background: var(--surface); border-radius: 0 6px 6px 0; }
+  .practice-block.amber { border-left-color: var(--amber); }
+  .practice-block.teal { border-left-color: var(--teal); }
+  .practice-block.purple { border-left-color: var(--purple); }
+  .practice-block.coral { border-left-color: var(--coral); }
+  .practice-title { font-size: 12px; font-weight: bold; color: var(--text); margin-bottom: 4px; }
+  .practice-body { font-size: 12px; color: var(--text2); line-height: 1.6; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 1.5rem; }
+  .leg-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text2); }
+  .leg-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+
+  .buy-section { margin-bottom: 1.5rem; }
+  .buy-category { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 0.5rem; margin-top: 1rem; }
+  .buy-items { display: flex; flex-wrap: wrap; gap: 6px; }
+  .buy-item { font-size: 11px; padding: 4px 10px; border: 1px solid var(--border); border-radius: 20px; color: var(--text2); background: var(--surface); }
+
+  .checklist { list-style: none; padding: 0; }
+  .checklist li { font-size: 12px; color: var(--text2); padding: 5px 0; border-bottom: 1px solid var(--border); display: flex; gap: 10px; align-items: flex-start; }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist li::before { content: ''; display: inline-block; width: 14px; height: 14px; border: 1px solid var(--border2); border-radius: 3px; flex-shrink: 0; margin-top: 1px; }
+
+  @media print { .sidebar { display: none; } .main { margin-left: 0; } }
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sidebar-title">Kira's Plan</div>
+  <div class="sidebar-date">Summer 2026</div>
+
+  <div class="nav-section">
+    <div class="nav-label">Schedule</div>
+    <button class="nav-item active" onclick="show('overview')">Overview</button>
+    <button class="nav-item" onclick="show('edmonton')">Phase 1: Edmonton</button>
+    <button class="nav-item" onclick="show('vancouver')">Phase 2: Vancouver</button>
+    <button class="nav-item" onclick="show('firelight')">Phase 3: Firelight</button>
+    <button class="nav-item" onclick="show('daily')">Daily templates</button>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Growth</div>
+    <button class="nav-item" onclick="show('curriculum')">Curriculum</button>
+    <button class="nav-item" onclick="show('presence')">Presence practice</button>
+    <button class="nav-item" onclick="show('professional')">Professional edge</button>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Life</div>
+    <button class="nav-item" onclick="show('fitness')">Fitness plan</button>
+    <button class="nav-item" onclick="show('buylist')">To acquire</button>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- OVERVIEW -->
+<div class="page active" id="page-overview">
+  <h1>Summer 2026</h1>
+  <div class="subtitle">May 1 through September — three phases, one direction</div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>Phase 1</h3>
+      <p style="font-size:13px; color:var(--amber); font-weight:bold;">Edmonton — May 1 to 13</p>
+      <ul>
+        <li>Remote work continues</li>
+        <li>Stairstepper + kettlebell, home equipment</li>
+        <li>Curriculum begins — light, consistent</li>
+        <li>Goal: arrive back in Vancouver with the streak intact and momentum built</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Phase 2</h3>
+      <p style="font-size:13px; color:var(--teal); font-weight:bold;">Vancouver — May 13 to June 1</p>
+      <ul>
+        <li>Remote work continues</li>
+        <li>Apartment gym + rec centre</li>
+        <li>Full curriculum rotation established</li>
+        <li>Goal: gym habit locked before Firelight starts</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Phase 3</h3>
+      <p style="font-size:13px; color:var(--purple); font-weight:bold;">Firelight — June 1 onward</p>
+      <ul>
+        <li>Mon–Thu 8–4:30, 3-day weekends</li>
+        <li>Full gym access</li>
+        <li>Deep study blocks on long weekends</li>
+        <li>Goal: operate at full capacity</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>The constants</h3>
+      <ul>
+        <li>Morning routine every single day</li>
+        <li>Evening routine every single day</li>
+        <li>Senior Helpers — Wed + Sun 7–9pm</li>
+        <li>Church Sundays</li>
+        <li>French + Anki daily</li>
+        <li>Drawing gestures daily</li>
+        <li>Guitar weekly</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>The non-negotiables</h2>
+  <p>These seven things make the day count. Miss one and the day doesn't count — but you don't punish yourself. You note it, you understand why, and tomorrow starts clean.</p>
+  <ul class="checklist">
+    <li>Workout one: cardio (20+ min)</li>
+    <li>Workout two: strength (20+ min)</li>
+    <li>Read 30+ pages — physical book or ebook</li>
+    <li>One 30-minute study or skill block from the curriculum</li>
+    <li>Water: 4L minimum</li>
+    <li>Progress photo taken + one-line log written</li>
+    <li>Calories tracked and within target</li>
+  </ul>
+</div>
+
+<!-- EDMONTON -->
+<div class="page" id="page-edmonton">
+  <h1>Phase 1: Edmonton</h1>
+  <div class="subtitle">May 1–13 — stairstepper + kettlebell, build the streak</div>
+  <div class="phase-badge badge-amber">Goal: arrive back with momentum, not excuses</div>
+
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:#f5e0b0;"></div>Morning</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#e8e8e4;"></div>Work</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#d0eee4;"></div>Study</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#f8ddd5;"></div>Fitness</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#e8e4f8;"></div>Evening</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#ddeece;"></div>Volunteer</div>
+  </div>
+
+  <div class="week-grid grid-7">
+    <div class="day-col">
+      <div class="day-header"><div class="day-name">Monday</div></div>
+      <div class="block b-morning"><div class="block-time">5:30</div><div class="block-label">Morning routine</div></div>
+      <div class="block b-work"><div class="block-time">8:00</div><div class="block-label">Work</div></div>
+      <div class="block b-work"><div class="block-time">12:00</div><div class="block-label">Lunch</div></div>
+      <div class="block b-work"><div class="block-time">1:00</div><div class="block-label">Work</div></div>
+      <div class="block b-study"><div class="block-time">3:30</div><div class="block-label">Logic + Sci Lit</div><div class="block-note">60 min reading + retrieval</div></div>
+      <div class="block b-free"><div class="block-time">5:00</div><div class="block-label">Free / family</div></div>
+      <div class="block b-evening"><div class="block-time">9:00</div><div class="block-label">Evening routine</div></div>
+    </div>
+    <div class="day-col">
+      <div class="day-header"><div class="day-name">Tuesday</div></div>
+      <div class="block b-morning"><div class="block-time">5:30</div><div class="block-label">Morning routine</div></div>
+      <div class="block b-work"><div class="block-time">8:00</div><div class="block-label">Work</div></div>
+      <div class="block b-work"><div class="block-time">12:00</div><div class="block-label">Lunch</div></div>
+      <div class="block b-work"><div class="block-time">1:00</div><div class="block-label">Work</div></div>
+      <div class="block b-study"><div class="block-time">3:30</div><div class="block-label">French + Anki</div><div class="block-note">30 min Duolingo + video</div></div>
+      <div class="block b-study"><div class="block-time">4:15</div><div class="block-label">RA work</div></div>
+      <div class="block b-free"><div class="block-time">5:30</div><div class="block-label">Free / family</div></div>
+      <div class="block b-evening"><div class="block-time">9:00</div><div class="block-label">Evening routine</div></div>
+    </div>
+    <div class="day-col">
+      <div class="day-header"><div class="day-name">Wednesday</div><div class="day-sub">Vol 7–9pm</div></div>
+      <div class="block b-morning"><div class="block-time">5:30</div><div class="block-label">Morning routine</div></div>
+      <div class="block b-work"><div class="block-time">8:00</div><div class="block-label">Work</div></div>
+      <div class="block b-work"><div class="block-time">12:00</div><div class="block-label">Lunch</div></div>
+      <div class="block b-work"><div class="block-time">1:00</div><div class="block-label">Work</div></div>
+      <div class="block b-study"><div class="block-time">3:30</div><div class="block-label">Math I</div><div class="block-note">Khan Academy, 60 min</div></div>
+      <div class="block b-vol"><div class="block-time">7:00</div><div class="block-label">Senior Helpers</div></div>
+      <div class="block b-evening"><div class="block-time">9:30</div><div class="block-label">Evening routine</div><div class="block-note">Shortened</div></div>
+    </div>
+    <div class="day-col">
+      <div class="day-header"><div class="day-name">Thursday</div><div class="day-sub">Drawing</div></div>
+      <div class="block b-morning"><div class="block-time">5:30</div><div class="block-label">Morning routine</div></div>
+      <div class="block b-work"><div class="block-time">8:00</div><div class="block-label">Work</div></div>
+      <div class="block b-work"><div class="block-time">12:00</div><div class="block-label">Lunch</div></div>
+      <div class="block b-work"><div class="block-time">1:00</div><div class="block-label">Work</div></div>
+      <div class="block b-study"><div class="block-time">3:30</div><div class="block-label">Drawing — Phase A</div><div class="block-note">Gesture sketches, 30 min</div></div>
+      <div class="block b-study"><div class="block-time">4:15</div><div class="block-label">Logic problems</div><div class="block-note">Problem sets, 30 min</div></div>
+      <div class="block b-free"><div class="block-time">5:00</div><div class="block-label">Free / family</div></div>
+      <div class="block b-evening"><div class="block-time">9:00</div><div class="block-label">Evening routine</div></div>
+    </div>
+    <div class="day-col">
+      <div class="day-header"><div class="day-name">Friday</div><div class="day-sub">Review</div></div>
+      <div class="block b-morning"><div class="block-time">5:30</div><div class="block-label">Morning routine</div></div>
+      <div class="block b-work"><div class="block-time">8:00</div><div class="block-label">Work</div></div>
+      <div class="block b-work"><div class="block-time">12:00</div><div class="block-label">Lunch</div></div>
+      <div class="block b-work"><div class="block-time">1:00</div><div class="block-label">Work</div></div>
+      <div class="block b-study"><div class="block-time">3:30</div><div class="block-label">Weekly retrieval</div><div class="block-note">Both modules, no notes, 45 min</div></div>
+      <div class="block b-study"><div class="block-time">4:30</div><div class="block-label">Anki + French</div></div>
+      <div class="block b-free"><div class="block-time">5:30</div><div class="block-label">Free / family</div></div>
+      <div class="block b-evening"><div class="block-time">9:00</div><div class="block-label">Evening routine</div></div>
+    </div>
+    <div class="day-col">
+      <div class="day-header"><div class="day-name">Saturday</div><div class="day-sub">Deep work</div></div>
+      <div class="block b-morning"><div class="block-time">7:00</div><div class="block-label">Morning routine</div><div class="block-note">Relaxed start</div></div>
+      <div class="block b-study"><div class="block-time">9:00</div><div class="block-label">Math I deep work</div><div class="block-note">2.5 hrs</div></div>
+      <div class="block b-study"><div class="block-time">12:00</div><div class="block-label">Drawing</div><div class="block-note">45 min gestures</div></div>
+      <div class="block b-free"><div class="block-time">1:00</div><div class="block-label">Free / family</div></div>
+      <div class="block b-evening"><div class="block-time">9:00</div><div class="block-label">Evening routine</div></div>
+    </div>
+    <div class="day-col">
+      <div class="day-header"><div class="day-name">Sunday</div><div class="day-sub">Vol 7–9pm</div></div>
+      <div class="block b-morning"><div class="block-time">8:00</div><div class="block-label">Church</div></div>
+      <div class="block b-study"><div class="block-time">10:00</div><div class="block-label">Weekly review</div><div class="block-note">30 min</div></div>
+      <div class="block b-study"><div class="block-time">10:30</div><div class="block-label">Sci Lit reading</div><div class="block-note">90 min</div></div>
+      <div class="block b-study"><div class="block-time">12:00</div><div class="block-label">Guitar</div><div class="block-note">30–45 min</div></div>
+      <div class="block b-free"><div class="block-time">1:00</div><div class="block-label">Free</div></div>
+      <div class="block b-vol"><div class="block-time">7:00</div><div class="block-label">Senior Helpers</div></div>
+      <div class="block b-evening"><div class="block-time">9:30</div><div class="block-label">Evening routine</div><div class="block-note">Shortened</div></div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>Fitness in Edmonton</h3>
+      <ul>
+        <li>Stairstepper 20–30 min: happens inside morning routine after sun salutation</li>
+        <li>Kettlebell 20 min: YouTube session, same block</li>
+        <li>Both workouts done before 8am — no double getting-ready</li>
+        <li>Workout clothes go on at 5:30, shower before sitting at desk</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Edmonton survival rules</h3>
+      <ul>
+        <li>Morning routine is the anchor — one bad evening doesn't become two bad mornings</li>
+        <li>Don't pre-decide about drinking — decide each morning instead</li>
+        <li>RA hours: Tue + Thu afternoons, covers the biweekly 16–20 hrs</li>
+        <li>Study is light by design — 60 min/day builds real momentum over 13 days</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- VANCOUVER -->
+<div class="page" id="page-vancouver">
+  <h1>Phase 2: Vancouver</h1>
+  <div class="subtitle">May 13–June 1 — apartment gym + rec centre, building the gym habit</div>
+  <div class="phase-badge badge-teal">Goal: gym habit locked before Firelight starts</div>
+
+  <div class="week-grid grid-7">
+    <div class="day-col">
+      <div class="day-header"><div class="day-name">Monday</div></div>
+      <div class="block b-morning"><div class="block-time">5:30</div><div class="block-label">Morning routine</div></div>
+      <div class="block b-work"><div class="block-time">8:00</div><div class="block-label">Work</div></div>
+      <div class="block b-work"><div class="block-time">12:00</div><div class="block-label">Lunch</div></div>
+      <div class="block b-work"><div class="block-time">1:00</div><div class="block-label">Work</div></div>
+      <div class="block b-study"><div class="block-time">3:30</div><div class="block-label">Logic + Sci Lit</div><div class="block-note">60–75 min reading + retrieval</div></div>
+      <div class="block b-study"><div class="block-time">5:00</div><div class="block-label">RA work</div><div class="block-note">Flex</div></div>
+      <div class="block b-evening"><div class="block-time">9:00</div><div class="block-label">Evening routine</div></div>
+    </div>
+    <div class="day-col">
+      <div class="day-header"><div class="day-name">Tuesday</div></div>
+      <div class="block b-morning"><div class="block-time">5:30</div><div class="block-label">Morning routine</div></div>
+      <div class="block b-work"><div class="block-time">8:00</div><div class="block-label">Work</div></div>
+      <div class="block b-work"><div class="block-time">12:00</div><div class="block-label">Lunch</div></div>
+      <div class="block b-work"><div class="block-time">1:00</div><div class="block-label">Work</div></div>
+      <div class="block b-study"><div class="block-time">3:30</div><div class="block-label">French + Math I</div><div class="block-note">30 min each</div></div>
+      <div class="block b-free"><div class="block-time">5:00</div><div class="block-label">Free</div></div>
+      <div class="block b-evening"><div class="block-time">9:00</div><div class="block-label">Evening routine</div></div>
+    </div>
+    <div class="day-col">
+      <div class="day-header"><div class="day-name">Wednesday</div><div class="day-sub">Vol 7–9pm</div></div>
+      <div class="block b-morning"><div class="block-time">5:30</div><div class="block-label">Morning routine</div></div>
+      <div class="block b-work"><div class="block-time">8:00</div><div class="block-label">Work</div></div>
+      <div class="block b-work"><div class="block-time">12:00</div><div class="block-label">Lunch</div></div>
+      <div class="block b-work"><div class="block-time">1:00</div><div class="block-label">Work</div></div>
+      <div class="block b-study"><div class="block-time">3:30</div><div class="block-label">Drawing — Phase A/B</div><div class="block-note">30 min minimum</div></div>
+      <div class="block b-study"><div class="block-time">4:15</div><div class="block-label">RA work</div></div>
+      <div class="block b-vol"><div class="block-time">7:00</div><div class="block-label">Senior Helpers</div></div>
+      <div class="block b-evening"><div class="block-time">9:30</div><div class="block-label">Evening routine</div><div class="block-note">Shortened</div></div>
+    </div>
+    <div class="day-col">
+      <div class="day-header"><div class="day-name">Thursday</div></div>
+      <div class="block b-morning"><div class="block-time">5:30</div><div class="block-label">Morning routine</div></div>
+      <div class="block b-work"><div class="block-time">8:00</div><div class="block-label">Work</div></div>
+      <div class="block b-work"><div class="block-time">12:00</div><div class="block-label">Lunch</div></div>
+      <div class="block b-work"><div class="block-time">1:00</div><div class="block-label">Work</div></div>
+      <div class="block b-study"><div class="block-time">3:30</div><div class="block-label">Logic problems</div><div class="block-note">Problem sets, 60 min</div></div>
+      <div class="block b-free"><div class="block-time">5:00</div><div class="block-label">Free</div></div>
+      <div class="block b-evening"><div class="block-time">9:00</div><div class="block-label">Evening routine</div></div>
+    </div>
+    <div class="day-col">
+      <div class="day-header"><div class="day-name">Friday</div><div class="day-sub">Review</div></div>
+      <div class="block b-morning"><div class="block-time">5:30</div><div class="block-label">Morning routine</div></div>
+      <div class="block b-work"><div class="block-time">8:00</div><div class="block-label">Work</div></div>
+      <div class="block b-work"><div class="block-time">12:00</div><div class="block-label">Lunch</div></div>
+      <div class="block b-work"><div class="block-time">1:00</div><div class="block-label">Work</div></div>
+      <div class="block b-study"><div class="block-time">3:30</div><div class="block-label">Weekly retrieval</div><div class="block-note">Both modules, no notes</div></div>
+      <div class="block b-free"><div class="block-time">4:30</div><div class="block-label">Errands, self-care, appointments</div></div>
+      <div class="block b-evening"><div class="block-time">9:00</div><div class="block-label">Evening routine</div></div>
+    </div>
+    <div class="day-col">
+      <div class="day-header"><div class="day-name">Saturday</div><div class="day-sub">Deep work</div></div>
+      <div class="block b-morning"><div class="block-time">7:00</div><div class="block-label">Morning routine</div><div class="block-note">Relaxed</div></div>
+      <div class="block b-study"><div class="block-time">9:00</div><div class="block-label">Math I deep work</div><div class="block-note">2.5–3 hrs</div></div>
+      <div class="block b-study"><div class="block-time">12:00</div><div class="block-label">Drawing long render</div><div class="block-note">45 min</div></div>
+      <div class="block b-free"><div class="block-time">1:00</div><div class="block-label">Free — cooking, film, friends</div></div>
+      <div class="block b-evening"><div class="block-time">9:00</div><div class="block-label">Evening routine</div></div>
+    </div>
+    <div class="day-col">
+      <div class="day-header"><div class="day-name">Sunday</div><div class="day-sub">Vol 7–9pm</div></div>
+      <div class="block b-morning"><div class="block-time">8:00</div><div class="block-label">Church</div></div>
+      <div class="block b-study"><div class="block-time">10:00</div><div class="block-label">Weekly review</div><div class="block-note">30 min</div></div>
+      <div class="block b-study"><div class="block-time">10:30</div><div class="block-label">Sci Lit reading</div><div class="block-note">90 min</div></div>
+      <div class="block b-study"><div class="block-time">12:00</div><div class="block-label">Guitar</div><div class="block-note">30–45 min</div></div>
+      <div class="block b-free"><div class="block-time">1:00</div><div class="block-label">Free</div></div>
+      <div class="block b-vol"><div class="block-time">7:00</div><div class="block-label">Senior Helpers</div></div>
+      <div class="block b-evening"><div class="block-time">9:30</div><div class="block-label">Evening routine</div><div class="block-note">Shortened</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FIRELIGHT -->
+<div class="page" id="page-firelight">
+  <h1>Phase 3: Firelight</h1>
+  <div class="subtitle">June 1 onward — Mon–Thu 8–4:30, three-day weekends</div>
+  <div class="phase-badge badge-purple">Goal: operate at full capacity</div>
+
+  <div class="week-grid grid-7">
+    <div class="day-col">
+      <div class="day-header"><div class="day-name">Monday</div></div>
+      <div class="block b-morning"><div class="block-time">5:30</div><div class="block-label">Morning routine</div></div>
+      <div class="block b-work"><div class="block-time">8:00</div><div class="block-label">Firelight</div></div>
+      <div class="block b-work"><div class="block-time">12:00</div><div class="block-label">Lunch</div></div>
+      <div class="block b-work"><div class="block-time">1:00</div><div class="block-label">Firelight</div></div>
+      <div class="block b-study"><div class="block-time">4:30</div><div class="block-label">Logic + Sci Lit</div><div class="block-note">60 min</div></div>
+      <div class="block b-free"><div class="block-time">6:00</div><div class="block-label">Free</div></div>
+      <div class="block b-evening"><div class="block-time">9:00</div><div class="block-label">Evening routine</div></div>
+    </div>
+    <div class="day-col">
+      <div class="day-header"><div class="day-name">Tuesday</div></div>
+      <div class="block b-morning"><div class="block-time">5:30</div><div class="block-label">Morning routine</div></div>
+      <div class="block b-work"><div class="block-time">8:00</div><div class="block-label">Firelight</div></div>
+      <div class="block b-work"><div class="block-time">12:00</div><div class="block-label">Lunch</div></div>
+      <div class="block b-work"><div class="block-time">1:00</div><div class="block-label">Firelight</div></div>
+      <div class="block b-study"><div class="block-time">4:30</div><div class="block-label">French + Math I</div><div class="block-note">30 min each</div></div>
+      <div class="block b-study"><div class="block-time">5:30</div><div class="block-label">RA work</div><div class="block-note">Flex</div></div>
+      <div class="block b-evening"><div class="block-time">9:00</div><div class="block-label">Evening routine</div></div>
+    </div>
+    <div class="day-col">
+      <div class="day-header"><div class="day-name">Wednesday</div><div class="day-sub">Vol 7–9pm</div></div>
+      <div class="block b-morning"><div class="block-time">5:30</div><div class="block-label">Morning routine</div></div>
+      <div class="block b-work"><div class="block-time">8:00</div><div class="block-label">Firelight</div></div>
+      <div class="block b-work"><div class="block-time">12:00</div><div class="block-label">Lunch</div></div>
+      <div class="block b-work"><div class="block-time">1:00</div><div class="block-label">Firelight</div></div>
+      <div class="block b-study"><div class="block-time">4:30</div><div class="block-label">Drawing</div><div class="block-note">30 min gestures</div></div>
+      <div class="block b-vol"><div class="block-time">7:00</div><div class="block-label">Senior Helpers</div></div>
+      <div class="block b-evening"><div class="block-time">9:30</div><div class="block-label">Evening routine</div><div class="block-note">Shortened</div></div>
+    </div>
+    <div class="day-col">
+      <div class="day-header"><div class="day-name">Thursday</div></div>
+      <div class="block b-morning"><div class="block-time">5:30</div><div class="block-label">Morning routine</div></div>
+      <div class="block b-work"><div class="block-time">8:00</div><div class="block-label">Firelight</div></div>
+      <div class="block b-work"><div class="block-time">12:00</div><div class="block-label">Lunch</div></div>
+      <div class="block b-work"><div class="block-time">1:00</div><div class="block-label">Firelight</div></div>
+      <div class="block b-study"><div class="block-time">4:30</div><div class="block-label">Logic problems</div><div class="block-note">60 min problem sets</div></div>
+      <div class="block b-free"><div class="block-time">6:00</div><div class="block-label">Free</div></div>
+      <div class="block b-evening"><div class="block-time">9:00</div><div class="block-label">Evening routine</div></div>
+    </div>
+    <div class="day-col">
+      <div class="day-header"><div class="day-name">Friday</div><div class="day-sub">Day off</div></div>
+      <div class="block b-morning"><div class="block-time">7:00</div><div class="block-label">Morning routine</div><div class="block-note">Relaxed</div></div>
+      <div class="block b-study"><div class="block-time">9:00</div><div class="block-label">Weekly retrieval</div><div class="block-note">45 min, no notes</div></div>
+      <div class="block b-study"><div class="block-time">10:00</div><div class="block-label">Sci Lit reading</div><div class="block-note">90 min</div></div>
+      <div class="block b-free"><div class="block-time">12:00</div><div class="block-label">Free — facials, pool, errands, appointments</div></div>
+      <div class="block b-study"><div class="block-time">3:00</div><div class="block-label">Guitar</div><div class="block-note">45 min</div></div>
+      <div class="block b-evening"><div class="block-time">9:00</div><div class="block-label">Evening routine</div></div>
+    </div>
+    <div class="day-col">
+      <div class="day-header"><div class="day-name">Saturday</div><div class="day-sub">Deep work</div></div>
+      <div class="block b-morning"><div class="block-time">7:00</div><div class="block-label">Morning routine</div></div>
+      <div class="block b-study"><div class="block-time">9:00</div><div class="block-label">Math I deep work</div><div class="block-note">2.5–3 hrs</div></div>
+      <div class="block b-study"><div class="block-time">12:00</div><div class="block-label">Drawing long render</div><div class="block-note">45 min</div></div>
+      <div class="block b-free"><div class="block-time">1:00</div><div class="block-label">Free — pool, cooking, film, friends</div></div>
+      <div class="block b-evening"><div class="block-time">9:00</div><div class="block-label">Evening routine</div></div>
+    </div>
+    <div class="day-col">
+      <div class="day-header"><div class="day-name">Sunday</div><div class="day-sub">Vol 7–9pm</div></div>
+      <div class="block b-morning"><div class="block-time">8:00</div><div class="block-label">Church</div></div>
+      <div class="block b-study"><div class="block-time">10:00</div><div class="block-label">Weekly review</div><div class="block-note">30 min</div></div>
+      <div class="block b-study"><div class="block-time">10:30</div><div class="block-label">Humanities reading</div><div class="block-note">90 min</div></div>
+      <div class="block b-free"><div class="block-time">12:00</div><div class="block-label">Free</div></div>
+      <div class="block b-vol"><div class="block-time">7:00</div><div class="block-label">Senior Helpers</div></div>
+      <div class="block b-evening"><div class="block-time">9:30</div><div class="block-label">Evening routine</div><div class="block-note">Shortened</div></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:0.5rem;">
+    <h3>The three-day weekend is your biggest structural asset</h3>
+    <p style="margin:0;">Friday handles admin, review, appointments, and the pool so Saturday stays completely clear for deep work. Facials, brow appointments, and shopping all live in Friday afternoons. This is when the glow-up logistics actually get executed rather than planned.</p>
+  </div>
+</div>
+
+<!-- DAILY TEMPLATES -->
+<div class="page" id="page-daily">
+  <h1>Daily templates</h1>
+  <div class="subtitle">A standard workday, and a shortened evening for volunteer nights</div>
+
+  <h2>Standard workday</h2>
+  <div class="time-block-list">
+    <div class="tb-row b-morning"><div class="tb-time">5:30</div><div class="tb-content"><span class="tb-label">Wake up + take meds</span></div></div>
+    <div class="tb-row b-morning"><div class="tb-time">5:35</div><div class="tb-content"><span class="tb-label">Morning Pages</span><div class="tb-detail">25 min — stream of consciousness, no editing</div></div></div>
+    <div class="tb-row b-fitness"><div class="tb-time">6:00</div><div class="tb-content"><span class="tb-label">Put on workout clothes + Sun Salutation + take preworkout</span><div class="tb-detail">10 min yoga while preworkout activates</div></div></div>
+    <div class="tb-row b-fitness"><div class="tb-time">6:10</div><div class="tb-content"><span class="tb-label">NYT Games while preworkout sets in</span><div class="tb-detail">Crossword, Wordle — this is the 25 min wait, made useful</div></div></div>
+    <div class="tb-row b-fitness"><div class="tb-time">6:35</div><div class="tb-content"><span class="tb-label">Workout one: cardio (30 min)</span><div class="tb-detail">Phase 1: stairstepper. Phase 2+: run or treadmill intervals</div></div></div>
+    <div class="tb-row b-fitness"><div class="tb-time">7:05</div><div class="tb-content"><span class="tb-label">Workout two: strength (20–30 min)</span><div class="tb-detail">Phase 1: kettlebell. Phase 2+: full body weights session</div></div></div>
+    <div class="tb-row b-morning"><div class="tb-time">7:35</div><div class="tb-content"><span class="tb-label">Smoothie + green drink + electrolytes + vitamins + dry brush + shower</span><div class="tb-detail">20 min to get ready — desk by 8</div></div></div>
+    <div class="tb-row b-work"><div class="tb-time">8:00</div><div class="tb-content"><span class="tb-label">Work</span></div></div>
+    <div class="tb-row b-work"><div class="tb-time">12:00</div><div class="tb-content"><span class="tb-label">Lunch</span><div class="tb-detail">Prep from the night before — no decisions when hungry</div></div></div>
+    <div class="tb-row b-work"><div class="tb-time">1:00</div><div class="tb-content"><span class="tb-label">Work</span></div></div>
+    <div class="tb-row b-study"><div class="tb-time">3:30</div><div class="tb-content"><span class="tb-label">Study block — varies by day</span><div class="tb-detail">See curriculum tab for what runs each day</div></div></div>
+    <div class="tb-row b-free"><div class="tb-time">5:00</div><div class="tb-content"><span class="tb-label">Free — cook, read, call someone, film, rest</span><div class="tb-detail">This is actual free time, not hidden productivity time</div></div></div>
+    <div class="tb-row b-evening"><div class="tb-time">9:00</div><div class="tb-content"><span class="tb-label">Closing shift (35 min)</span><div class="tb-detail">Prep tomorrow's food, tidy, set out clothes, review one-line log</div></div></div>
+    <div class="tb-row b-evening"><div class="tb-time">9:35</div><div class="tb-content"><span class="tb-label">Get ready for bed (25 min)</span><div class="tb-detail">Double cleanse, skin cycling serums, lash serum, lip mask, floss, brush, mouthwash, tongue scrape, night hair serum, braid, meds + vitamins</div></div></div>
+    <div class="tb-row b-evening"><div class="tb-time">10:00</div><div class="tb-content"><span class="tb-label">Moon Salutation (10 min)</span></div></div>
+    <div class="tb-row b-evening"><div class="tb-time">10:10</div><div class="tb-content"><span class="tb-label">Journal (25 min)</span><div class="tb-detail">Stoic evening reflection: what did I do well, what didn't reflect who I want to be, what will I do differently tomorrow</div></div></div>
+    <div class="tb-row b-evening"><div class="tb-time">10:35</div><div class="tb-content"><span class="tb-label">Read (30 min)</span><div class="tb-detail">Lights out by 11 — 6.5 hrs if up at 5:30</div></div></div>
+  </div>
+
+  <h2>Volunteer nights (Wed + Sun) — shortened</h2>
+  <div class="time-block-list">
+    <div class="tb-row b-vol"><div class="tb-time">7:00</div><div class="tb-content"><span class="tb-label">Senior Helpers</span></div></div>
+    <div class="tb-row b-evening"><div class="tb-time">9:15</div><div class="tb-content"><span class="tb-label">Get ready for bed</span><div class="tb-detail">Full skin routine — don't skip this one</div></div></div>
+    <div class="tb-row b-evening"><div class="tb-time">9:40</div><div class="tb-content"><span class="tb-label">Moon Salutation</span></div></div>
+    <div class="tb-row b-evening"><div class="tb-time">9:50</div><div class="tb-content"><span class="tb-label">Journal — brief</span><div class="tb-detail">One sentence is enough on these nights</div></div></div>
+    <div class="tb-row b-evening"><div class="tb-time">10:00</div><div class="tb-content"><span class="tb-label">Read — even 10 pages counts</span></div></div>
+  </div>
+</div>
+
+<!-- CURRICULUM -->
+<div class="page" id="page-curriculum">
+  <h1>Curriculum</h1>
+  <div class="subtitle">Year 1, Q1 — starting May 1, 2026</div>
+
+  <div style="margin-bottom:1.25rem;">
+    <span class="pill pill-amber">Daily: French 20 min + Anki 15 min</span>
+    <span class="pill pill-teal">Daily: 20 min gesture drawing</span>
+    <span class="pill pill-purple">Wks 1–12: Logic (primary module)</span>
+    <span class="pill pill-coral">Wks 1–8: Scientific Literacy (concurrent)</span>
+    <span class="pill pill-teal">Wks 1–12: Math I (Saturday deep work)</span>
+  </div>
+
+  <div class="cur-grid">
+    <div class="cur-card">
+      <div class="cur-day">Monday</div>
+      <div class="cur-module">Logic + Scientific Literacy</div>
+      <div class="cur-detail">Reading block. After each section, close the book and write retrieval notes from memory. Week 1: LPL Ch. 1–2 and Sagan Ch. 1–3. No skipping the writing — that is the actual work.</div>
+    </div>
+    <div class="cur-card">
+      <div class="cur-day">Tuesday</div>
+      <div class="cur-module">French + Math I</div>
+      <div class="cur-detail">French: 30 min Duolingo plus one Easy French or InnerFrench video. Math: Khan Academy exercises, one concept only. Week 1: algebra diagnostic — be honest about gaps.</div>
+    </div>
+    <div class="cur-card">
+      <div class="cur-day">Wednesday</div>
+      <div class="cur-module">Drawing — Phase A</div>
+      <div class="cur-detail">Weeks 1–4: gesture sketches only. Dodson Keys to Drawing. 20–120 second poses. Use line-of-action.com for pose reference. Goal: 100 gestures by end of Phase A.</div>
+    </div>
+    <div class="cur-card">
+      <div class="cur-day">Thursday</div>
+      <div class="cur-module">Logic problem sets</div>
+      <div class="cur-detail">Exercise sets from LPL. Write your reasoning in plain English before checking the answer. Build Anki fallacy deck as you go — one card per fallacy encountered.</div>
+    </div>
+    <div class="cur-card">
+      <div class="cur-day">Friday</div>
+      <div class="cur-module">Weekly retrieval</div>
+      <div class="cur-detail">No notes. Write everything you remember from Logic and Sci Lit this week. Check it against the text. The gap between what you thought you knew and what you got right is exactly what you study next week.</div>
+    </div>
+    <div class="cur-card">
+      <div class="cur-day">Saturday</div>
+      <div class="cur-module">Math I deep work — 2.5 to 3 hours</div>
+      <div class="cur-detail">The hard session. Weeks 1–2: algebra diagnostic. Week 3 onward: 3Blue1Brown Essence of Calculus. Attempt problems before watching solutions. Drawing long render follows.</div>
+    </div>
+    <div class="cur-card">
+      <div class="cur-day">Sunday</div>
+      <div class="cur-module">Sci Lit reading + weekly review + guitar</div>
+      <div class="cur-detail">Sagan chapters, 90 min. Then 30 min weekly review: log hours, update Anki, plan next week's sessions. Guitar 30–45 min — no pressure. Just play.</div>
+    </div>
+  </div>
+
+  <h2>What success looks like in week one</h2>
+  <ul class="checklist">
+    <li>Logic Anki deck started with 10 cards minimum</li>
+    <li>LPL Ch. 1–2 read with retrieval notes written after, not during</li>
+    <li>Sagan Ch. 1–3 read, one Claim Check drafted on any health or science news story</li>
+    <li>Khan algebra diagnostic attempted and gaps identified honestly</li>
+    <li>20 gesture sketches done across the week</li>
+    <li>French happened at least 4 days</li>
+  </ul>
+  <p style="margin-top:0.75rem;">That is a complete, successful first week. Nothing more is required.</p>
+
+  <h2>Reframing what learning looks like</h2>
+  <div class="two-col">
+    <div class="card">
+      <h3>Not school</h3>
+      <ul>
+        <li>No deadlines except yours. If a week goes sideways, pick up where you left off</li>
+        <li>The deliverables are for you, not a professor</li>
+        <li>If a resource isn't working, the curriculum lists alternatives for every module</li>
+        <li>French and drawing are daily habits, not subjects — they happen the way brushing your teeth happens</li>
+        <li>Confusion in math means you are at your learning edge, not that something is wrong</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>The daily minimum that matters</h3>
+      <ul>
+        <li>15 min Anki — every single day</li>
+        <li>20 min French — at least 5 days a week</li>
+        <li>20 min gesture drawing — at least 5 days a week</li>
+        <li>The scheduled study block — once a day on weekdays</li>
+        <li>That is 70 minutes of curriculum per day. Over a summer it becomes extraordinary</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- PRESENCE PRACTICE -->
+<div class="page" id="page-presence">
+  <h1>Presence practice</h1>
+  <div class="subtitle">Daily habits for confidence, friendship, and showing up fully — not a self-improvement project, a quiet practice</div>
+
+  <h2>The core problem and the actual fix</h2>
+  <p>What you're describing — talking too fast, saying things you immediately regret, thinking about yourself in groups, not feeling genuine with people your age — is not a personality flaw. It is what self-consciousness looks like from the inside. The split attention between performing and being there is what reads as distance or awkwardness to others. The fix is not becoming someone else. It is learning to redirect attention outward rather than inward, consistently, until it becomes automatic.</p>
+
+  <h2>Daily practices — woven into what you already do</h2>
+
+  <div class="practice-block amber">
+    <div class="practice-title">Morning intention (30 seconds, inside morning pages or just after)</div>
+    <div class="practice-body">Pick one word that describes who you want to be today. Not what you want to accomplish. Who you want to be. Grounded. Curious. Present. Patient. Carry it. This is from the Stoic practice and it takes almost no time.</div>
+  </div>
+
+  <div class="practice-block teal">
+    <div class="practice-title">The one conversation practice (one conversation per day, any day)</div>
+    <div class="practice-body">In one conversation today, say something and do not qualify it. Make the statement. Stop. Do not add "I don't know," "if that makes sense," or "maybe I'm wrong." Let it sit. The silence after a considered statement is not awkward — it is weight. This is the single highest-leverage presence habit you can build.</div>
+  </div>
+
+  <div class="practice-block purple">
+    <div class="practice-title">The outward redirect (whenever you catch self-consciousness in a group)</div>
+    <div class="practice-body">The moment you notice you are watching yourself from the outside, ask: what is genuinely interesting about this person right now? Find it. Your self-consciousness disappears when your attention is fully on someone else. This is not a trick. It is a genuine practice that produces genuine connection.</div>
+  </div>
+
+  <div class="practice-block coral">
+    <div class="practice-title">The weekly reach-out (Sunday, inside weekly review)</div>
+    <div class="practice-body">One message to one person you have been meaning to contact. It does not need to be long or clever. "I've been bad at staying in touch and I'm trying to change that. How are you?" is enough. Most people who like you are not keeping score. They are living their own lives. A simple honest message lands far better than the months of silence that preceded it.</div>
+  </div>
+
+  <div class="practice-block amber">
+    <div class="practice-title">Evening reflection (inside your journal block, takes 2 minutes)</div>
+    <div class="practice-body">Three questions, briefly: What did I do well today in how I showed up to other people? What didn't reflect who I want to be? One specific thing I will do differently tomorrow. This is the Stoic evening reflection adapted to your specific goals. Do not use it to punish yourself. Use it as honest accounting.</div>
+  </div>
+
+  <h2>On friendship specifically</h2>
+  <p>Real friendship does not require you to be a different person. It requires you to show up as the person you are, repeatedly. People become close by accumulating shared time. The friendships you feel you have let drift are not lost unless you have decided they are. The practice is repetition and reliability: show up, remember what people tell you, follow through on what you say.</p>
+  <p>One more thing worth naming: you do not need many friends. You need a few real ones. Quality over number, always. But those few require maintenance — not constant contact, but regular genuine check-ins. A real conversation once a month is a friendship. Silence for six months followed by guilt is a pattern. The Sunday reach-out breaks the pattern.</p>
+
+  <h2>On speaking — slowing down</h2>
+  <div class="two-col">
+    <div class="card">
+      <h3>The physical habits</h3>
+      <ul>
+        <li>Slow down by 20%. Nervous speech is fast speech. A deliberate pace reads as considered, not slow</li>
+        <li>Comfortable eye contact — genuine interest, not performed attentiveness</li>
+        <li>Ask one good question instead of several small ones — then actually listen to the full answer</li>
+        <li>Have positions. "Whatever you think" as a default is an absence, not a position</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Stop explaining yourself</h3>
+      <ul>
+        <li>"I don't drink tonight" needs no explanation</li>
+        <li>"I prefer to head home" needs no justification</li>
+        <li>"I'm not available then" is a complete sentence</li>
+        <li>The instinct to justify is the instinct to seek approval. Practice letting your choices stand without a defence</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- PROFESSIONAL EDGE -->
+<div class="page" id="page-professional">
+  <h1>Professional edge</h1>
+  <div class="subtitle">Firelight — research analyst, client-facing, front of the room before you know it</div>
+
+  <h2>The person who has it ready</h2>
+  <p>The difference between "sorry, I'm still working on that" and "I have that for you right here" is almost never talent. It is the gap between doing work in your head versus doing it on paper early. Research analysts who become indispensable are not necessarily the most brilliant people in the room. They are the ones who make everyone else's job easier by being one step ahead of the ask.</p>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>The anticipation habit</h3>
+      <ul>
+        <li>At the end of each workday, ask: what will someone need from me tomorrow that I could prepare tonight?</li>
+        <li>When you finish a task, ask: what is the logical next question someone will have about this? Answer it before they ask</li>
+        <li>Before any client-facing moment, write down the three things they are most likely to ask. Have the answers ready</li>
+        <li>Keep a running doc of every recurring request — build templates so the second version takes a quarter of the time</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>The communication habits</h3>
+      <ul>
+        <li>When you send work, say what it is and what you want the recipient to do with it in the first sentence</li>
+        <li>Never send a problem without at least one proposed solution alongside it</li>
+        <li>Confirm your understanding of a task before you start it, not halfway through</li>
+        <li>If something will be late, say so 24 hours before it is due — not after</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Being part of a team when you think about yourself in groups</h2>
+  <p>What you are describing in groups — thinking too much about yourself, not feeling like part of the team — has the same root as the social self-consciousness. The fix is the same: redirect attention outward. In a work context, that means asking yourself "what does this team need right now" instead of "how am I coming across right now."</p>
+
+  <div class="practice-block teal">
+    <div class="practice-title">The meeting habit</div>
+    <div class="practice-body">Before every meeting, pick one thing you will contribute — one observation, one question, one piece of information you bring that others don't have. Say it. Then stop talking and listen fully. People who speak once with substance are remembered far more than people who fill silence.</div>
+  </div>
+
+  <div class="practice-block purple">
+    <div class="practice-title">The generous colleague habit</div>
+    <div class="practice-body">Once a week, do something that makes a colleague's job easier without being asked — share a resource, flag something relevant, offer to take something off someone's plate. Generosity at work builds reputation faster than any individual piece of work. It also shifts your internal orientation from "how am I doing" to "how can I help."</div>
+  </div>
+
+  <div class="practice-block amber">
+    <div class="practice-title">The end-of-day log (5 min, inside closing shift)</div>
+    <div class="practice-body">Three lines: what I completed today, what is outstanding and when it will be done, one thing I will do tomorrow before anyone has to ask me. This keeps you one step ahead structurally and trains the anticipation habit into an automatic system.</div>
+  </div>
+
+  <h2>Client-facing confidence</h2>
+  <div class="two-col">
+    <div class="card">
+      <h3>Before client contact</h3>
+      <ul>
+        <li>Know the names of everyone you will speak to</li>
+        <li>Know what they care about — their priorities, not just their questions</li>
+        <li>Have the numbers, dates, and deliverables you are likely to be asked about accessible before the call starts</li>
+        <li>Take 60 seconds before going into a call to breathe and set one intention: be useful to these people</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>When you don't know something</h3>
+      <ul>
+        <li>"I don't have that in front of me right now — I'll get it to you by end of day" is professional and trustworthy</li>
+        <li>"I'm not sure but let me find out" followed by actually finding out is the entire job</li>
+        <li>Guessing to avoid looking uninformed is the only thing that actually undermines credibility</li>
+        <li>Saying "I'll confirm that" is a power move when you deliver</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- FITNESS -->
+<div class="page" id="page-fitness">
+  <h1>Fitness plan</h1>
+  <div class="subtitle">Three phases, two workouts daily, building toward the goals</div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>Phase 1: May 1–13 (Edmonton)</h3>
+      <ul>
+        <li>Cardio: stairstepper, 20–30 min, build to 30 by day 5</li>
+        <li>Strength: kettlebell YouTube session, follow the video</li>
+        <li>Both happen in the morning block before 8am</li>
+        <li>Goal: establish the streak, do not miss a day</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Phase 2: May 13–June 1 (Vancouver)</h3>
+      <ul>
+        <li>Cardio: run sessions, treadmill or outdoor intervals</li>
+        <li>Strength: full body weights, apartment gym or rec centre</li>
+        <li>Building toward running continuously</li>
+        <li>Goal: arrive at Firelight with a working gym habit</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Phase 3: June 1 onward</h3>
+      <ul>
+        <li>Cardio: running, increasing intervals, building toward 10k</li>
+        <li>Strength: full body weights, full gym access</li>
+        <li>Pool opens June 1 — swim laps on Fri/Sat as second cardio option</li>
+        <li>Goal: operate at full physical capacity through summer</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Performance targets</h3>
+      <ul>
+        <li>10 pullups</li>
+        <li>40 pushups</li>
+        <li>80 sit-ups in 2 minutes</li>
+        <li>2-minute plank</li>
+        <li>2.4 km under 10 minutes</li>
+        <li>10 km continuous in 1:30</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Recovery and non-negotiables</h2>
+  <div class="card">
+    <h3>What the program requires alongside workouts</h3>
+    <ul>
+      <li>Sleep 7–8 hours — this is part of the body composition plan, not separate from it</li>
+      <li>Water 4L minimum daily — tracked, not approximate</li>
+      <li>Prep food the night before on work days — the closing shift is when this happens</li>
+      <li>Weekly weigh-in Saturday morning, before eating, after bathroom — not more often than this</li>
+      <li>Rest days do not exist in this program but recovery workouts do — 20 min of intentional movement counts on hard days</li>
+    </ul>
+  </div>
+</div>
+
+<!-- BUY LIST -->
+<div class="page" id="page-buylist">
+  <h1>To acquire</h1>
+  <div class="subtitle">Organised by category — Friday afternoons in Phase 3 are when these get done</div>
+
+  <div class="buy-section">
+    <div class="buy-category">Living space</div>
+    <div class="buy-items">
+      <div class="buy-item">New couch cushion covers</div>
+      <div class="buy-item">Living room art</div>
+      <div class="buy-item">Art for above desk</div>
+      <div class="buy-item">Cat tree</div>
+      <div class="buy-item">New cat dishes</div>
+    </div>
+  </div>
+
+  <div class="buy-section">
+    <div class="buy-category">Kitchen</div>
+    <div class="buy-items">
+      <div class="buy-item">Drawer knife block</div>
+      <div class="buy-item">Wooden utensils</div>
+      <div class="buy-item">Espresso machine</div>
+      <div class="buy-item">Mixing bowls</div>
+      <div class="buy-item">New eating utensils</div>
+      <div class="buy-item">Blender</div>
+    </div>
+  </div>
+
+  <div class="buy-section">
+    <div class="buy-category">Bedroom</div>
+    <div class="buy-items">
+      <div class="buy-item">New bedding</div>
+      <div class="buy-item">Bedroom art</div>
+      <div class="buy-item">New pillows</div>
+      <div class="buy-item">Mattress topper</div>
+      <div class="buy-item">New quilt</div>
+      <div class="buy-item">Decorative pillows</div>
+    </div>
+  </div>
+
+  <div class="buy-section">
+    <div class="buy-category">Wardrobe</div>
+    <div class="buy-items">
+      <div class="buy-item">Shorts</div>
+      <div class="buy-item">Underwear</div>
+      <div class="buy-item">Sports bras</div>
+      <div class="buy-item">Bras</div>
+      <div class="buy-item">Summer pants</div>
+      <div class="buy-item">Dress</div>
+      <div class="buy-item">Sweaters</div>
+      <div class="buy-item">Loafers</div>
+      <div class="buy-item">Dress shoes</div>
+      <div class="buy-item">Black jeans</div>
+      <div class="buy-item">Blue jeans</div>
+      <div class="buy-item">Button-up shirts</div>
+      <div class="buy-item">Watches</div>
+      <div class="buy-item">Rings</div>
+    </div>
+  </div>
+
+  <div class="buy-section">
+    <div class="buy-category">Appearance</div>
+    <div class="buy-items">
+      <div class="buy-item">Latisse</div>
+      <div class="buy-item">Facial series — skin texture</div>
+      <div class="buy-item">Eyebrow appointments</div>
+      <div class="buy-item">Tattoo cover research</div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
