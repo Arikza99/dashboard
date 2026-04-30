@@ -440,6 +440,21 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
 .m-st{font-size:9px;padding:1px 7px;border-radius:3px;border:1px solid var(--bdr);color:var(--soft);white-space:nowrap}
 .m-st.done{color:var(--creative);border-color:rgba(61,122,82,.4)}
 .m-st.progress{color:var(--deadline);border-color:rgba(196,125,14,.4)}
+.movie-day{background:var(--surf);border:1px solid var(--bdr);border-radius:5px;padding:14px 16px;margin-bottom:10px}
+.movie-day-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;cursor:pointer}
+.movie-day-name{font-size:13px;font-weight:500;color:var(--txt)}
+.movie-day-genre{font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;border-radius:3px;font-weight:500}
+.movie-entry{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--bdr)}
+.movie-entry:last-child{border-bottom:none}
+.movie-entry.watched .movie-title{text-decoration:line-through;color:var(--dim)}
+.movie-ck{width:13px;height:13px;border:1.5px solid var(--bdr2);border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:8px;color:transparent;cursor:pointer}
+.movie-entry.watched .movie-ck{background:var(--txt);border-color:var(--txt);color:#fff}
+.movie-title{flex:1;font-size:12px;cursor:pointer}
+.movie-year{font-size:10px;color:var(--dim);flex-shrink:0}
+.movie-rating{font-size:10px;color:var(--deadline);flex-shrink:0}
+.movie-del{font-size:11px;color:var(--dim);cursor:pointer;opacity:0;transition:opacity .1s;padding:0 3px}
+.movie-entry:hover .movie-del{opacity:1}
+.tonight-badge{font-size:10px;padding:2px 8px;border-radius:3px;background:var(--deadline);color:#fff;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -476,6 +491,7 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
     <div class="ni" onclick="nav('shopping',this)"><div class="nd"></div>Shopping</div>
     <div class="nl">Growth</div>
     <div class="ni" onclick="nav('fitness',this)"><div class="nd"></div>Fitness & Meals</div>
+    <div class="ni" onclick="nav('movies',this)"><div class="nd"></div>Movie Night</div>
     <div class="ni" onclick="nav('finance',this)"><div class="nd"></div>Finance</div>
     <div class="ni" onclick="nav('tracker',this)"><div class="nd"></div>Media Tracker</div>
     <div class="ni" onclick="nav('curriculum',this)"><div class="nd"></div>Curriculum</div>
@@ -1206,6 +1222,44 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
   <div class="tc" id="tt-week">
     <div id="ttWeekSummary"><div class="empty">No sessions this week yet.</div></div>
   </div>
+</div>
+
+<!-- ══════ MOVIE NIGHT ══════ -->
+<div class="page" id="p-movies">
+  <div class="ph"><div class="pl">Growth</div><div class="pt">Movie Night</div><div class="psub">One night, one genre. Your watchlist organized by day.</div></div>
+
+  <!-- Tonight banner -->
+  <div class="card" style="margin-bottom:16px;display:flex;align-items:center;gap:12px">
+    <div style="font-size:22px" id="mnTonightEmoji">🎬</div>
+    <div>
+      <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:2px">Tonight</div>
+      <div style="font-size:14px;font-weight:500" id="mnTonightLabel">—</div>
+      <div style="font-size:11px;color:var(--soft)" id="mnTonightNext"></div>
+    </div>
+  </div>
+
+  <!-- Add to watchlist -->
+  <div class="card sec">
+    <div class="slbl" style="margin-bottom:10px"><span>Add to watchlist</span></div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap">
+      <input type="text" id="mnTitle" placeholder="Film title" style="flex:2;min-width:140px;padding:7px 9px">
+      <input type="text" id="mnYear" placeholder="Year" style="width:70px;flex:none;padding:7px 9px">
+      <select id="mnGenre" style="padding:7px 9px;font-size:12px">
+        <option value="mystery">Monday — Mystery</option>
+        <option value="thriller">Tuesday — Thriller</option>
+        <option value="western">Wednesday — Western</option>
+        <option value="throwback">Thursday — Throwback</option>
+        <option value="romance">Friday — Romance</option>
+        <option value="scifi">Saturday — Sci-Fi</option>
+        <option value="documentary">Sunday — Documentary</option>
+      </select>
+      <input type="text" id="mnNotes" placeholder="Notes (director, why you want to see it...)" style="flex:2;min-width:140px;padding:7px 9px">
+      <button class="btn bd" onclick="addMovie()">+ Add</button>
+    </div>
+  </div>
+
+  <!-- Watchlist by day -->
+  <div id="mnWatchlist"></div>
 </div>
 
 </main>
@@ -2676,6 +2730,7 @@ function collectAllData() {
   data.workNoteArchive = { main: workNoteArchive['main'] ? workNoteArchive['main'].map(n=>({...n})) : [] };
   data['workNotes_main'] = document.getElementById('wk-main-notes') ? document.getElementById('wk-main-notes').value : '';
   data.workTasks = { main: Array.from(document.querySelectorAll('#wk-main-list .ov-item')).map(el => ({ text: el.querySelector('.ov-txt') ? el.querySelector('.ov-txt').innerHTML : '', done: el.classList.contains('done') })) };
+  data.movieWatchlist = JSON.parse(JSON.stringify(movieWatchlist));
   data.weekBlocks = JSON.parse(JSON.stringify(weekBlocks));
   data.weekRecurring = JSON.parse(JSON.stringify(weekRecurring));
   data.typicalWeek = typicalWeek ? JSON.parse(JSON.stringify(typicalWeek)) : null;
@@ -2842,6 +2897,11 @@ function restoreAllData(data) {
     data.ttSessions.forEach(s => ttSessions.push(s));
     renderTTSessions();
     updateTTToday();
+  }
+  if (data.movieWatchlist) {
+    Object.keys(movieWatchlist).forEach(g => { if (data.movieWatchlist[g]) movieWatchlist[g] = data.movieWatchlist[g]; });
+    renderMNWatchlist();
+    renderMNTonight();
   }
   // restore weekly view
   if (data.weekBlocks) { WEEK_DAYS.forEach(d => { if (data.weekBlocks[d]) weekBlocks[d] = data.weekBlocks[d]; }); }
@@ -3510,6 +3570,125 @@ function renderTTWeekSummary() {
     </div>
     <div style="font-size:10px;color:var(--dim)">Week starting ${MONTHS[weekStart.getMonth()]} ${weekStart.getDate()}</div>`;
 }
+
+// ── MOVIE NIGHT ───────────────────────────────────
+const MN_DAYS = [
+  { day: 'Monday',    genre: 'mystery',     label: 'Mystery',     emoji: '🔍', color: '#503c8c' },
+  { day: 'Tuesday',   genre: 'thriller',    label: 'Thriller',    emoji: '🔪', color: '#b83232' },
+  { day: 'Wednesday', genre: 'western',     label: 'Western',     emoji: '🤠', color: '#7a5e32' },
+  { day: 'Thursday',  genre: 'throwback',   label: 'Throwback',   emoji: '📽', color: '#2a6480' },
+  { day: 'Friday',    genre: 'romance',     label: 'Romance',     emoji: '🌹', color: '#b4508c' },
+  { day: 'Saturday',  genre: 'scifi',       label: 'Sci-Fi',      emoji: '🚀', color: '#4a78b4' },
+  { day: 'Sunday',    genre: 'documentary', label: 'Documentary', emoji: '🎞', color: '#3d7a52' }
+];
+const movieWatchlist = { mystery:[], thriller:[], western:[], throwback:[], romance:[], scifi:[], documentary:[] };
+
+function mnTonight() {
+  const dayIdx = (new Date().getDay() + 6) % 7; // 0=Mon
+  return MN_DAYS[dayIdx];
+}
+
+function renderMNTonight() {
+  const tonight = mnTonight();
+  const nextIdx = (MN_DAYS.indexOf(tonight) + 1) % 7;
+  const next = MN_DAYS[nextIdx];
+  document.getElementById('mnTonightEmoji').textContent = tonight.emoji;
+  document.getElementById('mnTonightLabel').textContent = tonight.day + ' — ' + tonight.label + ' Night';
+  // find next unwatched film
+  const unwatched = (movieWatchlist[tonight.genre]||[]).filter(m => !m.watched);
+  document.getElementById('mnTonightNext').textContent = unwatched.length
+    ? unwatched.length + ' film' + (unwatched.length > 1 ? 's' : '') + ' on your ' + tonight.label + ' watchlist'
+    : 'Nothing on the ' + tonight.label + ' watchlist yet — add some below';
+}
+
+function addMovie() {
+  const title = document.getElementById('mnTitle').value.trim(); if (!title) return;
+  const year = document.getElementById('mnYear').value.trim();
+  const genre = document.getElementById('mnGenre').value;
+  const notes = document.getElementById('mnNotes').value.trim();
+  if (!movieWatchlist[genre]) movieWatchlist[genre] = [];
+  movieWatchlist[genre].push({ id: Date.now().toString(), title, year, notes, watched: false, rating: '' });
+  ['mnTitle','mnYear','mnNotes'].forEach(id => document.getElementById(id).value = '');
+  renderMNWatchlist();
+  renderMNTonight();
+  scheduleAutoSave();
+}
+
+function renderMNWatchlist() {
+  const el = document.getElementById('mnWatchlist');
+  const tonight = mnTonight();
+  el.innerHTML = MN_DAYS.map(d => {
+    const films = movieWatchlist[d.genre] || [];
+    const unwatched = films.filter(f => !f.watched);
+    const watched = films.filter(f => f.watched);
+    const isTonight = d.genre === tonight.genre;
+    return `<div class="movie-day">
+      <div class="movie-day-header" onclick="document.getElementById('mnSection-${d.genre}').style.display=document.getElementById('mnSection-${d.genre}').style.display==='none'?'block':'none'">
+        <span style="font-size:18px">${d.emoji}</span>
+        <span class="movie-day-name">${d.day}</span>
+        <span class="movie-day-genre" style="background:${d.color}22;color:${d.color}">${d.label}</span>
+        ${isTonight ? '<span class="tonight-badge">Tonight</span>' : ''}
+        <span style="font-size:10px;color:var(--soft);margin-left:auto">${unwatched.length} to watch · ${watched.length} watched</span>
+      </div>
+      <div id="mnSection-${d.genre}">
+        ${!films.length ? `<div class="empty">Nothing on the ${d.label} watchlist yet.</div>` : ''}
+        ${unwatched.map(f => mnFilmRow(f, d.genre)).join('')}
+        ${watched.length ? `<div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:10px 0 6px">Watched</div>${watched.map(f => mnFilmRow(f, d.genre)).join('')}` : ''}
+        <div style="margin-top:10px;display:flex;gap:6px">
+          <input type="text" id="mn-quick-${d.genre}" placeholder="Quick add title..." style="flex:1;padding:5px 8px;font-size:11px" onkeydown="if(event.key==='Enter')quickAddMovie('${d.genre}')">
+          <button class="btn bsm" onclick="quickAddMovie('${d.genre}')">+ Add</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function mnFilmRow(f, genre) {
+  return `<div class="movie-entry ${f.watched?'watched':''}">
+    <div class="movie-ck" onclick="toggleWatched('${genre}','${f.id}')">✓</div>
+    <div class="movie-title" onclick="toggleWatched('${genre}','${f.id}')">${f.title}</div>
+    ${f.year ? `<div class="movie-year">${f.year}</div>` : ''}
+    ${f.watched ? `<div style="display:flex;gap:3px">${[1,2,3,4,5].map(n=>`<span style="cursor:pointer;color:${(parseInt(f.rating)||0)>=n?'var(--deadline)':'var(--bdr2)'}" onclick="rateMovie('${genre}','${f.id}',${n})">★</span>`).join('')}</div>` : ''}
+    ${f.notes ? `<div style="font-size:10px;color:var(--soft);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${f.notes}">${f.notes}</div>` : ''}
+    <div class="movie-del" onclick="deleteMovie('${genre}','${f.id}')">✕</div>
+  </div>`;
+}
+
+function toggleWatched(genre, id) {
+  const film = (movieWatchlist[genre]||[]).find(f => f.id === id);
+  if (film) { film.watched = !film.watched; }
+  renderMNWatchlist();
+  renderMNTonight();
+  scheduleAutoSave();
+}
+
+function rateMovie(genre, id, rating) {
+  const film = (movieWatchlist[genre]||[]).find(f => f.id === id);
+  if (film) film.rating = rating;
+  renderMNWatchlist();
+  scheduleAutoSave();
+}
+
+function deleteMovie(genre, id) {
+  if (!movieWatchlist[genre]) return;
+  movieWatchlist[genre] = movieWatchlist[genre].filter(f => f.id !== id);
+  renderMNWatchlist();
+  renderMNTonight();
+  scheduleAutoSave();
+}
+
+function quickAddMovie(genre) {
+  const input = document.getElementById('mn-quick-'+genre);
+  if (!input || !input.value.trim()) return;
+  movieWatchlist[genre].push({ id: Date.now().toString(), title: input.value.trim(), year: '', notes: '', watched: false, rating: '' });
+  input.value = '';
+  renderMNWatchlist();
+  renderMNTonight();
+  scheduleAutoSave();
+}
+
+renderMNWatchlist();
+renderMNTonight();
 
 window.addEventListener('load', () => { setTimeout(sbLoad, 500); });
 </script>
