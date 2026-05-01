@@ -845,6 +845,7 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
   <div class="tabs">
     <div class="tab active" onclick="stab('tr','books',this)">Books</div>
     <div class="tab" onclick="stab('tr','films',this)">Films</div>
+    <div class="tab" onclick="stab('tr','tbr',this)">TBR / Up Next</div>
   </div>
   <div class="tc active" id="tr-books">
     <div class="card" style="margin-bottom:10px"><div style="display:flex;gap:7px"><input type="text" id="bTi" placeholder="Title" style="flex:2;padding:7px 9px"><input type="text" id="bAu" placeholder="Author" style="flex:1;padding:7px 9px"><select id="bSt"><option value="progress">reading</option><option value="done">finished</option><option value="want">want to read</option></select><button class="btn" onclick="addMedia('books')">+ Add</button></div></div>
@@ -853,6 +854,32 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
   <div class="tc" id="tr-films">
     <div class="card" style="margin-bottom:10px"><div style="display:flex;gap:7px"><input type="text" id="fTi" placeholder="Film title" style="flex:2;padding:7px 9px"><input type="text" id="fDi" placeholder="Director" style="flex:1;padding:7px 9px"><select id="fSt"><option value="done">watched</option><option value="want">want to watch</option><option value="progress">watching</option></select><button class="btn" onclick="addMedia('films')">+ Add</button></div></div>
     <div id="tr-films-list"><div class="empty">No films yet.</div></div>
+  </div>
+  <div class="tc" id="tr-tbr">
+    <div class="card" style="margin-bottom:10px">
+      <div style="display:flex;gap:7px;flex-wrap:wrap">
+        <input type="text" id="tbrTi" placeholder="Title" style="flex:2;min-width:120px;padding:7px 9px">
+        <input type="text" id="tbrBy" placeholder="Author / Director" style="flex:1;min-width:100px;padding:7px 9px">
+        <select id="tbrType" style="padding:7px 9px">
+          <option value="book">Book</option>
+          <option value="film">Film</option>
+          <option value="series">Series</option>
+          <option value="article">Article / Essay</option>
+          <option value="other">Other</option>
+        </select>
+        <input type="text" id="tbrNote" placeholder="Why you want it (optional)" style="flex:2;min-width:120px;padding:7px 9px">
+        <button class="btn bd" onclick="addTbr()">+ Add</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:7px;margin-bottom:12px;align-items:center;flex-wrap:wrap">
+      <span style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft)">Filter:</span>
+      <button class="btn bsm tbr-filter-btn active" data-filter="all" onclick="setTbrFilter('all',this)">All</button>
+      <button class="btn bsm tbr-filter-btn" data-filter="book" onclick="setTbrFilter('book',this)">Books</button>
+      <button class="btn bsm tbr-filter-btn" data-filter="film" onclick="setTbrFilter('film',this)">Films</button>
+      <button class="btn bsm tbr-filter-btn" data-filter="series" onclick="setTbrFilter('series',this)">Series</button>
+      <button class="btn bsm tbr-filter-btn" data-filter="article" onclick="setTbrFilter('article',this)">Articles</button>
+    </div>
+    <div id="tr-tbr-list"><div class="empty">Nothing queued yet. Add what you want to read or watch next.</div></div>
   </div>
 </div>
 
@@ -1240,7 +1267,7 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
         <option value="thriller">Tuesday — Thriller</option>
         <option value="western">Wednesday — Western</option>
         <option value="throwback">Thursday — Throwback</option>
-        <option value="romance">Friday — Romance</option>
+        <option value="fantasy">Friday — Fantasy</option>
         <option value="scifi">Saturday — Sci-Fi</option>
         <option value="documentary">Sunday — Documentary</option>
       </select>
@@ -2631,6 +2658,77 @@ function deleteMedia(type, idx) {
 }
 function addMedia(type){const f=mF[type],t=document.getElementById(f.t).value.trim(),s=document.getElementById(f.s).value.trim(),st=document.getElementById(f.st).value;if(!t)return;media[type].unshift({t,s,st});document.getElementById(f.t).value='';document.getElementById(f.s).value='';rendMedia(type);}
 
+// ── TBR / UP NEXT ─────────────────────────────────
+const tbrData = [];
+let tbrFilter = 'all';
+const tbrIco = { book:'📚', film:'🎬', series:'📺', article:'📄', other:'📌' };
+const tbrTypeLabel = { book:'Book', film:'Film', series:'Series', article:'Article', other:'Other' };
+
+function addTbr() {
+  const ti = document.getElementById('tbrTi').value.trim();
+  if (!ti) return;
+  const by = document.getElementById('tbrBy').value.trim();
+  const type = document.getElementById('tbrType').value;
+  const note = document.getElementById('tbrNote').value.trim();
+  tbrData.unshift({ id: Date.now().toString(), ti, by, type, note, upNext: false });
+  ['tbrTi','tbrBy','tbrNote'].forEach(id => document.getElementById(id).value = '');
+  rendTbr();
+  scheduleAutoSave();
+}
+
+function toggleTbrUpNext(id) {
+  const item = tbrData.find(t => t.id === id);
+  if (item) item.upNext = !item.upNext;
+  rendTbr();
+  scheduleAutoSave();
+}
+
+function deleteTbr(id) {
+  const idx = tbrData.findIndex(t => t.id === id);
+  if (idx !== -1) tbrData.splice(idx, 1);
+  rendTbr();
+  scheduleAutoSave();
+}
+
+function setTbrFilter(filter, btn) {
+  tbrFilter = filter;
+  document.querySelectorAll('.tbr-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  rendTbr();
+}
+
+function rendTbr() {
+  const el = document.getElementById('tr-tbr-list');
+  let items = tbrFilter === 'all' ? tbrData : tbrData.filter(t => t.type === tbrFilter);
+  if (!items.length) { el.innerHTML = '<div class="empty">Nothing here yet.</div>'; return; }
+  const upNext = items.filter(t => t.upNext);
+  const queue = items.filter(t => !t.upNext);
+  let html = '';
+  if (upNext.length) {
+    html += `<div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--deadline);margin-bottom:7px;margin-top:2px">Up next</div>`;
+    html += upNext.map(t => tbrRow(t)).join('');
+    if (queue.length) html += `<div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:14px 0 7px">Queue</div>`;
+  }
+  html += queue.map(t => tbrRow(t)).join('');
+  el.innerHTML = html;
+}
+
+function tbrRow(t) {
+  return `<div class="m-item" style="${t.upNext ? 'border-left:2px solid var(--deadline)' : ''}">
+    <div class="m-ico">${tbrIco[t.type]||'📌'}</div>
+    <div class="m-body">
+      <div class="m-title">${t.ti}</div>
+      <div class="m-meta">${[t.by, tbrTypeLabel[t.type]].filter(Boolean).join(' · ')}${t.note ? ' · <span style="color:var(--dim)">' + t.note + '</span>' : ''}</div>
+    </div>
+    <div style="display:flex;gap:5px;align-items:center;flex-shrink:0">
+      <div class="btn bsm" onclick="toggleTbrUpNext('${t.id}')" style="${t.upNext ? 'color:var(--deadline);border-color:rgba(196,125,14,.4)' : ''}">${t.upNext ? '★ Up next' : '☆ Up next'}</div>
+      <div class="ov-del" style="opacity:.5;font-size:11px;cursor:pointer;padding:0 4px" onclick="deleteTbr('${t.id}')">✕</div>
+    </div>
+  </div>`;
+}
+
+rendTbr();
+
 // ── CURRICULUM ────────────────────────────────────
 let curCalOffset = 0;
 function buildCurCal() {
@@ -3049,6 +3147,7 @@ function collectAllData() {
   data['workNotes_main'] = document.getElementById('wk-main-notes') ? document.getElementById('wk-main-notes').value : '';
   data.workTasks = { main: Array.from(document.querySelectorAll('#wk-main-list .ov-item')).map(el => ({ text: el.querySelector('.ov-txt') ? el.querySelector('.ov-txt').innerHTML : '', done: el.classList.contains('done') })) };
   data.movieWatchlist = JSON.parse(JSON.stringify(movieWatchlist));
+  data.tbrData = tbrData.map(t => ({...t}));
   data.weekPlans = { ...weekPlans };
   data.weekRecurring = JSON.parse(JSON.stringify(weekRecurring));
   data.typicalWeek = typicalWeek ? JSON.parse(JSON.stringify(typicalWeek)) : null;
@@ -3120,6 +3219,7 @@ function restoreAllData(data) {
     updFinSum();
   }
   if (data.media) { Object.assign(media, data.media); ['books','films'].forEach(t => rendMedia(t)); }
+  if (data.tbrData && Array.isArray(data.tbrData)) { tbrData.length = 0; data.tbrData.forEach(t => tbrData.push(t)); rendTbr(); }
   // restore main job notes and tasks
   const mainEl = document.getElementById('wk-main-notes');
   if (mainEl && data['workNotes_main'] !== undefined) mainEl.value = data['workNotes_main'];
@@ -3895,11 +3995,11 @@ const MN_DAYS = [
   { day: 'Tuesday',   genre: 'thriller',    label: 'Thriller',    emoji: '🔪', color: '#b83232' },
   { day: 'Wednesday', genre: 'western',     label: 'Western',     emoji: '🤠', color: '#7a5e32' },
   { day: 'Thursday',  genre: 'throwback',   label: 'Throwback',   emoji: '📽', color: '#2a6480' },
-  { day: 'Friday',    genre: 'romance',     label: 'Romance',     emoji: '🌹', color: '#b4508c' },
+  { day: 'Friday',    genre: 'fantasy',     label: 'Fantasy',     emoji: '🧙', color: '#b4508c' },
   { day: 'Saturday',  genre: 'scifi',       label: 'Sci-Fi',      emoji: '🚀', color: '#4a78b4' },
   { day: 'Sunday',    genre: 'documentary', label: 'Documentary', emoji: '🎞', color: '#3d7a52' }
 ];
-const movieWatchlist = { mystery:[], thriller:[], western:[], throwback:[], romance:[], scifi:[], documentary:[] };
+const movieWatchlist = { mystery:[], thriller:[], western:[], throwback:[], fantasy:[], scifi:[], documentary:[] };
 
 function mnTonight() {
   const dayIdx = (new Date().getDay() + 6) % 7; // 0=Mon
