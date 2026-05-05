@@ -1265,10 +1265,10 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
       <select id="mnGenre" style="padding:7px 9px;font-size:12px">
         <option value="mystery">Monday — Mystery</option>
         <option value="thriller">Tuesday — Thriller</option>
-        <option value="western">Wednesday — Western</option>
+        <option value="comedy">Wednesday — Comedy</option>
         <option value="throwback">Thursday — Throwback</option>
         <option value="fantasy">Friday — Fantasy</option>
-        <option value="scifi">Saturday — Sci-Fi</option>
+        <option value="romance">Saturday — Romance</option>
         <option value="documentary">Sunday — Documentary</option>
       </select>
       <input type="text" id="mnNotes" placeholder="Notes (director, why you want to see it...)" style="flex:2;min-width:140px;padding:7px 9px">
@@ -3993,13 +3993,13 @@ function renderTTWeekSummary() {
 const MN_DAYS = [
   { day: 'Monday',    genre: 'mystery',     label: 'Mystery',     emoji: '🔍', color: '#503c8c' },
   { day: 'Tuesday',   genre: 'thriller',    label: 'Thriller',    emoji: '🔪', color: '#b83232' },
-  { day: 'Wednesday', genre: 'western',     label: 'Western',     emoji: '🤠', color: '#7a5e32' },
+  { day: 'Wednesday', genre: 'comedy',      label: 'Comedy',      emoji: '😂', color: '#7a5e32' },
   { day: 'Thursday',  genre: 'throwback',   label: 'Throwback',   emoji: '📽', color: '#2a6480' },
   { day: 'Friday',    genre: 'fantasy',     label: 'Fantasy',     emoji: '🧙', color: '#b4508c' },
-  { day: 'Saturday',  genre: 'scifi',       label: 'Sci-Fi',      emoji: '🚀', color: '#4a78b4' },
+  { day: 'Saturday',  genre: 'romance',     label: 'Romance',     emoji: '🌹', color: '#4a78b4' },
   { day: 'Sunday',    genre: 'documentary', label: 'Documentary', emoji: '🎞', color: '#3d7a52' }
 ];
-const movieWatchlist = { mystery:[], thriller:[], western:[], throwback:[], fantasy:[], scifi:[], documentary:[] };
+const movieWatchlist = { mystery:[], thriller:[], comedy:[], throwback:[], fantasy:[], romance:[], documentary:[] };
 
 function mnTonight() {
   const dayIdx = (new Date().getDay() + 6) % 7; // 0=Mon
