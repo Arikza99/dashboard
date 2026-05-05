@@ -1264,7 +1264,7 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
       <input type="text" id="mnYear" placeholder="Year" style="width:70px;flex:none;padding:7px 9px">
       <select id="mnGenre" style="padding:7px 9px;font-size:12px">
         <option value="mystery">Monday — Mystery</option>
-        <option value="thriller">Tuesday — Thriller</option>
+        <option value="crime">Tuesday — Crime</option>
         <option value="comedy">Wednesday — Comedy</option>
         <option value="throwback">Thursday — Throwback</option>
         <option value="drama">Friday — Drama</option>
@@ -3992,14 +3992,14 @@ function renderTTWeekSummary() {
 // ── MOVIE NIGHT ───────────────────────────────────
 const MN_DAYS = [
   { day: 'Monday',    genre: 'mystery',     label: 'Mystery',     emoji: '🔍', color: '#503c8c' },
-  { day: 'Tuesday',   genre: 'thriller',    label: 'Thriller',    emoji: '🔪', color: '#b83232' },
+  { day: 'Tuesday',   genre: 'crime',       label: 'Crime',       emoji: '🔍', color: '#b83232' },
   { day: 'Wednesday', genre: 'comedy',      label: 'Comedy',      emoji: '😂', color: '#7a5e32' },
   { day: 'Thursday',  genre: 'throwback',   label: 'Throwback',   emoji: '📽', color: '#2a6480' },
   { day: 'Friday',    genre: 'drama',       label: 'Drama',       emoji: '🎭', color: '#b4508c' },
   { day: 'Saturday',  genre: 'romance',     label: 'Romance',     emoji: '🌹', color: '#4a78b4' },
   { day: 'Sunday',    genre: 'documentary', label: 'Documentary', emoji: '🎞', color: '#3d7a52' }
 ];
-const movieWatchlist = { mystery:[], thriller:[], comedy:[], throwback:[], drama:[], romance:[], documentary:[] };
+const movieWatchlist = { mystery:[], crime:[], comedy:[], throwback:[], drama:[], romance:[], documentary:[] };
 
 function mnTonight() {
   const dayIdx = (new Date().getDay() + 6) % 7; // 0=Mon
