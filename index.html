@@ -1267,7 +1267,7 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
         <option value="thriller">Tuesday — Thriller</option>
         <option value="comedy">Wednesday — Comedy</option>
         <option value="throwback">Thursday — Throwback</option>
-        <option value="fantasy">Friday — Fantasy</option>
+        <option value="drama">Friday — Drama</option>
         <option value="romance">Saturday — Romance</option>
         <option value="documentary">Sunday — Documentary</option>
       </select>
@@ -3995,11 +3995,11 @@ const MN_DAYS = [
   { day: 'Tuesday',   genre: 'thriller',    label: 'Thriller',    emoji: '🔪', color: '#b83232' },
   { day: 'Wednesday', genre: 'comedy',      label: 'Comedy',      emoji: '😂', color: '#7a5e32' },
   { day: 'Thursday',  genre: 'throwback',   label: 'Throwback',   emoji: '📽', color: '#2a6480' },
-  { day: 'Friday',    genre: 'fantasy',     label: 'Fantasy',     emoji: '🧙', color: '#b4508c' },
+  { day: 'Friday',    genre: 'drama',       label: 'Drama',       emoji: '🎭', color: '#b4508c' },
   { day: 'Saturday',  genre: 'romance',     label: 'Romance',     emoji: '🌹', color: '#4a78b4' },
   { day: 'Sunday',    genre: 'documentary', label: 'Documentary', emoji: '🎞', color: '#3d7a52' }
 ];
-const movieWatchlist = { mystery:[], thriller:[], comedy:[], throwback:[], fantasy:[], romance:[], documentary:[] };
+const movieWatchlist = { mystery:[], thriller:[], comedy:[], throwback:[], drama:[], romance:[], documentary:[] };
 
 function mnTonight() {
   const dayIdx = (new Date().getDay() + 6) % 7; // 0=Mon
