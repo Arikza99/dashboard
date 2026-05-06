@@ -496,6 +496,7 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
     <div class="ni" onclick="nav('movies',this)"><div class="nd"></div>Movie Night</div>
     <div class="ni" onclick="nav('finance',this)"><div class="nd"></div>Finance</div>
     <div class="ni" onclick="nav('tracker',this)"><div class="nd"></div>Media Tracker</div>
+    <div class="ni" onclick="nav('flashcards',this)"><div class="nd"></div>Flashcards</div>
     <div class="ni" onclick="nav('curriculum',this)"><div class="nd"></div>Curriculum</div>
   </div>
   <div class="drive-bar">
@@ -528,7 +529,25 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
   <!-- DAILY -->
   <div class="htc active" id="ht-daily">
 
-    <!-- Brain dump -->
+    <!-- Morning briefing -->
+    <div class="sec" id="morningBriefing" style="margin-bottom:14px">
+      <div class="slbl"><span>Today's briefing</span><span id="briefingDate" style="font-size:10px;color:var(--soft);font-weight:400"></span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px" id="briefingGrid">
+        <div class="card" style="padding:12px 14px">
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--urgent);margin-bottom:7px">Urgent tasks</div>
+          <div id="brief-urgent"><div style="font-size:11px;color:var(--dim)">Nothing urgent.</div></div>
+        </div>
+        <div class="card" style="padding:12px 14px">
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--deadline);margin-bottom:7px">Work tasks &amp; deadlines</div>
+          <div id="brief-work"><div style="font-size:11px;color:var(--dim)">No work tasks.</div></div>
+        </div>
+        <div class="card" style="padding:12px 14px">
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--soft);margin-bottom:7px">Overflow</div>
+          <div id="brief-overflow"><div style="font-size:11px;color:var(--dim)">Nothing in overflow.</div></div>
+        </div>
+      </div>
+    </div>
+
     <div class="sec">
       <div class="slbl">
         <span>Brain dump — <span id="todayDateLabel" style="color:var(--soft);font-weight:400"></span></span>
@@ -540,7 +559,18 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
       <div class="brain-dump">
         <textarea id="brainDump" placeholder="Everything on your mind. Clear it out here before you start working."></textarea>
       </div>
-      <div id="brainDumpArchive" style="margin-top:10px"></div>
+      <!-- Brain dump folder -->
+      <div style="margin-top:10px">
+        <div onclick="toggleBdFolder()" style="display:flex;align-items:center;gap:7px;cursor:pointer;padding:7px 10px;border:1px solid var(--bdr);border-radius:5px;background:var(--surf);user-select:none" id="bdFolderHeader">
+          <span id="bdFolderArrow" style="font-size:10px;color:var(--dim);transition:transform .2s">▶</span>
+          <span style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--soft)">📁 Saved brain dumps</span>
+          <span id="bdFolderCount" style="font-size:10px;color:var(--dim);margin-left:auto">0 notes</span>
+        </div>
+        <div id="bdFolder" style="display:none;border:1px solid var(--bdr);border-top:none;border-radius:0 0 5px 5px;padding:8px 10px;background:var(--surf)">
+          <div id="brainDumpArchive"></div>
+          <div id="bdFolderEmpty" style="font-size:11px;color:var(--dim);padding:6px 0">No saved dumps yet. Write something and hit "Save as note".</div>
+        </div>
+      </div>
     </div>
 
     <!-- Sprint board -->
@@ -843,47 +873,167 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
 <div class="page" id="p-tracker">
   <div class="ph"><div class="pl">Growth</div><div class="pt">Media Tracker</div></div>
   <div class="tabs">
-    <div class="tab active" onclick="stab('tr','books',this)">Books</div>
-    <div class="tab" onclick="stab('tr','films',this)">Films</div>
-    <div class="tab" onclick="stab('tr','tbr',this)">TBR / Up Next</div>
+    <div class="tab active" onclick="stab('tr','books',this)">Reading Journal</div>
+    <div class="tab" onclick="stab('tr','articles',this)">Articles &amp; Essays</div>
+    <div class="tab" onclick="stab('tr','podcasts',this)">Podcasts</div>
   </div>
+
+  <!-- READING JOURNAL -->
   <div class="tc active" id="tr-books">
-    <div class="card" style="margin-bottom:10px"><div style="display:flex;gap:7px"><input type="text" id="bTi" placeholder="Title" style="flex:2;padding:7px 9px"><input type="text" id="bAu" placeholder="Author" style="flex:1;padding:7px 9px"><select id="bSt"><option value="progress">reading</option><option value="done">finished</option><option value="want">want to read</option></select><button class="btn" onclick="addMedia('books')">+ Add</button></div></div>
-    <div id="tr-books-list"><div class="empty">No books yet.</div></div>
+    <div class="tabs" style="margin-bottom:12px">
+      <div class="tab active" onclick="stab('rj','current',this)">Currently reading</div>
+      <div class="tab" onclick="stab('rj','finished',this)">Finished</div>
+      <div class="tab" onclick="stab('rj','tbr',this)">To be read</div>
+    </div>
+
+    <!-- Currently reading -->
+    <div class="tc active" id="rj-current">
+      <div class="card" style="margin-bottom:12px">
+        <div style="display:grid;grid-template-columns:2fr 1fr 80px auto;gap:7px;margin-bottom:7px">
+          <input type="text" id="rjTi" placeholder="Title" style="padding:7px 9px">
+          <input type="text" id="rjAu" placeholder="Author" style="padding:7px 9px">
+          <input type="number" id="rjPg" placeholder="Pages" style="padding:7px 9px" min="1">
+          <button class="btn" onclick="addBookCurrent()">+ Add</button>
+        </div>
+      </div>
+      <div id="rj-current-list"><div class="empty">Nothing currently being read.</div></div>
+    </div>
+
+    <!-- Finished -->
+    <div class="tc" id="rj-finished">
+      <div id="rj-finished-list"><div class="empty">No finished books yet.</div></div>
+    </div>
+
+    <!-- TBR -->
+    <div class="tc" id="rj-tbr">
+      <div class="card" style="margin-bottom:12px">
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <input type="text" id="rjTbrTi" placeholder="Title" style="flex:2;min-width:120px;padding:7px 9px">
+          <input type="text" id="rjTbrAu" placeholder="Author" style="flex:1;min-width:100px;padding:7px 9px">
+          <input type="text" id="rjTbrNote" placeholder="Why you want to read it (optional)" style="flex:2;min-width:140px;padding:7px 9px">
+          <button class="btn bd" onclick="addBookTbr()">+ Add</button>
+        </div>
+      </div>
+      <div id="rj-tbr-list"><div class="empty">Nothing on the TBR yet.</div></div>
+    </div>
   </div>
-  <div class="tc" id="tr-films">
-    <div class="card" style="margin-bottom:10px"><div style="display:flex;gap:7px"><input type="text" id="fTi" placeholder="Film title" style="flex:2;padding:7px 9px"><input type="text" id="fDi" placeholder="Director" style="flex:1;padding:7px 9px"><select id="fSt"><option value="done">watched</option><option value="want">want to watch</option><option value="progress">watching</option></select><button class="btn" onclick="addMedia('films')">+ Add</button></div></div>
-    <div id="tr-films-list"><div class="empty">No films yet.</div></div>
-  </div>
-  <div class="tc" id="tr-tbr">
-    <div class="card" style="margin-bottom:10px">
-      <div style="display:flex;gap:7px;flex-wrap:wrap">
-        <input type="text" id="tbrTi" placeholder="Title" style="flex:2;min-width:120px;padding:7px 9px">
-        <input type="text" id="tbrBy" placeholder="Author / Director" style="flex:1;min-width:100px;padding:7px 9px">
-        <select id="tbrType" style="padding:7px 9px">
-          <option value="book">Book</option>
-          <option value="film">Film</option>
-          <option value="series">Series</option>
-          <option value="article">Article / Essay</option>
+
+  <!-- ARTICLES & ESSAYS -->
+  <div class="tc" id="tr-articles">
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:7px;margin-bottom:7px">
+        <input type="text" id="artTi" placeholder="Title" style="padding:7px 9px">
+        <input type="text" id="artBy" placeholder="Author / Publication" style="padding:7px 9px">
+        <select id="artType" style="padding:7px 9px">
+          <option value="article">Article</option>
+          <option value="essay">Essay</option>
+          <option value="video">Video essay</option>
+          <option value="paper">Academic paper</option>
           <option value="other">Other</option>
         </select>
-        <input type="text" id="tbrNote" placeholder="Why you want it (optional)" style="flex:2;min-width:120px;padding:7px 9px">
-        <button class="btn bd" onclick="addTbr()">+ Add</button>
+        <button class="btn" onclick="addArticle()">+ Add</button>
+      </div>
+      <div style="display:flex;gap:7px">
+        <input type="url" id="artUrl" placeholder="URL (optional)" style="flex:2;padding:7px 9px">
+        <select id="artStatus" style="padding:7px 9px">
+          <option value="want">Want to read</option>
+          <option value="progress">In progress</option>
+          <option value="done">Done</option>
+        </select>
       </div>
     </div>
-    <div style="display:flex;gap:7px;margin-bottom:12px;align-items:center;flex-wrap:wrap">
-      <span style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft)">Filter:</span>
-      <button class="btn bsm tbr-filter-btn active" data-filter="all" onclick="setTbrFilter('all',this)">All</button>
-      <button class="btn bsm tbr-filter-btn" data-filter="book" onclick="setTbrFilter('book',this)">Books</button>
-      <button class="btn bsm tbr-filter-btn" data-filter="film" onclick="setTbrFilter('film',this)">Films</button>
-      <button class="btn bsm tbr-filter-btn" data-filter="series" onclick="setTbrFilter('series',this)">Series</button>
-      <button class="btn bsm tbr-filter-btn" data-filter="article" onclick="setTbrFilter('article',this)">Articles</button>
+    <div style="display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap">
+      <button class="btn bsm art-filter active" data-f="all" onclick="setArtFilter('all',this)">All</button>
+      <button class="btn bsm art-filter" data-f="want" onclick="setArtFilter('want',this)">To read</button>
+      <button class="btn bsm art-filter" data-f="progress" onclick="setArtFilter('progress',this)">In progress</button>
+      <button class="btn bsm art-filter" data-f="done" onclick="setArtFilter('done',this)">Done</button>
+      <button class="btn bsm art-filter" data-f="video" onclick="setArtFilter('video',this)">Video essays</button>
     </div>
-    <div id="tr-tbr-list"><div class="empty">Nothing queued yet. Add what you want to read or watch next.</div></div>
+    <div id="tr-articles-list"><div class="empty">No articles saved yet.</div></div>
+  </div>
+
+  <!-- PODCASTS -->
+  <div class="tc" id="tr-podcasts">
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:grid;grid-template-columns:2fr 1fr auto;gap:7px;margin-bottom:7px">
+        <input type="text" id="podShow" placeholder="Show name" style="padding:7px 9px">
+        <input type="text" id="podEp" placeholder="Episode title (optional)" style="padding:7px 9px">
+        <button class="btn" onclick="addPodcast()">+ Add</button>
+      </div>
+      <div style="display:flex;gap:7px">
+        <input type="text" id="podNote" placeholder="Note or takeaway (optional)" style="flex:1;padding:7px 9px">
+        <select id="podStatus" style="padding:7px 9px">
+          <option value="want">Want to listen</option>
+          <option value="progress">Listening</option>
+          <option value="done">Listened</option>
+        </select>
+      </div>
+    </div>
+    <div id="tr-podcasts-list"><div class="empty">No podcasts saved yet.</div></div>
+  </div>
+</div>
+
+<!-- ══════ FLASHCARDS ══════ -->
+<div class="page" id="p-flashcards">
+  <div class="ph"><div class="pl">Growth</div><div class="pt">Flashcards</div><div class="psub">Words, facts, geography, history — anything worth keeping. Quiz yourself anytime.</div></div>
+  <div class="tabs">
+    <div class="tab active" onclick="stab('fc','deck',this)">My decks</div>
+    <div class="tab" onclick="stab('fc','quiz',this)">Quiz me</div>
+  </div>
+
+  <!-- DECKS -->
+  <div class="tc active" id="fc-deck">
+    <div class="card" style="margin-bottom:14px">
+      <div style="display:flex;gap:7px;margin-bottom:8px;flex-wrap:wrap">
+        <input type="text" id="fcFront" placeholder="Front — word, question, place..." style="flex:2;min-width:140px;padding:7px 9px">
+        <input type="text" id="fcBack" placeholder="Back — definition, answer..." style="flex:2;min-width:140px;padding:7px 9px">
+        <select id="fcDeck" style="padding:7px 9px;min-width:130px">
+          <option value="words">Words</option>
+          <option value="facts">Facts</option>
+          <option value="geography">Geography</option>
+          <option value="history">History</option>
+          <option value="other">Other</option>
+        </select>
+        <button class="btn bd" onclick="addFlashcard()">+ Add card</button>
+      </div>
+      <div style="display:flex;gap:6px">
+        <input type="text" id="fcNewDeck" placeholder="Or create a new deck..." style="flex:1;padding:7px 9px">
+        <button class="btn" onclick="addFcDeck()">+ Create deck</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap" id="fcDeckFilters">
+      <button class="btn bsm fc-deck-filter active" data-deck="all" onclick="setFcFilter('all',this)">All</button>
+      <button class="btn bsm fc-deck-filter" data-deck="words" onclick="setFcFilter('words',this)">Words</button>
+      <button class="btn bsm fc-deck-filter" data-deck="facts" onclick="setFcFilter('facts',this)">Facts</button>
+      <button class="btn bsm fc-deck-filter" data-deck="geography" onclick="setFcFilter('geography',this)">Geography</button>
+      <button class="btn bsm fc-deck-filter" data-deck="history" onclick="setFcFilter('history',this)">History</button>
+      <button class="btn bsm fc-deck-filter" data-deck="other" onclick="setFcFilter('other',this)">Other</button>
+    </div>
+    <div id="fc-card-list"><div class="empty">No flashcards yet. Add one above.</div></div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="tc" id="fc-quiz">
+    <div style="margin-bottom:14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <select id="fcQuizDeck" style="padding:7px 9px">
+        <option value="all">All decks</option>
+        <option value="words">Words</option>
+        <option value="facts">Facts</option>
+        <option value="geography">Geography</option>
+        <option value="history">History</option>
+        <option value="other">Other</option>
+      </select>
+      <button class="btn bd" onclick="startQuiz()">Start quiz</button>
+      <span id="fcQuizProgress" style="font-size:11px;color:var(--soft)"></span>
+    </div>
+    <div id="fc-quiz-area">
+      <div class="empty">Pick a deck and hit Start quiz.</div>
+    </div>
   </div>
 </div>
 
 <!-- ══════ CURRICULUM ══════ -->
+
 <div class="page" id="p-curriculum">
   <div class="ph"><div class="pl">Growth</div><div class="pt">Curriculum</div><div class="psub">Your personal learning space. Select a course to open its workspace.</div></div>
 
@@ -2680,100 +2830,340 @@ function logPayment(i){
 function remCC(i){ccData.splice(i,1);rendCC(); scheduleAutoSave();}
 
 // ── MEDIA ─────────────────────────────────────────
-const media={books:[],films:[],music:[]};
-const mIco={books:'📖',films:'🎬',music:'🎵'};
-const mLbl={books:{done:'finished',progress:'reading',want:'want to read'},films:{done:'watched',progress:'watching',want:'want to watch'},music:{done:'listened',progress:'revisiting',want:'want to listen'}};
-const mF={books:{t:'bTi',s:'bAu',st:'bSt'},films:{t:'fTi',s:'fDi',st:'fSt'},music:{t:'aTi',s:'aAr',st:'aSt'}};
-function rendMedia(type){
-  const el=document.getElementById('tr-'+type+'-list');
-  if(!media[type].length){el.innerHTML=`<div class="empty">No ${type} yet.</div>`;return;}
-  el.innerHTML=media[type].map((it,i)=>`
-    <div class="m-item">
-      <div class="m-ico">${mIco[type]}</div>
-      <div class="m-body"><div class="m-title">${it.t}</div><div class="m-meta">${it.s}</div></div>
-      <div class="m-st ${it.st}">${mLbl[type][it.st]}</div>
-      <div class="ov-del" style="opacity:.5;font-size:11px;cursor:pointer;padding:0 4px;align-self:flex-start;margin-top:2px" onclick="deleteMedia('${type}',${i})">✕</div>
-    </div>`).join('');
-}
-function deleteMedia(type, idx) {
-  media[type].splice(idx, 1);
-  rendMedia(type);
-  scheduleAutoSave();
-}
-function addMedia(type){const f=mF[type],t=document.getElementById(f.t).value.trim(),s=document.getElementById(f.s).value.trim(),st=document.getElementById(f.st).value;if(!t)return;media[type].unshift({t,s,st});document.getElementById(f.t).value='';document.getElementById(f.s).value='';rendMedia(type);}
+// ── READING JOURNAL ───────────────────────────────
+const rjCurrent = []; // { id, title, author, pages, currentPage, notes, quotes, startDate }
+const rjFinished = []; // { id, title, author, pages, rating, notes, finishDate }
+const rjTbr = []; // { id, title, author, note, upNext }
 
-// ── TBR / UP NEXT ─────────────────────────────────
-const tbrData = [];
-let tbrFilter = 'all';
-const tbrIco = { book:'📚', film:'🎬', series:'📺', article:'📄', other:'📌' };
-const tbrTypeLabel = { book:'Book', film:'Film', series:'Series', article:'Article', other:'Other' };
-
-function addTbr() {
-  const ti = document.getElementById('tbrTi').value.trim();
-  if (!ti) return;
-  const by = document.getElementById('tbrBy').value.trim();
-  const type = document.getElementById('tbrType').value;
-  const note = document.getElementById('tbrNote').value.trim();
-  tbrData.unshift({ id: Date.now().toString(), ti, by, type, note, upNext: false });
-  ['tbrTi','tbrBy','tbrNote'].forEach(id => document.getElementById(id).value = '');
-  rendTbr();
-  scheduleAutoSave();
+function addBookCurrent() {
+  const ti = document.getElementById('rjTi').value.trim(); if (!ti) return;
+  const au = document.getElementById('rjAu').value.trim();
+  const pg = parseInt(document.getElementById('rjPg').value) || 0;
+  const now = new Date();
+  rjCurrent.unshift({ id: Date.now().toString(), title: ti, author: au, pages: pg, currentPage: 0, notes: '', quotes: [], startDate: MONTHS[now.getMonth()] + ' ' + now.getDate() });
+  ['rjTi','rjAu','rjPg'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  rendRjCurrent(); scheduleAutoSave();
 }
 
-function toggleTbrUpNext(id) {
-  const item = tbrData.find(t => t.id === id);
-  if (item) item.upNext = !item.upNext;
-  rendTbr();
-  scheduleAutoSave();
+function rendRjCurrent() {
+  const el = document.getElementById('rj-current-list');
+  if (!el) return;
+  if (!rjCurrent.length) { el.innerHTML = '<div class="empty">Nothing currently being read.</div>'; return; }
+  el.innerHTML = rjCurrent.map((b,i) => {
+    const pct = b.pages ? Math.round((b.currentPage/b.pages)*100) : 0;
+    return `<div class="m-item" style="flex-direction:column;align-items:stretch;gap:8px;padding:12px 14px" id="rjc-${b.id}">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <div style="font-size:20px">📖</div>
+        <div style="flex:1">
+          <div class="m-title">${b.title}</div>
+          <div class="m-meta">${b.author}${b.startDate?' · started '+b.startDate:''}</div>
+        </div>
+        <div style="display:flex;gap:5px;align-items:center;flex-shrink:0">
+          <div class="btn bsm" onclick="finishBook(${i})">Mark finished</div>
+          <div class="ov-del" style="opacity:.5;font-size:11px;cursor:pointer;padding:0 4px" onclick="rjCurrent.splice(${i},1);rendRjCurrent();scheduleAutoSave()">✕</div>
+        </div>
+      </div>
+      ${b.pages ? `<div style="display:flex;align-items:center;gap:8px">
+        <div style="flex:1;height:4px;background:var(--bdr);border-radius:2px"><div style="width:${pct}%;height:100%;background:var(--teal,#0f7a5a);border-radius:2px;transition:width .3s"></div></div>
+        <span style="font-size:10px;color:var(--soft)">p.</span>
+        <input type="number" value="${b.currentPage}" min="0" max="${b.pages}" style="width:52px;padding:3px 6px;font-size:11px;text-align:center" onchange="updatePage('${b.id}',this.value)">
+        <span style="font-size:10px;color:var(--dim)">of ${b.pages} · ${pct}%</span>
+      </div>` : ''}
+      <textarea placeholder="Notes on this book..." style="width:100%;background:var(--bg);border:1px solid var(--bdr);border-radius:4px;padding:7px 9px;resize:none;font-family:var(--mono);font-size:11.5px;color:var(--txt);outline:none;line-height:1.7;min-height:55px" onchange="updateBookNotes('${b.id}',this.value)">${b.notes||''}</textarea>
+      <div>
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:5px">
+          <span style="font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--dim)">Quotes &amp; words</span>
+          <input type="text" id="rjq-${b.id}" placeholder="Add a quote or word..." style="flex:1;padding:4px 8px;font-size:11px" onkeydown="if(event.key==='Enter')addQuote('${b.id}')">
+          <button class="btn bsm" onclick="addQuote('${b.id}')">+ Add</button>
+        </div>
+        <div id="rjquotes-${b.id}">${(b.quotes||[]).map((q,qi)=>`<div style="font-size:11px;color:var(--mid);padding:4px 0;border-bottom:1px solid var(--bdr);display:flex;gap:8px;align-items:flex-start"><span style="color:var(--dim);flex:1">${q}</span><span style="cursor:pointer;opacity:.4;font-size:10px" onclick="removeQuote('${b.id}',${qi})">✕</span></div>`).join('')}</div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
-function deleteTbr(id) {
-  const idx = tbrData.findIndex(t => t.id === id);
-  if (idx !== -1) tbrData.splice(idx, 1);
-  rendTbr();
-  scheduleAutoSave();
+function updatePage(id, val) {
+  const b = rjCurrent.find(b => b.id === id); if (!b) return;
+  b.currentPage = Math.max(0, Math.min(parseInt(val)||0, b.pages||9999));
+  rendRjCurrent(); scheduleAutoSave();
+}
+function updateBookNotes(id, val) {
+  const b = rjCurrent.find(b => b.id === id); if (b) { b.notes = val; scheduleAutoSave(); }
+}
+function addQuote(id) {
+  const inp = document.getElementById('rjq-'+id); if (!inp || !inp.value.trim()) return;
+  const b = rjCurrent.find(b => b.id === id); if (!b) return;
+  if (!b.quotes) b.quotes = [];
+  b.quotes.push(inp.value.trim()); inp.value = '';
+  rendRjCurrent(); scheduleAutoSave();
+}
+function removeQuote(id, qi) {
+  const b = rjCurrent.find(b => b.id === id); if (!b) return;
+  b.quotes.splice(qi, 1); rendRjCurrent(); scheduleAutoSave();
+}
+function finishBook(i) {
+  const b = rjCurrent[i];
+  const rating = prompt('Rate it (1–5 stars, optional):') || '';
+  const now = new Date();
+  rjFinished.unshift({ ...b, rating: rating.trim(), finishDate: MONTHS[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear() });
+  rjCurrent.splice(i, 1);
+  rendRjCurrent(); rendRjFinished(); scheduleAutoSave();
 }
 
-function setTbrFilter(filter, btn) {
-  tbrFilter = filter;
-  document.querySelectorAll('.tbr-filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  rendTbr();
+function rendRjFinished() {
+  const el = document.getElementById('rj-finished-list'); if (!el) return;
+  if (!rjFinished.length) { el.innerHTML = '<div class="empty">No finished books yet.</div>'; return; }
+  el.innerHTML = rjFinished.map((b,i) => `<div class="m-item" style="flex-direction:column;align-items:stretch;gap:6px;padding:12px 14px">
+    <div style="display:flex;align-items:flex-start;gap:10px">
+      <div style="font-size:20px">✅</div>
+      <div style="flex:1">
+        <div class="m-title">${b.title}</div>
+        <div class="m-meta">${b.author}${b.finishDate?' · finished '+b.finishDate:''}${b.rating?' · '+'★'.repeat(parseInt(b.rating)||0):''}</div>
+      </div>
+      <div class="ov-del" style="opacity:.5;font-size:11px;cursor:pointer;padding:0 4px" onclick="rjFinished.splice(${i},1);rendRjFinished();scheduleAutoSave()">✕</div>
+    </div>
+    ${b.notes?`<div style="font-size:11px;color:var(--mid);line-height:1.6;padding:4px 0">${b.notes}</div>`:''}
+    ${(b.quotes||[]).length?`<div style="border-top:1px solid var(--bdr);padding-top:6px">${b.quotes.map(q=>`<div style="font-size:11px;color:var(--dim);padding:2px 0">"${q}"</div>`).join('')}</div>`:''}
+  </div>`).join('');
 }
 
-function rendTbr() {
-  const el = document.getElementById('tr-tbr-list');
-  let items = tbrFilter === 'all' ? tbrData : tbrData.filter(t => t.type === tbrFilter);
-  if (!items.length) { el.innerHTML = '<div class="empty">Nothing here yet.</div>'; return; }
-  const upNext = items.filter(t => t.upNext);
-  const queue = items.filter(t => !t.upNext);
+function addBookTbr() {
+  const ti = document.getElementById('rjTbrTi').value.trim(); if (!ti) return;
+  const au = document.getElementById('rjTbrAu').value.trim();
+  const note = document.getElementById('rjTbrNote').value.trim();
+  rjTbr.unshift({ id: Date.now().toString(), title: ti, author: au, note, upNext: false });
+  ['rjTbrTi','rjTbrAu','rjTbrNote'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  rendRjTbr(); scheduleAutoSave();
+}
+function rendRjTbr() {
+  const el = document.getElementById('rj-tbr-list'); if (!el) return;
+  if (!rjTbr.length) { el.innerHTML = '<div class="empty">Nothing on the TBR yet.</div>'; return; }
+  const up = rjTbr.filter(b=>b.upNext), queue = rjTbr.filter(b=>!b.upNext);
   let html = '';
-  if (upNext.length) {
-    html += `<div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--deadline);margin-bottom:7px;margin-top:2px">Up next</div>`;
-    html += upNext.map(t => tbrRow(t)).join('');
-    if (queue.length) html += `<div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:14px 0 7px">Queue</div>`;
-  }
-  html += queue.map(t => tbrRow(t)).join('');
+  if (up.length) { html += `<div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--deadline);margin-bottom:7px">Up next</div>`; html += up.map(b=>rjTbrRow(b)).join(''); }
+  if (queue.length) { if(up.length) html += `<div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:14px 0 7px">Queue</div>`; html += queue.map(b=>rjTbrRow(b)).join(''); }
   el.innerHTML = html;
 }
-
-function tbrRow(t) {
-  return `<div class="m-item" style="${t.upNext ? 'border-left:2px solid var(--deadline)' : ''}">
-    <div class="m-ico">${tbrIco[t.type]||'📌'}</div>
-    <div class="m-body">
-      <div class="m-title">${t.ti}</div>
-      <div class="m-meta">${[t.by, tbrTypeLabel[t.type]].filter(Boolean).join(' · ')}${t.note ? ' · <span style="color:var(--dim)">' + t.note + '</span>' : ''}</div>
-    </div>
+function rjTbrRow(b) {
+  return `<div class="m-item" style="${b.upNext?'border-left:2px solid var(--deadline)':''}">
+    <div class="m-ico">📚</div>
+    <div class="m-body"><div class="m-title">${b.title}</div><div class="m-meta">${b.author}${b.note?' · <span style="color:var(--dim)">'+b.note+'</span>':''}</div></div>
     <div style="display:flex;gap:5px;align-items:center;flex-shrink:0">
-      <div class="btn bsm" onclick="toggleTbrUpNext('${t.id}')" style="${t.upNext ? 'color:var(--deadline);border-color:rgba(196,125,14,.4)' : ''}">${t.upNext ? '★ Up next' : '☆ Up next'}</div>
-      <div class="ov-del" style="opacity:.5;font-size:11px;cursor:pointer;padding:0 4px" onclick="deleteTbr('${t.id}')">✕</div>
+      <div class="btn bsm" onclick="toggleRjTbrUpNext('${b.id}')" style="${b.upNext?'color:var(--deadline)':''}">${b.upNext?'★ Up next':'☆ Up next'}</div>
+      <div class="btn bsm" onclick="moveToCurrentFromTbr('${b.id}')">Start reading</div>
+      <div class="ov-del" style="opacity:.5;font-size:11px;cursor:pointer;padding:0 4px" onclick="deleteRjTbr('${b.id}')">✕</div>
     </div>
   </div>`;
 }
+function toggleRjTbrUpNext(id) { const b=rjTbr.find(b=>b.id===id); if(b){b.upNext=!b.upNext;rendRjTbr();scheduleAutoSave();} }
+function deleteRjTbr(id) { const i=rjTbr.findIndex(b=>b.id===id); if(i!==-1){rjTbr.splice(i,1);rendRjTbr();scheduleAutoSave();} }
+function moveToCurrentFromTbr(id) {
+  const i=rjTbr.findIndex(b=>b.id===id); if(i===-1) return;
+  const b=rjTbr[i]; rjTbr.splice(i,1);
+  const now=new Date();
+  rjCurrent.unshift({id:Date.now().toString(),title:b.title,author:b.author,pages:0,currentPage:0,notes:'',quotes:[],startDate:MONTHS[now.getMonth()]+' '+now.getDate()});
+  rendRjTbr(); rendRjCurrent(); scheduleAutoSave();
+  // switch sub-tab
+  document.querySelectorAll('[id^="rj-"]').forEach(el=>el.classList.remove('active'));
+  document.getElementById('rj-current').classList.add('active');
+}
 
-rendTbr();
+rendRjCurrent(); rendRjFinished(); rendRjTbr();
 
-// ── CURRICULUM ────────────────────────────────────
+// ── ARTICLES & ESSAYS ─────────────────────────────
+const articles = [];
+let artFilter = 'all';
+const artTypeLabel = { article:'Article', essay:'Essay', video:'Video essay', paper:'Academic paper', other:'Other' };
+const artTypeIco = { article:'📄', essay:'✍️', video:'🎞️', paper:'🔬', other:'📎' };
+
+function addArticle() {
+  const ti = document.getElementById('artTi').value.trim(); if (!ti) return;
+  const by = document.getElementById('artBy').value.trim();
+  const type = document.getElementById('artType').value;
+  const url = document.getElementById('artUrl').value.trim();
+  const status = document.getElementById('artStatus').value;
+  articles.unshift({ id: Date.now().toString(), ti, by, type, url, status, notes: '' });
+  ['artTi','artBy','artUrl'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  rendArticles(); scheduleAutoSave();
+}
+function setArtFilter(f, btn) {
+  artFilter = f;
+  document.querySelectorAll('.art-filter').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); rendArticles();
+}
+function rendArticles() {
+  const el = document.getElementById('tr-articles-list'); if (!el) return;
+  let items = articles;
+  if (artFilter === 'video') items = articles.filter(a=>a.type==='video');
+  else if (artFilter !== 'all') items = articles.filter(a=>a.status===artFilter);
+  if (!items.length) { el.innerHTML = '<div class="empty">Nothing here yet.</div>'; return; }
+  el.innerHTML = items.map((a,i) => {
+    const idx = articles.indexOf(a);
+    return `<div class="m-item">
+      <div class="m-ico">${artTypeIco[a.type]||'📄'}</div>
+      <div class="m-body">
+        <div class="m-title">${a.url?`<a href="${a.url}" target="_blank" style="color:inherit;text-decoration:underline;text-underline-offset:3px">${a.ti}</a>`:a.ti}</div>
+        <div class="m-meta">${[a.by, artTypeLabel[a.type]].filter(Boolean).join(' · ')}</div>
+      </div>
+      <div class="m-st ${a.status}" style="cursor:pointer" onclick="cycleArtStatus(${idx})">${a.status==='want'?'to read':a.status==='progress'?'in progress':'done'}</div>
+      <div class="ov-del" style="opacity:.5;font-size:11px;cursor:pointer;padding:0 4px" onclick="articles.splice(${idx},1);rendArticles();scheduleAutoSave()">✕</div>
+    </div>`;
+  }).join('');
+}
+function cycleArtStatus(i) {
+  const order = ['want','progress','done'];
+  const a = articles[i]; a.status = order[(order.indexOf(a.status)+1)%3];
+  rendArticles(); scheduleAutoSave();
+}
+rendArticles();
+
+// ── PODCASTS ──────────────────────────────────────
+const podcasts = [];
+function addPodcast() {
+  const show = document.getElementById('podShow').value.trim(); if (!show) return;
+  const ep = document.getElementById('podEp').value.trim();
+  const note = document.getElementById('podNote').value.trim();
+  const status = document.getElementById('podStatus').value;
+  podcasts.unshift({ id: Date.now().toString(), show, ep, note, status });
+  ['podShow','podEp','podNote'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  rendPodcasts(); scheduleAutoSave();
+}
+function rendPodcasts() {
+  const el = document.getElementById('tr-podcasts-list'); if (!el) return;
+  if (!podcasts.length) { el.innerHTML = '<div class="empty">No podcasts saved yet.</div>'; return; }
+  el.innerHTML = podcasts.map((p,i) => `<div class="m-item">
+    <div class="m-ico">🎙️</div>
+    <div class="m-body">
+      <div class="m-title">${p.show}</div>
+      <div class="m-meta">${[p.ep, p.note].filter(Boolean).join(' · ')}</div>
+    </div>
+    <div class="m-st ${p.status}" style="cursor:pointer" onclick="cyclePodStatus(${i})">${p.status==='want'?'to listen':p.status==='progress'?'listening':'listened'}</div>
+    <div class="ov-del" style="opacity:.5;font-size:11px;cursor:pointer;padding:0 4px" onclick="podcasts.splice(${i},1);rendPodcasts();scheduleAutoSave()">✕</div>
+  </div>`).join('');
+}
+function cyclePodStatus(i) {
+  const order=['want','progress','done']; const p=podcasts[i]; p.status=order[(order.indexOf(p.status)+1)%3];
+  rendPodcasts(); scheduleAutoSave();
+}
+rendPodcasts();
+
+
+// ── FLASHCARDS ────────────────────────────────────
+const fcCards = []; // { id, front, back, deck, score: 0 }
+const fcDecks = ['words','facts','geography','history','other'];
+let fcFilter = 'all';
+let fcQuizQueue = [];
+let fcQuizIdx = 0;
+let fcQuizFlipped = false;
+let fcQuizCorrect = 0;
+
+function addFlashcard() {
+  const front = document.getElementById('fcFront').value.trim(); if (!front) return;
+  const back = document.getElementById('fcBack').value.trim(); if (!back) return;
+  const deck = document.getElementById('fcDeck').value;
+  fcCards.unshift({ id: Date.now().toString(), front, back, deck, score: 0 });
+  ['fcFront','fcBack'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  rendFcCards(); scheduleAutoSave();
+}
+
+function addFcDeck() {
+  const inp = document.getElementById('fcNewDeck'); if (!inp || !inp.value.trim()) return;
+  const name = inp.value.trim().toLowerCase().replace(/\s+/g,'-');
+  if (fcDecks.includes(name)) { inp.value=''; return; }
+  fcDecks.push(name);
+  // add to selects and filters
+  ['fcDeck','fcQuizDeck'].forEach(selId => {
+    const sel = document.getElementById(selId); if (!sel) return;
+    const opt = document.createElement('option'); opt.value=name; opt.textContent=name.charAt(0).toUpperCase()+name.slice(1); sel.appendChild(opt);
+  });
+  const filters = document.getElementById('fcDeckFilters');
+  if (filters) {
+    const btn = document.createElement('button');
+    btn.className='btn bsm fc-deck-filter'; btn.dataset.deck=name;
+    btn.textContent=name.charAt(0).toUpperCase()+name.slice(1);
+    btn.onclick=()=>setFcFilter(name,btn); filters.appendChild(btn);
+  }
+  inp.value=''; scheduleAutoSave();
+}
+
+function setFcFilter(deck, btn) {
+  fcFilter = deck;
+  document.querySelectorAll('.fc-deck-filter').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); rendFcCards();
+}
+
+function rendFcCards() {
+  const el = document.getElementById('fc-card-list'); if (!el) return;
+  const items = fcFilter==='all' ? fcCards : fcCards.filter(c=>c.deck===fcFilter);
+  if (!items.length) { el.innerHTML = '<div class="empty">No cards in this deck yet.</div>'; return; }
+  // group by deck
+  const groups = {};
+  items.forEach(c => { if (!groups[c.deck]) groups[c.deck]=[]; groups[c.deck].push(c); });
+  el.innerHTML = Object.entries(groups).map(([deck, cards]) => `
+    <div style="margin-bottom:16px">
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--soft);margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--bdr)">${deck} · ${cards.length} card${cards.length!==1?'s':''}</div>
+      ${cards.map(c => {
+        const globalIdx = fcCards.indexOf(c);
+        return `<div class="m-item" style="align-items:center">
+          <div style="flex:1">
+            <div class="m-title">${c.front}</div>
+            <div class="m-meta" style="color:var(--mid)">${c.back}</div>
+          </div>
+          <div style="font-size:10px;color:var(--dim);margin-right:8px">${c.score>0?'★'.repeat(Math.min(c.score,3)):'new'}</div>
+          <div class="ov-del" style="opacity:.5;font-size:11px;cursor:pointer;padding:0 4px" onclick="fcCards.splice(${globalIdx},1);rendFcCards();scheduleAutoSave()">✕</div>
+        </div>`;
+      }).join('')}
+    </div>`).join('');
+}
+
+function startQuiz() {
+  const deck = document.getElementById('fcQuizDeck').value;
+  fcQuizQueue = (deck==='all' ? [...fcCards] : fcCards.filter(c=>c.deck===deck));
+  // sort: new cards first, then by lowest score
+  fcQuizQueue.sort((a,b)=>a.score-b.score);
+  // shuffle cards with same score
+  for (let i=fcQuizQueue.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [fcQuizQueue[i],fcQuizQueue[j]]=[fcQuizQueue[j],fcQuizQueue[i]]; }
+  fcQuizIdx=0; fcQuizCorrect=0; fcQuizFlipped=false;
+  if (!fcQuizQueue.length) { document.getElementById('fc-quiz-area').innerHTML='<div class="empty">No cards in this deck. Add some first.</div>'; return; }
+  rendQuizCard();
+}
+
+function rendQuizCard() {
+  const area = document.getElementById('fc-quiz-area');
+  const prog = document.getElementById('fcQuizProgress');
+  if (fcQuizIdx >= fcQuizQueue.length) {
+    if (prog) prog.textContent = '';
+    area.innerHTML = `<div class="card" style="text-align:center;padding:30px 20px">
+      <div style="font-size:24px;margin-bottom:10px">✅</div>
+      <div style="font-size:15px;font-weight:500;margin-bottom:6px">Done — ${fcQuizCorrect} of ${fcQuizQueue.length} correct</div>
+      <div style="font-size:12px;color:var(--soft);margin-bottom:18px">${fcQuizCorrect===fcQuizQueue.length?'Perfect round.':fcQuizCorrect>fcQuizQueue.length/2?'Good. Keep going.':'Keep at it — repetition is the whole game.'}</div>
+      <button class="btn bd" onclick="startQuiz()">Go again</button>
+    </div>`;
+    return;
+  }
+  if (prog) prog.textContent = `${fcQuizIdx+1} of ${fcQuizQueue.length} · ${fcQuizCorrect} correct`;
+  const card = fcQuizQueue[fcQuizIdx];
+  area.innerHTML = `<div class="card" style="padding:28px 24px;text-align:center;cursor:pointer;min-height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px" onclick="flipQuizCard()" id="fcQuizCard">
+    <div style="font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--dim)">${fcQuizFlipped?'Answer':'Question — tap to reveal'}</div>
+    <div style="font-size:18px;font-weight:400;color:var(--txt);line-height:1.5">${fcQuizFlipped?card.back:card.front}</div>
+    ${fcQuizFlipped?`<div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn" onclick="event.stopPropagation();markQuiz(false)" style="color:var(--urgent)">✕ Missed it</button>
+      <button class="btn bd" onclick="event.stopPropagation();markQuiz(true)" style="color:var(--teal,#0f7a5a)">✓ Got it</button>
+    </div>`:'<div style="font-size:11px;color:var(--dim)">tap the card</div>'}
+  </div>`;
+}
+
+function flipQuizCard() { fcQuizFlipped=true; rendQuizCard(); }
+function markQuiz(correct) {
+  const card = fcQuizQueue[fcQuizIdx];
+  if (correct) { card.score=Math.min((card.score||0)+1,5); fcQuizCorrect++; }
+  else { card.score=Math.max((card.score||0)-1,0); }
+  fcQuizIdx++; fcQuizFlipped=false; rendQuizCard(); scheduleAutoSave();
+}
+
+rendFcCards();
+
+// ── CURRICULUM// ── CURRICULUM ────────────────────────────────────
 let curCalOffset = 0;
 function buildCurCal() {
   const now=new Date(), target=new Date(now.getFullYear(),now.getMonth()+curCalOffset,1);
@@ -3175,8 +3565,13 @@ function collectAllData() {
   };
   data.groceries = Object.values(groceries);
   data.finance = { incomeData, fixedData, envelopes, ccData };
-  data.media = media;
-  // shopping lists
+  data.rjCurrent = rjCurrent.map(b=>({...b, quotes:[...(b.quotes||[])]}));
+  data.rjFinished = rjFinished.map(b=>({...b, quotes:[...(b.quotes||[])]}));
+  data.rjTbr = rjTbr.map(b=>({...b}));
+  data.articles = articles.map(a=>({...a}));
+  data.podcasts = podcasts.map(p=>({...p}));
+  data.fcCards = fcCards.map(c=>({...c}));
+  data.fcDecks = [...fcDecks];
   data.shopping = {};
   ['wish','clothing','home','other'].forEach(tab => {
     data.shopping[tab] = Array.from(document.querySelectorAll('#sh-'+tab+'-list .ov-item')).map(el => ({
@@ -3191,7 +3586,6 @@ function collectAllData() {
   data['workNotes_main'] = document.getElementById('wk-main-notes') ? document.getElementById('wk-main-notes').value : '';
   data.workTasks = { main: Array.from(document.querySelectorAll('#wk-main-list .ov-item')).map(el => ({ text: el.querySelector('.ov-txt') ? el.querySelector('.ov-txt').innerHTML : '', done: el.classList.contains('done') })) };
   data.movieWatchlist = JSON.parse(JSON.stringify(movieWatchlist));
-  data.tbrData = tbrData.map(t => ({...t}));
   data.weekPlans = { ...weekPlans };
   data.weekRecurring = JSON.parse(JSON.stringify(weekRecurring));
   data.typicalWeek = typicalWeek ? JSON.parse(JSON.stringify(typicalWeek)) : null;
@@ -3262,8 +3656,13 @@ function restoreAllData(data) {
     if (data.finance.ccData) { ccData.length = 0; data.finance.ccData.forEach(c => ccData.push(c)); rendCC(); }
     updFinSum();
   }
-  if (data.media) { Object.assign(media, data.media); ['books','films'].forEach(t => rendMedia(t)); }
-  if (data.tbrData && Array.isArray(data.tbrData)) { tbrData.length = 0; data.tbrData.forEach(t => tbrData.push(t)); rendTbr(); }
+  if (data.rjCurrent) { rjCurrent.length=0; data.rjCurrent.forEach(b=>rjCurrent.push(b)); rendRjCurrent(); }
+  if (data.rjFinished) { rjFinished.length=0; data.rjFinished.forEach(b=>rjFinished.push(b)); rendRjFinished(); }
+  if (data.rjTbr) { rjTbr.length=0; data.rjTbr.forEach(b=>rjTbr.push(b)); rendRjTbr(); }
+  if (data.articles) { articles.length=0; data.articles.forEach(a=>articles.push(a)); rendArticles(); }
+  if (data.podcasts) { podcasts.length=0; data.podcasts.forEach(p=>podcasts.push(p)); rendPodcasts(); }
+  if (data.fcCards) { fcCards.length=0; data.fcCards.forEach(c=>fcCards.push(c)); rendFcCards(); }
+  if (data.fcDecks) { data.fcDecks.forEach(d => { if (!fcDecks.includes(d)) { fcDecks.push(d); ['fcDeck','fcQuizDeck'].forEach(selId => { const sel=document.getElementById(selId); if(!sel) return; if(!sel.querySelector(`option[value="${d}"]`)){const opt=document.createElement('option');opt.value=d;opt.textContent=d.charAt(0).toUpperCase()+d.slice(1);sel.appendChild(opt);} }); } }); }
   // restore main job notes and tasks
   const mainEl = document.getElementById('wk-main-notes');
   if (mainEl && data['workNotes_main'] !== undefined) mainEl.value = data['workNotes_main'];
@@ -3453,20 +3852,105 @@ function archiveBrainDump() {
   renderBrainDumpArchive();
   document.getElementById('brainDump').value = '';
 }
+function toggleBdFolder() {
+  const folder = document.getElementById('bdFolder');
+  const arrow = document.getElementById('bdFolderArrow');
+  const open = folder.style.display === 'none';
+  folder.style.display = open ? 'block' : 'none';
+  arrow.style.transform = open ? 'rotate(90deg)' : '';
+}
 function renderBrainDumpArchive() {
   const el = document.getElementById('brainDumpArchive');
-  if (!brainDumpNotes.length) { el.innerHTML = ''; return; }
-  el.innerHTML = brainDumpNotes.map((n,i) => `
+  const empty = document.getElementById('bdFolderEmpty');
+  const count = document.getElementById('bdFolderCount');
+  if (count) count.textContent = brainDumpNotes.length + ' note' + (brainDumpNotes.length !== 1 ? 's' : '');
+  if (!brainDumpNotes.length) {
+    if (el) el.innerHTML = '';
+    if (empty) empty.style.display = 'block';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+  if (el) el.innerHTML = brainDumpNotes.map((n,i) => `
     <div class="note-entry" id="bdnote-${i}">
       <div class="note-header" onclick="toggleNote('bdnote-${i}')">
         <span class="note-arrow">▶</span>
         <span class="note-title">${n.title}</span>
         <span class="note-date">${n.date}</span>
-        <span style="font-size:10px;color:var(--dim);cursor:pointer;padding:0 4px" onclick="event.stopPropagation();brainDumpNotes.splice(${i},1);renderBrainDumpArchive()">✕</span>
+        <span style="font-size:10px;color:var(--dim);cursor:pointer;padding:0 4px" onclick="event.stopPropagation();brainDumpNotes.splice(${i},1);renderBrainDumpArchive();scheduleAutoSave()">✕</span>
       </div>
       <div class="note-body"><div class="note-text">${n.text}</div></div>
     </div>`).join('');
 }
+
+// ── MORNING BRIEFING ──────────────────────────────
+function renderBriefing() {
+  // date
+  const now = new Date();
+  const dateEl = document.getElementById('briefingDate');
+  if (dateEl) dateEl.textContent = now.toLocaleDateString('en-CA', { weekday:'long', month:'long', day:'numeric' });
+
+  // urgent sprint tasks
+  const urgentEl = document.getElementById('brief-urgent');
+  if (urgentEl) {
+    const urgentCards = document.querySelectorAll('#sc-urgent .scard');
+    if (!urgentCards.length) {
+      urgentEl.innerHTML = '<div style="font-size:11px;color:var(--dim)">Nothing urgent.</div>';
+    } else {
+      urgentEl.innerHTML = Array.from(urgentCards).map(c => {
+        const title = c.querySelector('.scard-title')?.textContent || '';
+        const due = c.querySelector('.scard-due')?.textContent || '';
+        const done = c.classList.contains('done');
+        return `<div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:5px;${done?'opacity:.4':''}">
+          <div style="width:5px;height:5px;border-radius:50%;background:var(--urgent);flex-shrink:0;margin-top:4px"></div>
+          <div style="font-size:11px;color:var(--txt);line-height:1.4">${title}${due?'<span style="color:var(--dim);margin-left:4px">'+due+'</span>':''}</div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // work tasks & deadlines
+  const workEl = document.getElementById('brief-work');
+  if (workEl) {
+    const workItems = document.querySelectorAll('#wk-main-list .wt-item');
+    const roleItems = document.querySelectorAll('[id^="wkrole-tasks-"] .wt-item');
+    const all = [...Array.from(workItems), ...Array.from(roleItems)];
+    const undone = all.filter(el => !el.classList.contains('done'));
+    if (!undone.length) {
+      workEl.innerHTML = '<div style="font-size:11px;color:var(--dim)">No work tasks.</div>';
+    } else {
+      workEl.innerHTML = undone.slice(0,5).map(el => {
+        const txt = el.querySelector('.wt-txt')?.textContent || el.textContent.replace('✕','').trim();
+        const due = el.querySelector('.wt-due')?.textContent || '';
+        return `<div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:5px">
+          <div style="width:5px;height:5px;border-radius:50%;background:var(--deadline);flex-shrink:0;margin-top:4px"></div>
+          <div style="font-size:11px;color:var(--txt);line-height:1.4">${txt}${due?'<span style="color:var(--dim);margin-left:4px">'+due+'</span>':''}</div>
+        </div>`;
+      }).join('') + (undone.length > 5 ? `<div style="font-size:10px;color:var(--dim);margin-top:3px">+${undone.length-5} more</div>` : '');
+    }
+  }
+
+  // overflow
+  const ovEl = document.getElementById('brief-overflow');
+  if (ovEl) {
+    const ovItems = document.querySelectorAll('#ovList .ov-item:not(.done)');
+    if (!ovItems.length) {
+      ovEl.innerHTML = '<div style="font-size:11px;color:var(--dim)">Nothing in overflow.</div>';
+    } else {
+      ovEl.innerHTML = Array.from(ovItems).slice(0,5).map(el => {
+        const txt = el.querySelector('.ov-txt')?.textContent || '';
+        return `<div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:5px">
+          <div style="width:5px;height:5px;border-radius:50%;background:var(--soft);flex-shrink:0;margin-top:4px"></div>
+          <div style="font-size:11px;color:var(--txt);line-height:1.4">${txt}</div>
+        </div>`;
+      }).join('') + (ovItems.length > 5 ? `<div style="font-size:10px;color:var(--dim);margin-top:3px">+${ovItems.length-5} more</div>` : '');
+    }
+  }
+}
+// refresh briefing whenever tasks change
+const _origUpdCnts = updCnts;
+function updCnts() { _origUpdCnts(); setTimeout(renderBriefing, 50); }
+setTimeout(renderBriefing, 800);
+
 
 // Clear day
 function clearDay() {
