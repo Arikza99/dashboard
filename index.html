@@ -1249,11 +1249,13 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
   <!-- Tonight banner -->
   <div class="card" style="margin-bottom:16px;display:flex;align-items:center;gap:12px">
     <div style="font-size:22px" id="mnTonightEmoji">🎬</div>
-    <div>
+    <div style="flex:1">
       <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:2px">Tonight</div>
       <div style="font-size:14px;font-weight:500" id="mnTonightLabel">—</div>
       <div style="font-size:11px;color:var(--soft)" id="mnTonightNext"></div>
+      <div id="mnRandomResult" style="display:none;margin-top:8px;padding:7px 10px;background:var(--hover);border-radius:6px;font-size:12px"></div>
     </div>
+    <button class="btn" onclick="pickRandomFilm()" style="flex-shrink:0;white-space:nowrap">🎲 Pick one</button>
   </div>
 
   <!-- Add to watchlist -->
@@ -4017,6 +4019,23 @@ function renderMNTonight() {
   document.getElementById('mnTonightNext').textContent = unwatched.length
     ? unwatched.length + ' film' + (unwatched.length > 1 ? 's' : '') + ' on your ' + tonight.label + ' watchlist'
     : 'Nothing on the ' + tonight.label + ' watchlist yet — add some below';
+  // clear any previous random pick when re-rendering
+  const res = document.getElementById('mnRandomResult');
+  if (res) { res.style.display = 'none'; res.textContent = ''; }
+}
+
+function pickRandomFilm() {
+  const tonight = mnTonight();
+  const unwatched = (movieWatchlist[tonight.genre]||[]).filter(m => !m.watched);
+  const res = document.getElementById('mnRandomResult');
+  if (!unwatched.length) {
+    res.textContent = 'No unwatched films on your ' + tonight.label + ' list yet.';
+    res.style.display = 'block';
+    return;
+  }
+  const pick = unwatched[Math.floor(Math.random() * unwatched.length)];
+  res.innerHTML = '<span style="color:var(--soft);font-size:10px;letter-spacing:.08em;text-transform:uppercase">Tonight\'s pick</span><br><span style="font-size:13px;font-weight:500">' + pick.title + (pick.year ? ' <span style="color:var(--soft);font-weight:400">(' + pick.year + ')</span>' : '') + '</span>' + (pick.notes ? '<br><span style="font-size:11px;color:var(--soft)">' + pick.notes + '</span>' : '');
+  res.style.display = 'block';
 }
 
 function addMovie() {
