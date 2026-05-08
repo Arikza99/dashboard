@@ -3757,7 +3757,7 @@ function restoreAllData(data) {
 }
 
 // ── SUPABASE SAVE ─────────────────────────────────
-let sbIsLoading = false; // prevent saving during load
+let sbIsLoading = true; // prevent saving during load — set false after sbLoad completes
 let sbSaveTimer = null;
 
 function scheduleAutoSave() {
