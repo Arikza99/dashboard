@@ -598,7 +598,7 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
             <select id="atfSprint" style="width:100%"><option value="urgent">Urgent</option><option value="deadline">Deadline</option><option value="admin" selected>Admin</option><option value="creative">Creative/Study</option></select>
           </div>
           <div style="flex:1"><div class="atf-lbl">Role (optional)</div>
-            <select id="atfRole" style="width:100%"><option value="">— none —</option><option value="main">Main Job</option><option value="ra">RA</option><option value="spec">SPEC</option><option value="other">Other</option></select>
+            <select id="atfRole" style="width:100%"><option value="">— none —</option><option value="main">Main Job</option><option value="ra">RA</option><option value="spec">School</option><option value="other">Other</option></select>
           </div>
         </div>
         <div style="display:flex;gap:8px;margin-bottom:8px">
@@ -1117,7 +1117,7 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
       <span>Roles & projects</span>
       <button class="btn bsm" onclick="addWorkRole()">+ Add role</button>
     </div>
-    <div id="wk-roles-list"><div class="empty">Click "+ Add role" to create a section for RA, SPEC, or any other role.</div></div>
+    <div id="wk-roles-list"><div class="empty">Click "+ Add role" to create a section for RA, School, or any other role.</div></div>
   </div>
 
   <!-- REFERENCES -->
@@ -2329,7 +2329,7 @@ function bfLabel(b) { const n=parseInt(b); if(isNaN(n)||b==='') return null; ret
 
 function mkCard(t) {
   const bc = bfClass(t.buffer), bl = bfLabel(t.buffer);
-  const roleLabels = { main:'Main Job', ra:'RA', spec:'SPEC', other:'Other' };
+  const roleLabels = { main:'Main Job', ra:'RA', spec:'School', other:'Other' };
   const roleColors = { main:'var(--admin)', ra:'var(--creative)', spec:'var(--deadline)', other:'var(--soft)' };
   const el = document.createElement('div');
   el.className = 'tcard' + (t.done?' done':'');
@@ -3251,7 +3251,7 @@ const workRoleData = []; // {id, name, notes, tasks, sections}
 
 function renderWorkRoles() {
   const container = document.getElementById('wk-roles-list');
-  if (!workRoleData.length) { container.innerHTML = '<div class="empty">Click "+ Add role" to create a section for RA, SPEC, or any other role.</div>'; return; }
+  if (!workRoleData.length) { container.innerHTML = '<div class="empty">Click "+ Add role" to create a section for RA, School, or any other role.</div>'; return; }
   container.innerHTML = workRoleData.map((r, i) => `
     <div class="card sec">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
@@ -3318,7 +3318,7 @@ function renderWorkRoles() {
 }
 
 function addWorkRole() {
-  const name = prompt('Role or project name (e.g. RA, SPEC, Volunteering):');
+  const name = prompt('Role or project name (e.g. RA, School, Volunteering):');
   if (!name) return;
   workRoleData.push({ id: Date.now().toString(), name: name.trim(), notes: '', tasks: [], sections: [], savedNotes: [] });
   renderWorkRoles();
@@ -3891,7 +3891,7 @@ function renderSprintsByRole() {
   const allEl = document.getElementById('wk-all-sprint');
   if (!allEl) return;
   const allRoleTasks = Object.values(tasks).filter(t => t.role);
-  const roleLabels = { main:'Main Job', ra:'RA', spec:'SPEC', other:'Other' };
+  const roleLabels = { main:'Main Job', ra:'RA', spec:'School', other:'Other' };
   const roleColors = { main:'var(--admin)', ra:'var(--creative)', spec:'var(--deadline)', other:'var(--soft)' };
   if (!allRoleTasks.length) { allEl.innerHTML = '<div class="empty">No sprint tasks tagged to a role yet.</div>'; return; }
   allEl.innerHTML = allRoleTasks.map(t => `
