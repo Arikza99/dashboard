@@ -1933,7 +1933,7 @@ function stab(g, n, el) {
 function htab(n, el) {
   document.querySelectorAll('.home-tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
-  document.querySelectorAll('.htc').forEach(tc => tc.classList.remove('active'));
+  document.querySelectorAll('#p-home .htc').forEach(tc => tc.classList.remove('active'));
   document.getElementById('ht-' + n).classList.add('active');
 }
 function cdtab(n, el) {
