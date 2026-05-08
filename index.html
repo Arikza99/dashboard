@@ -496,6 +496,7 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
     <div class="ni" onclick="nav('movies',this)"><div class="nd"></div>Movie Night</div>
     <div class="ni" onclick="nav('finance',this)"><div class="nd"></div>Finance</div>
     <div class="ni" onclick="nav('tracker',this)"><div class="nd"></div>Media Tracker</div>
+    <div class="ni" onclick="nav('flashcards',this)"><div class="nd"></div>Flashcards</div>
     <div class="ni" onclick="nav('curriculum',this)"><div class="nd"></div>Curriculum</div>
   </div>
   <div class="drive-bar">
@@ -528,6 +529,28 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
   <!-- DAILY -->
   <div class="htc active" id="ht-daily">
 
+    <!-- Morning briefing -->
+    <div class="sec" style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)">Today's Briefing</div>
+        <div style="font-size:9px;color:var(--dim)" id="briefingDate"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div class="card" style="padding:10px 12px">
+          <div style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--urgent);margin-bottom:6px;font-weight:500">Urgent tasks</div>
+          <div id="briefingUrgent" style="font-size:11.5px;color:var(--mid)">Nothing urgent.</div>
+        </div>
+        <div class="card" style="padding:10px 12px">
+          <div style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--admin);margin-bottom:6px;font-weight:500">Work tasks &amp; deadlines</div>
+          <div id="briefingWork" style="font-size:11.5px;color:var(--mid)">No work tasks.</div>
+        </div>
+        <div class="card" style="padding:10px 12px">
+          <div style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);margin-bottom:6px;font-weight:500">Overflow</div>
+          <div id="briefingOverflow" style="font-size:11.5px;color:var(--mid)">Nothing in overflow.</div>
+        </div>
+      </div>
+    </div>
+
     <!-- Brain dump -->
     <div class="sec">
       <div class="slbl">
@@ -540,7 +563,16 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
       <div class="brain-dump">
         <textarea id="brainDump" placeholder="Everything on your mind. Clear it out here before you start working."></textarea>
       </div>
-      <div id="brainDumpArchive" style="margin-top:10px"></div>
+      <!-- Brain dump folder -->
+      <div style="margin-top:10px;border:1px solid var(--bdr);border-radius:4px;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;background:var(--surf2)" onclick="toggleBrainDumpFolder()">
+          <span id="brainDumpFolderArrow" style="font-size:9px;color:var(--dim);transition:transform .2s">▶</span>
+          <span style="font-size:10px;color:var(--dim)">📁</span>
+          <span style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)">Saved brain dumps</span>
+          <span style="font-size:9px;color:var(--dim);margin-left:auto" id="brainDumpCount">0 notes</span>
+        </div>
+        <div id="brainDumpArchive" style="display:none;padding:10px 12px"></div>
+      </div>
     </div>
 
     <!-- Sprint board -->
@@ -1222,11 +1254,13 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
   <!-- Tonight banner -->
   <div class="card" style="margin-bottom:16px;display:flex;align-items:center;gap:12px">
     <div style="font-size:22px" id="mnTonightEmoji">🎬</div>
-    <div>
+    <div style="flex:1">
       <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:2px">Tonight</div>
       <div style="font-size:14px;font-weight:500" id="mnTonightLabel">—</div>
       <div style="font-size:11px;color:var(--soft)" id="mnTonightNext"></div>
+      <div style="font-size:12px;color:var(--creative);margin-top:4px;font-weight:500" id="mnPickResult"></div>
     </div>
+    <button class="btn bsm" onclick="mnPickOne()" style="flex-shrink:0">🎲 Pick one</button>
   </div>
 
   <!-- Add to watchlist -->
@@ -1237,11 +1271,11 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
       <input type="text" id="mnYear" placeholder="Year" style="width:70px;flex:none;padding:7px 9px">
       <select id="mnGenre" style="padding:7px 9px;font-size:12px">
         <option value="mystery">Monday — Mystery</option>
-        <option value="thriller">Tuesday — Thriller</option>
-        <option value="western">Wednesday — Western</option>
+        <option value="crime">Tuesday — Crime</option>
+        <option value="comedy">Wednesday — Comedy</option>
         <option value="throwback">Thursday — Throwback</option>
-        <option value="romance">Friday — Romance</option>
-        <option value="scifi">Saturday — Sci-Fi</option>
+        <option value="drama">Friday — Drama</option>
+        <option value="romance">Saturday — Romance</option>
         <option value="documentary">Sunday — Documentary</option>
       </select>
       <input type="text" id="mnNotes" placeholder="Notes (director, why you want to see it...)" style="flex:2;min-width:140px;padding:7px 9px">
@@ -1537,18 +1571,19 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
   <div class="tc" id="sp-daily">
     <div class="sp-h2">Standard workday</div>
     <div class="sp-tbl">
-      <div class="sp-tr sp-bm"><div class="sp-tt">5:30</div><div class="sp-tc"><span class="sp-tl">Wake up + take meds</span></div></div>
-      <div class="sp-tr sp-bm"><div class="sp-tt">5:35</div><div class="sp-tc"><span class="sp-tl">Morning Pages</span><div class="sp-td">25 min — stream of consciousness, no editing</div></div></div>
-      <div class="sp-tr sp-bf"><div class="sp-tt">6:00</div><div class="sp-tc"><span class="sp-tl">Workout clothes + Sun Salutation + preworkout</span><div class="sp-td">10 min yoga while preworkout activates</div></div></div>
-      <div class="sp-tr sp-bf"><div class="sp-tt">6:10</div><div class="sp-tc"><span class="sp-tl">NYT Games while preworkout sets in</span><div class="sp-td">Crossword, Wordle — this is the 25 min wait, made useful</div></div></div>
-      <div class="sp-tr sp-bf"><div class="sp-tt">6:35</div><div class="sp-tc"><span class="sp-tl">Workout one: cardio (30 min)</span><div class="sp-td">Phase 1: stairstepper. Phase 2+: run or treadmill intervals</div></div></div>
-      <div class="sp-tr sp-bf"><div class="sp-tt">7:05</div><div class="sp-tc"><span class="sp-tl">Workout two: strength (20–30 min)</span><div class="sp-td">Phase 1: kettlebell. Phase 2+: full body weights session</div></div></div>
-      <div class="sp-tr sp-bm"><div class="sp-tt">7:35</div><div class="sp-tc"><span class="sp-tl">Smoothie + green drink + electrolytes + vitamins + dry brush + shower</span><div class="sp-td">20 min to get ready — desk by 8</div></div></div>
-      <div class="sp-tr sp-bw"><div class="sp-tt">8:00</div><div class="sp-tc"><span class="sp-tl">Work</span></div></div>
+      <div class="sp-tr sp-bm"><div class="sp-tt">5:00</div><div class="sp-tc"><span class="sp-tl">Wake up + take meds</span></div></div>
+      <div class="sp-tr sp-bm"><div class="sp-tt">5:05</div><div class="sp-tc"><span class="sp-tl">Morning Pages</span><div class="sp-td">25 min — stream of consciousness, no editing</div></div></div>
+      <div class="sp-tr sp-bf"><div class="sp-tt">5:30</div><div class="sp-tc"><span class="sp-tl">Workout clothes + Sun Salutation (10 min)</span><div class="sp-td">Yoga while preworkout activates</div></div></div>
+      <div class="sp-tr sp-bf"><div class="sp-tt">5:40</div><div class="sp-tc"><span class="sp-tl">Preworkout + NYT Games (25 min wait)</span><div class="sp-td">Crossword, Wordle — the wait made useful</div></div></div>
+      <div class="sp-tr sp-bf"><div class="sp-tt">6:05</div><div class="sp-tc"><span class="sp-tl">Cardio (30 min)</span><div class="sp-td">Phase 1: stairstepper. Phase 2+: run or treadmill intervals</div></div></div>
+      <div class="sp-tr sp-bf"><div class="sp-tt">6:35</div><div class="sp-tc"><span class="sp-tl">Strength (30 min)</span><div class="sp-td">Phase 1: kettlebell. Phase 2+: full body weights session</div></div></div>
+      <div class="sp-tr sp-bm"><div class="sp-tt">7:05</div><div class="sp-tc"><span class="sp-tl">Shower (15 min)</span></div></div>
+      <div class="sp-tr sp-bm"><div class="sp-tt">7:20</div><div class="sp-tc"><span class="sp-tl">Get ready (40 min)</span><div class="sp-td">Skin, hair, clothes — desk by 8</div></div></div>
+      <div class="sp-tr sp-bw"><div class="sp-tt">8:00</div><div class="sp-tc"><span class="sp-tl">Gov work (remote)</span></div></div>
       <div class="sp-tr sp-bw"><div class="sp-tt">12:00</div><div class="sp-tc"><span class="sp-tl">Lunch</span><div class="sp-td">Prep from the night before — no decisions when hungry</div></div></div>
-      <div class="sp-tr sp-bw"><div class="sp-tt">1:00</div><div class="sp-tc"><span class="sp-tl">Work</span></div></div>
+      <div class="sp-tr sp-bw"><div class="sp-tt">1:00</div><div class="sp-tc"><span class="sp-tl">Gov work (remote)</span></div></div>
       <div class="sp-tr sp-bst"><div class="sp-tt">3:30</div><div class="sp-tc"><span class="sp-tl">Study block — varies by day</span><div class="sp-td">See curriculum tab for what runs each day</div></div></div>
-      <div class="sp-tr sp-bfr"><div class="sp-tt">5:00</div><div class="sp-tc"><span class="sp-tl">Free — cook, read, call someone, film, rest</span><div class="sp-td">Actual free time, not hidden productivity time</div></div></div>
+      <div class="sp-tr sp-bfr"><div class="sp-tt">5:00</div><div class="sp-tc"><span class="sp-tl">Free — cook, read, film, rest</span><div class="sp-td">Actual free time, not hidden productivity time</div></div></div>
       <div class="sp-tr sp-be"><div class="sp-tt">9:00</div><div class="sp-tc"><span class="sp-tl">Closing shift (35 min)</span><div class="sp-td">Prep tomorrow's food, tidy, set out clothes, review one-line log</div></div></div>
       <div class="sp-tr sp-be"><div class="sp-tt">9:35</div><div class="sp-tc"><span class="sp-tl">Get ready for bed (25 min)</span><div class="sp-td">Double cleanse, skin cycling serums, lash serum, lip mask, floss, brush, mouthwash, tongue scrape, night hair serum, braid, meds + vitamins</div></div></div>
       <div class="sp-tr sp-be"><div class="sp-tt">10:00</div><div class="sp-tc"><span class="sp-tl">Moon Salutation (10 min)</span></div></div>
@@ -1655,6 +1690,63 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
   </div>
 </div>
 
+
+<!-- ══════ FLASHCARDS ══════ -->
+<div class="page" id="p-flashcards">
+  <div class="ph"><div class="pl">Growth</div><div class="pt">Flashcards</div><div class="psub">Words, facts, geography, history — anything worth keeping. Quiz yourself anytime.</div></div>
+  <div class="tabs">
+    <div class="tab active" onclick="stab('fc','decks',this)">My Decks</div>
+    <div class="tab" onclick="stab('fc','quiz',this)">Quiz Me</div>
+  </div>
+  <div class="tc active" id="fc-decks">
+    <div class="card sec">
+      <div style="display:flex;gap:7px;margin-bottom:8px;flex-wrap:wrap">
+        <input type="text" id="fcFront" placeholder="Front — word, question, place..." style="flex:2;min-width:140px;padding:7px 9px">
+        <input type="text" id="fcBack" placeholder="Back — definition, answer..." style="flex:2;min-width:140px;padding:7px 9px">
+        <select id="fcDeck" style="padding:7px 9px;min-width:100px"></select>
+        <button class="btn bd" onclick="addFcCard()">+ Add card</button>
+      </div>
+      <div style="display:flex;gap:7px">
+        <input type="text" id="fcNewDeck" placeholder="Or create a new deck..." style="flex:1;padding:6px 9px;font-size:11px">
+        <button class="btn bsm" onclick="addFcDeck()">+ Create deck</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px" id="fcDeckFilter"></div>
+    <div id="fcCardList"><div class="empty">No cards yet. Add one above.</div></div>
+  </div>
+  <div class="tc" id="fc-quiz">
+    <div id="fcQuizSetup">
+      <div class="card" style="margin-bottom:12px">
+        <div class="slbl" style="margin-bottom:10px"><span>Pick a deck to quiz</span></div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <select id="fcQuizDeck" style="padding:7px 9px;flex:1"></select>
+          <button class="btn bd" onclick="beginQuiz()">Start quiz</button>
+        </div>
+      </div>
+    </div>
+    <div id="fcQuizActive" style="display:none">
+      <div style="text-align:center;margin-bottom:16px;font-size:11px;color:var(--soft)" id="fcQuizProgress"></div>
+      <div class="card" style="min-height:180px;display:flex;align-items:center;justify-content:center;cursor:pointer;text-align:center;padding:24px" onclick="flipFcCard()" id="fcQuizCard">
+        <div>
+          <div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:12px" id="fcQuizSide">FRONT — click to flip</div>
+          <div style="font-size:18px;font-weight:400" id="fcQuizText"></div>
+        </div>
+      </div>
+      <div id="fcQuizActions" style="display:none">
+        <div style="display:flex;gap:8px;margin-top:12px;justify-content:center">
+          <button class="btn" onclick="fcAnswer(false)" style="flex:1;color:var(--urgent);border-color:var(--urgent)">✗ Missed it</button>
+          <button class="btn bd" onclick="fcAnswer(true)" style="flex:1">✓ Got it</button>
+        </div>
+      </div>
+    </div>
+    <div id="fcQuizResult" style="display:none;text-align:center;padding:24px">
+      <div style="font-size:32px;margin-bottom:12px">🎉</div>
+      <div style="font-size:16px;font-weight:500;margin-bottom:6px" id="fcResultScore"></div>
+      <div style="font-size:12px;color:var(--soft);margin-bottom:16px" id="fcResultDetail"></div>
+      <button class="btn bd" onclick="beginQuiz()">Go again</button>
+    </div>
+  </div>
+</div>
 </main>
 
 <script>
@@ -3049,6 +3141,8 @@ function collectAllData() {
   data['workNotes_main'] = document.getElementById('wk-main-notes') ? document.getElementById('wk-main-notes').value : '';
   data.workTasks = { main: Array.from(document.querySelectorAll('#wk-main-list .ov-item')).map(el => ({ text: el.querySelector('.ov-txt') ? el.querySelector('.ov-txt').innerHTML : '', done: el.classList.contains('done') })) };
   data.movieWatchlist = JSON.parse(JSON.stringify(movieWatchlist));
+  data.fcCards = fcCards.map(c => ({...c}));
+  data.fcDecks = [...fcDecks];
   data.weekPlans = { ...weekPlans };
   data.weekRecurring = JSON.parse(JSON.stringify(weekRecurring));
   data.typicalWeek = typicalWeek ? JSON.parse(JSON.stringify(typicalWeek)) : null;
@@ -3221,6 +3315,9 @@ function restoreAllData(data) {
     renderMNWatchlist();
     renderMNTonight();
   }
+  if (data.fcCards && Array.isArray(data.fcCards)) { fcCards.length = 0; data.fcCards.forEach(c => fcCards.push(c)); }
+  if (data.fcDecks && Array.isArray(data.fcDecks)) { fcDecks.length = 0; data.fcDecks.forEach(d => { if(!fcDecks.includes(d)) fcDecks.push(d); }); }
+  renderFcDeckSelect(); renderFcCards();
   // restore weekly view
   if (data.weekPlans) { WEEK_DAYS.forEach(d => { if (data.weekPlans[d] !== undefined) weekPlans[d] = data.weekPlans[d]; }); }
   if (data.weekRecurring) { WEEK_DAYS.forEach(d => { if (data.weekRecurring[d]) weekRecurring[d] = data.weekRecurring[d]; }); }
@@ -3285,6 +3382,7 @@ async function sbLoad() {
     document.getElementById('driveSaveBtn').style.display = 'block';
   } finally {
     sbIsLoading = false;
+    setTimeout(renderBriefing, 200);
   }
 }
 
@@ -3311,6 +3409,8 @@ function archiveBrainDump() {
 }
 function renderBrainDumpArchive() {
   const el = document.getElementById('brainDumpArchive');
+  const countEl = document.getElementById('brainDumpCount');
+  if (countEl) countEl.textContent = brainDumpNotes.length + ' note' + (brainDumpNotes.length === 1 ? '' : 's');
   if (!brainDumpNotes.length) { el.innerHTML = ''; return; }
   el.innerHTML = brainDumpNotes.map((n,i) => `
     <div class="note-entry" id="bdnote-${i}">
@@ -3892,14 +3992,14 @@ function renderTTWeekSummary() {
 // ── MOVIE NIGHT ───────────────────────────────────
 const MN_DAYS = [
   { day: 'Monday',    genre: 'mystery',     label: 'Mystery',     emoji: '🔍', color: '#503c8c' },
-  { day: 'Tuesday',   genre: 'thriller',    label: 'Thriller',    emoji: '🔪', color: '#b83232' },
-  { day: 'Wednesday', genre: 'western',     label: 'Western',     emoji: '🤠', color: '#7a5e32' },
+  { day: 'Tuesday',   genre: 'crime',       label: 'Crime',       emoji: '🔍', color: '#b83232' },
+  { day: 'Wednesday', genre: 'comedy',      label: 'Comedy',      emoji: '😂', color: '#7a5e32' },
   { day: 'Thursday',  genre: 'throwback',   label: 'Throwback',   emoji: '📽', color: '#2a6480' },
-  { day: 'Friday',    genre: 'romance',     label: 'Romance',     emoji: '🌹', color: '#b4508c' },
-  { day: 'Saturday',  genre: 'scifi',       label: 'Sci-Fi',      emoji: '🚀', color: '#4a78b4' },
+  { day: 'Friday',    genre: 'drama',       label: 'Drama',       emoji: '🎭', color: '#b4508c' },
+  { day: 'Saturday',  genre: 'romance',     label: 'Romance',     emoji: '🌹', color: '#4a78b4' },
   { day: 'Sunday',    genre: 'documentary', label: 'Documentary', emoji: '🎞', color: '#3d7a52' }
 ];
-const movieWatchlist = { mystery:[], thriller:[], western:[], throwback:[], romance:[], scifi:[], documentary:[] };
+const movieWatchlist = { mystery:[], crime:[], comedy:[], throwback:[], drama:[], romance:[], documentary:[] };
 
 function mnTonight() {
   const dayIdx = (new Date().getDay() + 6) % 7; // 0=Mon
@@ -3912,6 +4012,8 @@ function renderMNTonight() {
   const next = MN_DAYS[nextIdx];
   document.getElementById('mnTonightEmoji').textContent = tonight.emoji;
   document.getElementById('mnTonightLabel').textContent = tonight.day + ' — ' + tonight.label + ' Night';
+  const pickEl = document.getElementById('mnPickResult');
+  if (pickEl) pickEl.textContent = '';
   // find next unwatched film
   const unwatched = (movieWatchlist[tonight.genre]||[]).filter(m => !m.watched);
   document.getElementById('mnTonightNext').textContent = unwatched.length
@@ -4007,6 +4109,164 @@ function quickAddMovie(genre) {
 
 renderMNWatchlist();
 renderMNTonight();
+
+
+// ── FLASHCARDS ────────────────────────────────────
+const FC_DEFAULT_DECKS = ['Words','Facts','Geography','History','Other'];
+const fcDecks = [...FC_DEFAULT_DECKS];
+const fcCards = [];
+let fcActiveDeck = 'All';
+let fcQuizQueue = [];
+let fcQuizIdx = 0;
+let fcQuizFlipped = false;
+let fcQuizCorrect = 0;
+
+function renderFcDeckSelect() {
+  ['fcDeck','fcQuizDeck'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = fcDecks.map(d => '<option value="'+d+'">'+d+'</option>').join('');
+  });
+  const filterEl = document.getElementById('fcDeckFilter');
+  if (filterEl) {
+    filterEl.innerHTML = ['All',...fcDecks].map(function(d) {
+      const active = d===fcActiveDeck;
+      return '<button class="btn bsm '+(active?'bd':'')+'" onclick="setFcDeck(this.dataset.deck)" data-deck="'+d+'" style="'+(active?'background:var(--txt);color:var(--surf)':'')+'">'+d+'</button>';
+    }).join('');
+  }
+}
+function setFcDeck(deckOrEl) { fcActiveDeck = (typeof deckOrEl === 'string') ? deckOrEl : deckOrEl.dataset.deck; renderFcDeckSelect(); renderFcCards(); }
+function addFcDeck() {
+  const name = document.getElementById('fcNewDeck').value.trim();
+  if (!name || fcDecks.includes(name)) return;
+  fcDecks.push(name); document.getElementById('fcNewDeck').value = '';
+  renderFcDeckSelect(); scheduleAutoSave();
+}
+function addFcCard() {
+  const front = document.getElementById('fcFront').value.trim();
+  const back = document.getElementById('fcBack').value.trim();
+  const deck = document.getElementById('fcDeck').value;
+  if (!front || !back) return;
+  fcCards.unshift({ id: Date.now().toString(), front, back, deck, score: 0 });
+  document.getElementById('fcFront').value = '';
+  document.getElementById('fcBack').value = '';
+  renderFcCards(); scheduleAutoSave();
+}
+function renderFcCards() {
+  const el = document.getElementById('fcCardList');
+  if (!el) return;
+  const filtered = fcActiveDeck === 'All' ? fcCards : fcCards.filter(function(c){ return c.deck === fcActiveDeck; });
+  if (!filtered.length) { el.innerHTML = '<div class="empty">No cards'+(fcActiveDeck !== 'All' ? ' in '+fcActiveDeck : '')+' yet.</div>'; return; }
+  const stars = ['new','★','★★','★★★'];
+  const items = filtered.map(function(c) {
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.style.cssText = 'margin-bottom:6px;padding:10px 14px';
+    div.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px"><div style="flex:1"><div style="font-size:12px;font-weight:500;margin-bottom:3px">'+c.front+'</div><div style="font-size:11.5px;color:var(--soft)">'+c.back+'</div></div><div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><span style="font-size:9px;padding:1px 6px;border-radius:3px;border:1px solid var(--bdr);color:var(--dim)">'+c.deck+'</span><span style="font-size:10px;color:var(--deadline)">'+stars[c.score||0]+'</span><div class="ov-del" data-id="'+c.id+'">✕</div></div></div>';
+    div.querySelector('.ov-del').addEventListener('click', function(){ deleteFcCard(this.dataset.id); });
+    return div;
+  });
+  el.innerHTML = '';
+  items.forEach(function(item){ el.appendChild(item); });
+}
+
+
+function deleteFcCard(id) {
+  const idx = fcCards.findIndex(c => c.id === id);
+  if (idx !== -1) fcCards.splice(idx, 1);
+  renderFcCards(); scheduleAutoSave();
+}
+function beginQuiz() {
+  const deckEl = document.getElementById('fcQuizDeck');
+  if (!deckEl) return;
+  const deck = deckEl.value;
+  const pool = fcCards.filter(c => deck === 'All' || c.deck === deck);
+  if (!pool.length) { alert('No cards in this deck yet.'); return; }
+  fcQuizQueue = [...pool].sort((a,b) => (a.score||0) - (b.score||0));
+  fcQuizIdx = 0; fcQuizCorrect = 0;
+  document.getElementById('fcQuizSetup').style.display = 'none';
+  document.getElementById('fcQuizResult').style.display = 'none';
+  document.getElementById('fcQuizActive').style.display = 'block';
+  showFcCard();
+}
+function showFcCard() {
+  if (fcQuizIdx >= fcQuizQueue.length) { endQuiz(); return; }
+  const card = fcQuizQueue[fcQuizIdx];
+  fcQuizFlipped = false;
+  document.getElementById('fcQuizProgress').textContent = (fcQuizIdx+1)+' of '+fcQuizQueue.length;
+  document.getElementById('fcQuizSide').textContent = 'FRONT — click to flip';
+  document.getElementById('fcQuizText').textContent = card.front;
+  document.getElementById('fcQuizActions').style.display = 'none';
+}
+function flipFcCard() {
+  if (fcQuizFlipped) return;
+  fcQuizFlipped = true;
+  const card = fcQuizQueue[fcQuizIdx];
+  document.getElementById('fcQuizSide').textContent = 'BACK';
+  document.getElementById('fcQuizText').textContent = card.back;
+  document.getElementById('fcQuizActions').style.display = 'block';
+}
+function fcAnswer(correct) {
+  const card = fcQuizQueue[fcQuizIdx];
+  const real = fcCards.find(c => c.id === card.id);
+  if (real) real.score = correct ? Math.min(3,(real.score||0)+1) : Math.max(0,(real.score||0)-1);
+  if (correct) fcQuizCorrect++;
+  fcQuizIdx++; showFcCard(); scheduleAutoSave();
+}
+function endQuiz() {
+  document.getElementById('fcQuizActive').style.display = 'none';
+  document.getElementById('fcQuizResult').style.display = 'block';
+  document.getElementById('fcResultScore').textContent = fcQuizCorrect+' / '+fcQuizQueue.length+' correct';
+  document.getElementById('fcResultDetail').textContent = Math.round((fcQuizCorrect/fcQuizQueue.length)*100)+'% — '+(fcQuizCorrect===fcQuizQueue.length?'Perfect! 🌟':fcQuizCorrect>=fcQuizQueue.length*0.7?'Great work.':'Keep practising.');
+  renderFcCards();
+}
+renderFcDeckSelect(); renderFcCards();
+
+// ── MORNING BRIEFING ──────────────────────────────
+function renderBriefing() {
+  const now = new Date();
+  const days = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
+  const mons = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  const dateEl = document.getElementById('briefingDate');
+  if (dateEl) dateEl.textContent = days[now.getDay()]+', '+mons[now.getMonth()]+' '+now.getDate();
+  const urgentEl = document.getElementById('briefingUrgent');
+  if (urgentEl) {
+    const cards = document.querySelectorAll('#sc-urgent .tcard:not(.done)');
+    urgentEl.innerHTML = cards.length ? Array.from(cards).slice(0,3).map(c=>{const t=c.querySelector('.tc-title');return t?'<div style="margin-bottom:3px">· '+t.textContent+'</div>':''}).join('') : 'Nothing urgent.';
+  }
+  const workEl = document.getElementById('briefingWork');
+  if (workEl) {
+    const items = document.querySelectorAll('#wk-main-list .ov-item:not(.done)');
+    workEl.innerHTML = items.length ? Array.from(items).slice(0,3).map(item=>{const t=item.querySelector('.ov-txt');return t?'<div style="margin-bottom:3px">· '+t.textContent.trim().split('\n')[0]+'</div>':''}).join('') : 'No work tasks.';
+  }
+  const ovEl = document.getElementById('briefingOverflow');
+  if (ovEl) {
+    const ovItems = document.querySelectorAll('#ovList .ov-item:not(.done)');
+    ovEl.innerHTML = ovItems.length ? Array.from(ovItems).slice(0,3).map(item=>{const t=item.querySelector('.ov-txt');return t?'<div style="margin-bottom:3px">· '+t.textContent+'</div>':''}).join('') : 'Nothing in overflow.';
+  }
+}
+setInterval(renderBriefing, 30000);
+
+// ── BRAIN DUMP FOLDER ─────────────────────────────
+function toggleBrainDumpFolder() {
+  const archive = document.getElementById('brainDumpArchive');
+  const arrow = document.getElementById('brainDumpFolderArrow');
+  if (!archive) return;
+  const isOpen = archive.style.display !== 'none';
+  archive.style.display = isOpen ? 'none' : 'block';
+  if (arrow) arrow.style.transform = isOpen ? '' : 'rotate(90deg)';
+}
+
+// ── MOVIE NIGHT RANDOMIZER ────────────────────────
+function mnPickOne() {
+  const tonight = mnTonight();
+  const unwatched = (movieWatchlist[tonight.genre]||[]).filter(f => !f.watched);
+  const resultEl = document.getElementById('mnPickResult');
+  if (!resultEl) return;
+  if (!unwatched.length) { resultEl.textContent = 'Nothing on the watchlist yet — add some below.'; return; }
+  const pick = unwatched[Math.floor(Math.random() * unwatched.length)];
+  resultEl.textContent = '🎬 ' + pick.title + (pick.year?' ('+pick.year+')':'') + (pick.notes?' — '+pick.notes:'');
+}
 
 window.addEventListener('load', () => { setTimeout(sbLoad, 500); });
 </script>
