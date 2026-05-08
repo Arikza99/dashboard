@@ -875,16 +875,89 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
 <div class="page" id="p-tracker">
   <div class="ph"><div class="pl">Growth</div><div class="pt">Media Tracker</div></div>
   <div class="tabs">
-    <div class="tab active" onclick="stab('tr','books',this)">Books</div>
-    <div class="tab" onclick="stab('tr','films',this)">Films</div>
+    <div class="tab active" onclick="stab('tr','rj',this)">Reading Journal</div>
+    <div class="tab" onclick="stab('tr','articles',this)">Articles &amp; Essays</div>
+    <div class="tab" onclick="stab('tr','podcasts',this)">Podcasts</div>
   </div>
-  <div class="tc active" id="tr-books">
-    <div class="card" style="margin-bottom:10px"><div style="display:flex;gap:7px"><input type="text" id="bTi" placeholder="Title" style="flex:2;padding:7px 9px"><input type="text" id="bAu" placeholder="Author" style="flex:1;padding:7px 9px"><select id="bSt"><option value="progress">reading</option><option value="done">finished</option><option value="want">want to read</option></select><button class="btn" onclick="addMedia('books')">+ Add</button></div></div>
-    <div id="tr-books-list"><div class="empty">No books yet.</div></div>
+
+  <!-- READING JOURNAL -->
+  <div class="tc active" id="tr-rj">
+    <div class="tabs" style="margin-bottom:14px;border-bottom:1px solid var(--bdr)">
+      <div class="tab active" onclick="stab('rj','current',this)" style="font-size:11px">Currently reading</div>
+      <div class="tab" onclick="stab('rj','finished',this)" style="font-size:11px">Finished</div>
+      <div class="tab" onclick="stab('rj','tbr',this)" style="font-size:11px">To be read</div>
+    </div>
+
+    <!-- Currently reading -->
+    <div class="tc active" id="rj-current">
+      <div class="card sec">
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <input type="text" id="rjTitle" placeholder="Title" style="flex:2;min-width:120px;padding:7px 9px">
+          <input type="text" id="rjAuthor" placeholder="Author" style="flex:1;padding:7px 9px">
+          <input type="number" id="rjPages" placeholder="Pages" min="1" style="width:80px;flex:none;padding:7px 9px">
+          <button class="btn bd" onclick="addRjBook()">+ Add</button>
+        </div>
+      </div>
+      <div id="rj-current-list"><div class="empty">No books currently reading.</div></div>
+    </div>
+
+    <!-- Finished -->
+    <div class="tc" id="rj-finished">
+      <div id="rj-finished-list"><div class="empty">No finished books yet.</div></div>
+    </div>
+
+    <!-- To Be Read -->
+    <div class="tc" id="rj-tbr">
+      <div class="card sec">
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <input type="text" id="tbrTitle" placeholder="Title" style="flex:2;min-width:120px;padding:7px 9px">
+          <input type="text" id="tbrAuthor" placeholder="Author" style="flex:1;padding:7px 9px">
+          <input type="text" id="tbrNote" placeholder="Why you want to read it..." style="flex:2;padding:7px 9px">
+          <button class="btn" onclick="addTbrBook()">+ Add</button>
+        </div>
+      </div>
+      <div id="rj-tbr-list"><div class="empty">Nothing on the TBR list yet.</div></div>
+    </div>
   </div>
-  <div class="tc" id="tr-films">
-    <div class="card" style="margin-bottom:10px"><div style="display:flex;gap:7px"><input type="text" id="fTi" placeholder="Film title" style="flex:2;padding:7px 9px"><input type="text" id="fDi" placeholder="Director" style="flex:1;padding:7px 9px"><select id="fSt"><option value="done">watched</option><option value="want">want to watch</option><option value="progress">watching</option></select><button class="btn" onclick="addMedia('films')">+ Add</button></div></div>
-    <div id="tr-films-list"><div class="empty">No films yet.</div></div>
+
+  <!-- ARTICLES & ESSAYS -->
+  <div class="tc" id="tr-articles">
+    <div class="card sec">
+      <div style="display:flex;gap:7px;flex-wrap:wrap">
+        <input type="text" id="artTitle" placeholder="Title" style="flex:2;min-width:140px;padding:7px 9px">
+        <input type="text" id="artAuthor" placeholder="Author / Publication" style="flex:1;padding:7px 9px">
+        <select id="artType" style="padding:7px 9px">
+          <option>Article</option>
+          <option>Essay</option>
+          <option>Video Essay</option>
+          <option>Academic Paper</option>
+          <option>Other</option>
+        </select>
+        <input type="url" id="artUrl" placeholder="URL (optional)" style="flex:1;padding:7px 9px">
+        <button class="btn bd" onclick="addArticle()">+ Add</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+      <button class="btn bsm" onclick="setArtFilter('all')" id="artf-all">All</button>
+      <button class="btn bsm" onclick="setArtFilter('To Read')" id="artf-toread">To Read</button>
+      <button class="btn bsm" onclick="setArtFilter('In Progress')" id="artf-inprogress">In Progress</button>
+      <button class="btn bsm" onclick="setArtFilter('Done')" id="artf-done">Done</button>
+      <button class="btn bsm" onclick="setArtFilter('Video Essay')" id="artf-video">Video Essays</button>
+    </div>
+    <div id="tr-articles-list"><div class="empty">No articles or essays yet.</div></div>
+  </div>
+
+  <!-- PODCASTS -->
+  <div class="tc" id="tr-podcasts">
+    <div class="card sec">
+      <div style="display:flex;gap:7px;flex-wrap:wrap">
+        <input type="text" id="podShow" placeholder="Show name" style="flex:2;min-width:120px;padding:7px 9px">
+        <input type="text" id="podEp" placeholder="Episode (optional)" style="flex:2;padding:7px 9px">
+        <input type="text" id="podNote" placeholder="Note / takeaway (optional)" style="flex:2;padding:7px 9px">
+        <button class="btn bd" onclick="addPodcast()">+ Add</button>
+      </div>
+    </div>
+    <div id="tr-podcasts-list"><div class="empty">No podcasts yet.</div></div>
   </div>
 </div>
 
@@ -2701,27 +2774,303 @@ function logPayment(i){
 function remCC(i){ccData.splice(i,1);rendCC(); scheduleAutoSave();}
 
 // ── MEDIA ─────────────────────────────────────────
-const media={books:[],films:[],music:[]};
-const mIco={books:'📖',films:'🎬',music:'🎵'};
-const mLbl={books:{done:'finished',progress:'reading',want:'want to read'},films:{done:'watched',progress:'watching',want:'want to watch'},music:{done:'listened',progress:'revisiting',want:'want to listen'}};
-const mF={books:{t:'bTi',s:'bAu',st:'bSt'},films:{t:'fTi',s:'fDi',st:'fSt'},music:{t:'aTi',s:'aAr',st:'aSt'}};
-function rendMedia(type){
-  const el=document.getElementById('tr-'+type+'-list');
-  if(!media[type].length){el.innerHTML=`<div class="empty">No ${type} yet.</div>`;return;}
-  el.innerHTML=media[type].map((it,i)=>`
-    <div class="m-item">
-      <div class="m-ico">${mIco[type]}</div>
-      <div class="m-body"><div class="m-title">${it.t}</div><div class="m-meta">${it.s}</div></div>
-      <div class="m-st ${it.st}">${mLbl[type][it.st]}</div>
-      <div class="ov-del" style="opacity:.5;font-size:11px;cursor:pointer;padding:0 4px;align-self:flex-start;margin-top:2px" onclick="deleteMedia('${type}',${i})">✕</div>
-    </div>`).join('');
+// ── MEDIA TRACKER ────────────────────────────────
+// Reading Journal
+const rjCurrent = []; // {id, title, author, pages, currentPage, notes, quotes[], startDate}
+const rjFinished = []; // {id, title, author, pages, notes, quotes[], finishDate, rating}
+const rjTbr = []; // {id, title, author, note, upNext}
+// Articles & Essays
+const articles = []; // {id, title, author, type, url, status}
+let artFilter = 'all';
+// Podcasts
+const podcasts = []; // {id, show, episode, note, status}
+
+// ── READING JOURNAL ──────────────────────────────
+function addRjBook() {
+  const title = document.getElementById('rjTitle').value.trim();
+  const author = document.getElementById('rjAuthor').value.trim();
+  const pages = parseInt(document.getElementById('rjPages').value) || 0;
+  if (!title) return;
+  const now = new Date();
+  const dateStr = MONTHS[now.getMonth()].slice(0,3) + ' ' + now.getDate();
+  rjCurrent.unshift({ id: Date.now().toString(), title, author, pages, currentPage: 0, notes: '', quotes: [], startDate: dateStr });
+  ['rjTitle','rjAuthor','rjPages'].forEach(id => document.getElementById(id).value = '');
+  rendRjCurrent();
 }
-function deleteMedia(type, idx) {
-  media[type].splice(idx, 1);
-  rendMedia(type);
+
+function rendRjCurrent() {
+  const el = document.getElementById('rj-current-list');
+  if (!el) return;
+  if (!rjCurrent.length) { el.innerHTML = '<div class="empty">No books currently reading.</div>'; return; }
+  el.innerHTML = '';
+  rjCurrent.forEach(function(book) {
+    const pct = book.pages > 0 ? Math.min(100, Math.round((book.currentPage / book.pages) * 100)) : 0;
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.cssText = 'margin-bottom:12px;padding:16px 18px';
+    card.innerHTML =
+      '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">' +
+        '<div style="display:flex;align-items:center;gap:10px">' +
+          '<span style="font-size:22px">📖</span>' +
+          '<div><div style="font-size:13px;font-weight:500">' + book.title + '</div>' +
+          '<div style="font-size:11px;color:var(--soft)">' + (book.author || '') + (book.startDate ? ' · started ' + book.startDate : '') + '</div></div>' +
+        '</div>' +
+        '<button class="btn bsm" data-id="' + book.id + '" onclick="markFinished(this.dataset.id)">Mark finished</button>' +
+      '</div>' +
+      (book.pages > 0 ? '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">' +
+        '<div class="pb" style="flex:1"><div class="pbf" style="width:' + pct + '%;background:var(--creative)"></div></div>' +
+        '<div style="font-size:10px;color:var(--soft);flex-shrink:0">p. ' +
+          '<input type="number" value="' + book.currentPage + '" min="0" max="' + book.pages + '" data-id="' + book.id + '" ' +
+          'style="width:45px;padding:1px 4px;font-size:10px;font-family:var(--mono);border:1px solid var(--bdr);border-radius:2px;background:var(--bg);color:var(--txt)" ' +
+          'onchange="updateRjPage(this.dataset.id, this.value)"> of ' + book.pages + ' · ' + pct + '%</div>' +
+      '</div>' : '') +
+      '<textarea data-id="' + book.id + '" placeholder="Notes on this book..." ' +
+        'style="width:100%;background:var(--surf2);border:1px solid var(--bdr);border-radius:4px;padding:8px 10px;font-size:11.5px;font-family:var(--mono);color:var(--txt);resize:vertical;min-height:60px;outline:none;margin-bottom:10px" ' +
+        'oninput="updateRjNotes(this.dataset.id, this.value)">' + (book.notes || '') + '</textarea>' +
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">' +
+        '<span style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)">Quotes &amp; Words</span>' +
+        '<input type="text" data-id="' + book.id + '" placeholder="Add a quote or word..." ' +
+          'style="flex:1;padding:4px 8px;font-size:11px;background:var(--surf2);border:1px solid var(--bdr);border-radius:3px;font-family:var(--mono);color:var(--txt);outline:none" ' +
+          'onkeydown="if(event.key===&#39;Enter&#39;)addRjQuote(this.dataset.id,this)">' +
+        '<button class="btn bsm" data-id="' + book.id + '" onclick="addRjQuote(this.dataset.id, this.previousElementSibling)">+ Add</button>' +
+      '</div>' +
+      '<div id="rjq-' + book.id + '">' + renderRjQuotes(book) + '</div>' +
+      '<div style="text-align:right;margin-top:8px"><button class="btn bsm" style="color:var(--urgent)" data-id="' + book.id + '" onclick="deleteRjCurrent(this.dataset.id)">Remove</button></div>';
+    el.appendChild(card);
+  });
+}
+
+function renderRjQuotes(book) {
+  if (!book.quotes || !book.quotes.length) return '';
+  return book.quotes.map(function(q, i) {
+    return '<div style="font-size:11.5px;color:var(--mid);font-style:italic;padding:3px 0;border-bottom:1px solid var(--bdr)">"' + q + '"</div>';
+  }).join('');
+}
+
+function updateRjPage(id, val) {
+  const book = rjCurrent.find(function(b){ return b.id === id; });
+  if (book) { book.currentPage = parseInt(val) || 0; rendRjCurrent(); scheduleAutoSave(); }
+}
+
+function updateRjNotes(id, val) {
+  const book = rjCurrent.find(function(b){ return b.id === id; });
+  if (book) { book.notes = val; scheduleAutoSave(); }
+}
+
+function addRjQuote(id, inputEl) {
+  const book = rjCurrent.find(function(b){ return b.id === id; });
+  if (!book || !inputEl || !inputEl.value.trim()) return;
+  if (!book.quotes) book.quotes = [];
+  book.quotes.push(inputEl.value.trim());
+  inputEl.value = '';
+  const quotesEl = document.getElementById('rjq-' + id);
+  if (quotesEl) quotesEl.innerHTML = renderRjQuotes(book);
   scheduleAutoSave();
 }
-function addMedia(type){const f=mF[type],t=document.getElementById(f.t).value.trim(),s=document.getElementById(f.s).value.trim(),st=document.getElementById(f.st).value;if(!t)return;media[type].unshift({t,s,st});document.getElementById(f.t).value='';document.getElementById(f.s).value='';rendMedia(type);}
+
+function markFinished(id) {
+  const idx = rjCurrent.findIndex(function(b){ return b.id === id; });
+  if (idx === -1) return;
+  const book = rjCurrent[idx];
+  const rating = prompt('Rate "' + book.title + '" (1–5 stars):', '5');
+  const now = new Date();
+  const finishDate = MONTHS[now.getMonth()].slice(0,3) + ' ' + now.getDate() + ', ' + now.getFullYear();
+  rjFinished.unshift({ id: book.id, title: book.title, author: book.author, pages: book.pages, notes: book.notes, quotes: book.quotes || [], finishDate: finishDate, rating: parseInt(rating) || 0 });
+  rjCurrent.splice(idx, 1);
+  rendRjCurrent();
+  rendRjFinished();
+  scheduleAutoSave();
+}
+
+function deleteRjCurrent(id) {
+  const idx = rjCurrent.findIndex(function(b){ return b.id === id; });
+  if (idx !== -1) rjCurrent.splice(idx, 1);
+  rendRjCurrent(); scheduleAutoSave();
+}
+
+function rendRjFinished() {
+  const el = document.getElementById('rj-finished-list');
+  if (!el) return;
+  if (!rjFinished.length) { el.innerHTML = '<div class="empty">No finished books yet.</div>'; return; }
+  const stars = function(n) { let s = ''; for(let i=1;i<=5;i++) s += '<span style="color:'+(i<=n?'var(--deadline)':'var(--bdr2)')+'">★</span>'; return s; };
+  el.innerHTML = rjFinished.map(function(book) {
+    return '<div class="card" style="margin-bottom:10px;padding:14px 16px">' +
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">' +
+        '<span style="font-size:20px">📖</span>' +
+        '<div style="flex:1"><div style="font-size:13px;font-weight:500">' + book.title + '</div>' +
+        '<div style="font-size:11px;color:var(--soft)">' + (book.author||'') + ' · finished ' + book.finishDate + '</div></div>' +
+        '<div>' + stars(book.rating) + '</div>' +
+      '</div>' +
+      (book.notes ? '<div style="font-size:11.5px;color:var(--mid);margin-bottom:6px">' + book.notes + '</div>' : '') +
+      (book.quotes && book.quotes.length ? '<div>' + book.quotes.map(function(q){ return '<div style="font-size:11px;color:var(--soft);font-style:italic;padding:2px 0">"' + q + '"</div>'; }).join('') + '</div>' : '') +
+    '</div>';
+  }).join('');
+}
+
+// TBR
+function addTbrBook() {
+  const title = document.getElementById('tbrTitle').value.trim();
+  const author = document.getElementById('tbrAuthor').value.trim();
+  const note = document.getElementById('tbrNote').value.trim();
+  if (!title) return;
+  rjTbr.push({ id: Date.now().toString(), title, author, note, upNext: false });
+  ['tbrTitle','tbrAuthor','tbrNote'].forEach(function(id){ document.getElementById(id).value = ''; });
+  rendRjTbr(); scheduleAutoSave();
+}
+
+function rendRjTbr() {
+  const el = document.getElementById('rj-tbr-list');
+  if (!el) return;
+  if (!rjTbr.length) { el.innerHTML = '<div class="empty">Nothing on the TBR list yet.</div>'; return; }
+  const sorted = [...rjTbr].sort(function(a,b){ return (b.upNext?1:0)-(a.upNext?1:0); });
+  el.innerHTML = '';
+  sorted.forEach(function(book) {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.cssText = 'margin-bottom:8px;padding:12px 14px;' + (book.upNext ? 'border-color:var(--creative);' : '');
+    card.innerHTML =
+      '<div style="display:flex;align-items:center;gap:10px">' +
+        '<span style="font-size:18px">📚</span>' +
+        '<div style="flex:1">' +
+          '<div style="font-size:12.5px;font-weight:500">' + book.title + '</div>' +
+          (book.author ? '<div style="font-size:11px;color:var(--soft)">' + book.author + '</div>' : '') +
+          (book.note ? '<div style="font-size:11px;color:var(--mid);margin-top:2px">' + book.note + '</div>' : '') +
+        '</div>' +
+        '<div style="display:flex;gap:6px;flex-shrink:0">' +
+          '<button class="btn bsm" style="color:' + (book.upNext?'var(--creative)':'var(--dim)') + '" data-id="' + book.id + '" onclick="toggleTbrUpNext(this.dataset.id)">' + (book.upNext?'★ Up next':'☆ Up next') + '</button>' +
+          '<button class="btn bsm" data-id="' + book.id + '" onclick="startReading(this.dataset.id)">Start reading</button>' +
+          '<button class="btn bsm" style="color:var(--urgent)" data-id="' + book.id + '" onclick="deleteTbr(this.dataset.id)">✕</button>' +
+        '</div>' +
+      '</div>';
+    el.appendChild(card);
+  });
+}
+
+function toggleTbrUpNext(id) {
+  const book = rjTbr.find(function(b){ return b.id === id; });
+  if (book) { book.upNext = !book.upNext; rendRjTbr(); scheduleAutoSave(); }
+}
+
+function startReading(id) {
+  const idx = rjTbr.findIndex(function(b){ return b.id === id; });
+  if (idx === -1) return;
+  const book = rjTbr[idx];
+  const now = new Date();
+  const dateStr = MONTHS[now.getMonth()].slice(0,3) + ' ' + now.getDate();
+  rjCurrent.unshift({ id: book.id, title: book.title, author: book.author, pages: 0, currentPage: 0, notes: book.note || '', quotes: [], startDate: dateStr });
+  rjTbr.splice(idx, 1);
+  rendRjTbr(); rendRjCurrent(); scheduleAutoSave();
+}
+
+function deleteTbr(id) {
+  const idx = rjTbr.findIndex(function(b){ return b.id === id; });
+  if (idx !== -1) rjTbr.splice(idx, 1);
+  rendRjTbr(); scheduleAutoSave();
+}
+
+// ── ARTICLES & ESSAYS ────────────────────────────
+function addArticle() {
+  const title = document.getElementById('artTitle').value.trim();
+  const author = document.getElementById('artAuthor').value.trim();
+  const type = document.getElementById('artType').value;
+  const url = document.getElementById('artUrl').value.trim();
+  if (!title) return;
+  articles.unshift({ id: Date.now().toString(), title, author, type, url, status: 'To Read' });
+  ['artTitle','artAuthor','artUrl'].forEach(function(id){ document.getElementById(id).value = ''; });
+  rendArticles(); scheduleAutoSave();
+}
+
+function setArtFilter(f) {
+  artFilter = f;
+  ['all','toread','inprogress','done','video'].forEach(function(k){
+    const el = document.getElementById('artf-' + k);
+    if (el) { el.style.background = ''; el.style.color = ''; }
+  });
+  const activeId = f === 'all' ? 'artf-all' : f === 'To Read' ? 'artf-toread' : f === 'In Progress' ? 'artf-inprogress' : f === 'Done' ? 'artf-done' : 'artf-video';
+  const activeEl = document.getElementById(activeId);
+  if (activeEl) { activeEl.style.background = 'var(--txt)'; activeEl.style.color = 'var(--surf)'; }
+  rendArticles();
+}
+
+function cycleArtStatus(id) {
+  const art = articles.find(function(a){ return a.id === id; });
+  if (!art) return;
+  const cycle = ['To Read','In Progress','Done'];
+  art.status = cycle[(cycle.indexOf(art.status) + 1) % cycle.length];
+  rendArticles(); scheduleAutoSave();
+}
+
+function rendArticles() {
+  const el = document.getElementById('tr-articles-list');
+  if (!el) return;
+  let filtered = articles;
+  if (artFilter === 'Video Essay') filtered = articles.filter(function(a){ return a.type === 'Video Essay'; });
+  else if (artFilter !== 'all') filtered = articles.filter(function(a){ return a.status === artFilter; });
+  if (!filtered.length) { el.innerHTML = '<div class="empty">No articles' + (artFilter !== 'all' ? ' matching this filter' : '') + ' yet.</div>'; return; }
+  const statusColor = { 'To Read': 'var(--soft)', 'In Progress': 'var(--deadline)', 'Done': 'var(--creative)' };
+  el.innerHTML = filtered.map(function(art) {
+    const titleHtml = art.url ? '<a href="' + art.url + '" target="_blank" style="color:var(--txt);text-decoration:underline;text-decoration-color:var(--bdr2)">' + art.title + '</a>' : art.title;
+    return '<div class="card" style="margin-bottom:6px;padding:10px 14px;display:flex;align-items:center;gap:10px">' +
+      '<div style="flex:1">' +
+        '<div style="font-size:12.5px;font-weight:500;margin-bottom:2px">' + titleHtml + '</div>' +
+        '<div style="font-size:10px;color:var(--soft)">' + (art.author||'') + (art.author && art.type ? ' · ' : '') + art.type + '</div>' +
+      '</div>' +
+      '<div style="font-size:10px;padding:2px 8px;border-radius:3px;border:1px solid var(--bdr);cursor:pointer;color:' + statusColor[art.status] + '" data-id="' + art.id + '" onclick="cycleArtStatus(this.dataset.id)">' + art.status + '</div>' +
+      '<div class="ov-del" data-id="' + art.id + '" style="opacity:.5">✕</div>' +
+    '</div>';
+  }).join('');
+  el.querySelectorAll('.ov-del').forEach(function(btn){ btn.addEventListener('click', function(){ deleteArticle(this.dataset.id); }); });
+}
+
+function deleteArticle(id) {
+  const idx = articles.findIndex(function(a){ return a.id === id; });
+  if (idx !== -1) articles.splice(idx, 1);
+  rendArticles(); scheduleAutoSave();
+}
+
+// ── PODCASTS ─────────────────────────────────────
+function addPodcast() {
+  const show = document.getElementById('podShow').value.trim();
+  const episode = document.getElementById('podEp').value.trim();
+  const note = document.getElementById('podNote').value.trim();
+  if (!show) return;
+  podcasts.unshift({ id: Date.now().toString(), show, episode, note, status: 'Want to Listen' });
+  ['podShow','podEp','podNote'].forEach(function(id){ document.getElementById(id).value = ''; });
+  rendPodcasts(); scheduleAutoSave();
+}
+
+function cyclePodStatus(id) {
+  const pod = podcasts.find(function(p){ return p.id === id; });
+  if (!pod) return;
+  const cycle = ['Want to Listen','Listening','Listened'];
+  pod.status = cycle[(cycle.indexOf(pod.status) + 1) % cycle.length];
+  rendPodcasts(); scheduleAutoSave();
+}
+
+function rendPodcasts() {
+  const el = document.getElementById('tr-podcasts-list');
+  if (!el) return;
+  if (!podcasts.length) { el.innerHTML = '<div class="empty">No podcasts yet.</div>'; return; }
+  const statusColor = { 'Want to Listen': 'var(--soft)', 'Listening': 'var(--deadline)', 'Listened': 'var(--creative)' };
+  el.innerHTML = podcasts.map(function(pod) {
+    return '<div class="card" style="margin-bottom:6px;padding:10px 14px;display:flex;align-items:center;gap:10px">' +
+      '<div style="flex:1">' +
+        '<div style="font-size:12.5px;font-weight:500;margin-bottom:2px">' + pod.show + '</div>' +
+        (pod.episode ? '<div style="font-size:11px;color:var(--soft)">' + pod.episode + '</div>' : '') +
+        (pod.note ? '<div style="font-size:11px;color:var(--mid);margin-top:2px">' + pod.note + '</div>' : '') +
+      '</div>' +
+      '<div style="font-size:10px;padding:2px 8px;border-radius:3px;border:1px solid var(--bdr);cursor:pointer;color:' + statusColor[pod.status] + '" data-id="' + pod.id + '" onclick="cyclePodStatus(this.dataset.id)">' + pod.status + '</div>' +
+      '<div class="ov-del" data-id="' + pod.id + '" style="opacity:.5">✕</div>' +
+    '</div>';
+  }).join('');
+  el.querySelectorAll('.ov-del').forEach(function(btn){ btn.addEventListener('click', function(){ deletePodcast(this.dataset.id); }); });
+}
+
+function deletePodcast(id) {
+  const idx = podcasts.findIndex(function(p){ return p.id === id; });
+  if (idx !== -1) podcasts.splice(idx, 1);
+  rendPodcasts(); scheduleAutoSave();
+}
 
 // ── CURRICULUM ────────────────────────────────────
 let curCalOffset = 0;
@@ -3125,7 +3474,11 @@ function collectAllData() {
   };
   data.groceries = Object.values(groceries);
   data.finance = { incomeData, fixedData, envelopes, ccData };
-  data.media = media;
+  data.rjCurrent = rjCurrent.map(function(b){return Object.assign({},b,{quotes:[...(b.quotes||[])]});});
+  data.rjFinished = rjFinished.map(function(b){return Object.assign({},b,{quotes:[...(b.quotes||[])]});});
+  data.rjTbr = rjTbr.map(function(b){return Object.assign({},b);});
+  data.articles = articles.map(function(a){return Object.assign({},a);});
+  data.podcasts = podcasts.map(function(p){return Object.assign({},p);});
   // shopping lists
   data.shopping = {};
   ['wish','clothing','home','other'].forEach(tab => {
@@ -3213,7 +3566,11 @@ function restoreAllData(data) {
     if (data.finance.ccData) { ccData.length = 0; data.finance.ccData.forEach(c => ccData.push(c)); rendCC(); }
     updFinSum();
   }
-  if (data.media) { Object.assign(media, data.media); ['books','films'].forEach(t => rendMedia(t)); }
+  if (data.rjCurrent) { rjCurrent.length=0; data.rjCurrent.forEach(function(b){rjCurrent.push(b);}); rendRjCurrent(); }
+  if (data.rjFinished) { rjFinished.length=0; data.rjFinished.forEach(function(b){rjFinished.push(b);}); rendRjFinished(); }
+  if (data.rjTbr) { rjTbr.length=0; data.rjTbr.forEach(function(b){rjTbr.push(b);}); rendRjTbr(); }
+  if (data.articles) { articles.length=0; data.articles.forEach(function(a){articles.push(a);}); rendArticles(); }
+  if (data.podcasts) { podcasts.length=0; data.podcasts.forEach(function(p){podcasts.push(p);}); rendPodcasts(); }
   // restore main job notes and tasks
   const mainEl = document.getElementById('wk-main-notes');
   if (mainEl && data['workNotes_main'] !== undefined) mainEl.value = data['workNotes_main'];
@@ -4122,11 +4479,10 @@ let fcQuizFlipped = false;
 let fcQuizCorrect = 0;
 
 function renderFcDeckSelect() {
-  ['fcDeck','fcQuizDeck'].forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.innerHTML = fcDecks.map(d => '<option value="'+d+'">'+d+'</option>').join('');
-  });
+  const deckEl = document.getElementById('fcDeck');
+  if (deckEl) deckEl.innerHTML = fcDecks.map(function(d){ return '<option value="'+d+'">'+d+'</option>'; }).join('');
+  const quizEl = document.getElementById('fcQuizDeck');
+  if (quizEl) quizEl.innerHTML = '<option value="All">All decks</option>' + fcDecks.map(function(d){ return '<option value="'+d+'">'+d+'</option>'; }).join('');
   const filterEl = document.getElementById('fcDeckFilter');
   if (filterEl) {
     filterEl.innerHTML = ['All',...fcDecks].map(function(d) {
