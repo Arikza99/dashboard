@@ -2396,14 +2396,34 @@ function dov(e) { e.preventDefault(); e.currentTarget.classList.add('dov'); }
 document.addEventListener('dragleave', e => { if(e.target.classList&&e.target.classList.contains('scards')) e.target.classList.remove('dov'); });
 function drp(e,sprint) { e.preventDefault(); e.currentTarget.classList.remove('dov'); if(!dragId||!tasks[dragId])return; const t=tasks[dragId]; document.getElementById('tc-'+t.id).remove(); t.sprint=sprint; const c=document.getElementById('sc-'+sprint); c.appendChild(mkCard(t)); updCnts(); dragId=null; }
 function submitTask() {
-  const title=document.getElementById('atfTitle').value.trim(); if(!title)return;
-  const role=document.getElementById('atfRole').value;
-  addTask({id:Date.now().toString(),title,sprint:document.getElementById('atfSprint').value,time:document.getElementById('atfTime').value.trim(),due:document.getElementById('atfDue').value.trim(),buffer:document.getElementById('atfBuffer').value.trim(),leadDays:getLd(),done:false,role});
-  ['atfTitle','atfTime','atfDue','atfBuffer'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('atfRole').value='';
-  document.getElementById('ldList').innerHTML=''; ldCount=0;
-  document.getElementById('ldSection').style.display='none';
-  document.getElementById('atf').style.display='none';
+  const titleEl = document.getElementById('atfTitle');
+  const title = titleEl ? titleEl.value.trim() : ''; 
+  if (!title) return;
+  const role = document.getElementById('atfRole').value;
+  addTask({
+    id: Date.now().toString(),
+    title,
+    sprint: document.getElementById('atfSprint').value,
+    time: document.getElementById('atfTime').value.trim(),
+    due: document.getElementById('atfDue').value.trim(),
+    buffer: document.getElementById('atfBuffer').value.trim(),
+    leadDays: getLd(),
+    done: false,
+    role
+  });
+  ['atfTitle','atfTime','atfDue','atfBuffer'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  const roleEl = document.getElementById('atfRole');
+  if (roleEl) roleEl.value = '';
+  const ldList = document.getElementById('ldList');
+  if (ldList) ldList.innerHTML = '';
+  ldCount = 0;
+  const ldSection = document.getElementById('ldSection');
+  if (ldSection) ldSection.style.display = 'none';
+  const atf = document.getElementById('atf');
+  if (atf) atf.style.display = 'none';
 }
 
 
