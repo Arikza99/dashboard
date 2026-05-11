@@ -3524,6 +3524,7 @@ function collectAllData() {
   data.brainDumpNotes = brainDumpNotes.map(n => ({...n}));
   // work
   data.workNoteArchive = { main: workNoteArchive['main'] ? workNoteArchive['main'].map(n=>({...n})) : [] };
+  data.workRoleData = workRoleData.map(r => ({...r, tasks: [...(r.tasks||[])], sections: [...(r.sections||[])], savedNotes: [...(r.savedNotes||[])]}));
   data['workNotes_main'] = document.getElementById('wk-main-notes') ? document.getElementById('wk-main-notes').value : '';
   data.workTasks = { main: Array.from(document.querySelectorAll('#wk-main-list .ov-item')).map(el => ({ text: el.querySelector('.ov-txt') ? el.querySelector('.ov-txt').innerHTML : '', done: el.classList.contains('done') })) };
   data.movieWatchlist = JSON.parse(JSON.stringify(movieWatchlist));
