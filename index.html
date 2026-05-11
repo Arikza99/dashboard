@@ -2570,7 +2570,7 @@ function rendShop(tab) {
     const div = document.createElement('div');
     div.className = 'shop-item' + (item.done ? ' done' : '');
     div.innerHTML =
-      (item.img ? '<img class="shop-img" src="'+item.img+'" alt="">' : '<div class="shop-img-placeholder">🛍</div>')
+      (item.img ? '<img class="shop-img" src="'+item.img+'" alt="">' : '<div class="shop-img-placeholder">🛍</div>') +
       '<div class="shop-body">' +
         '<div class="shop-name">' + item.name + '</div>' +
         (item.note ? '<div class="shop-note">' + item.note + '</div>' : '') +
