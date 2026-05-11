@@ -3683,20 +3683,27 @@ function restoreAllData(data) {
 }
 
 // ── SUPABASE SAVE ─────────────────────────────────
-let sbIsLoading = true; // prevent saving until load completes
+// sbIsLoading stays true until a successful load completes.
+// savingAllowed only flips true after we confirm Supabase responded with real data.
+// This prevents any race condition from overwriting Supabase with empty state.
+let sbIsLoading = true;
+let savingAllowed = false;
 let sbSaveTimer = null;
 
 function scheduleAutoSave() {
-  if (sbIsLoading) return;
+  if (sbIsLoading || !savingAllowed) return;
   clearTimeout(sbSaveTimer);
-  sbSaveTimer = setTimeout(sbSave, 3000); // save 3 seconds after last change
+  sbSaveTimer = setTimeout(sbSave, 3000);
 }
 
 async function sbSave() {
-  if (sbIsLoading) return;
+  if (sbIsLoading || !savingAllowed) return;
   setStatus('saving', 'Saving...');
+  const allData = collectAllData();
+  // Always save to localStorage as a backup before attempting Supabase
+  try { localStorage.setItem('dashboard_backup', JSON.stringify(allData)); } catch(e) {}
   try {
-    const payload = { id: 'main', data: collectAllData(), updated_at: new Date().toISOString() };
+    const payload = { id: 'main', data: allData, updated_at: new Date().toISOString() };
     const res = await fetch(SB_URL + '/rest/v1/dashboard_data', {
       method: 'POST',
       headers: {
@@ -3712,7 +3719,7 @@ async function sbSave() {
     setStatus('connected', 'Saved ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0'));
   } catch(e) {
     console.error('Save error:', e);
-    setStatus('error', 'Save failed');
+    setStatus('error', 'Save failed — backup kept locally');
     setTimeout(() => setStatus('connected', 'Connected'), 3000);
   }
 }
@@ -3720,6 +3727,7 @@ async function sbSave() {
 // ── SUPABASE LOAD ─────────────────────────────────
 async function sbLoad() {
   sbIsLoading = true;
+  savingAllowed = false;
   setStatus('saving', 'Loading...');
   try {
     const res = await fetch(SB_URL + '/rest/v1/dashboard_data?id=eq.main&select=data', {
@@ -3730,15 +3738,67 @@ async function sbLoad() {
     });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const rows = await res.json();
-    if (rows && rows.length > 0 && rows[0].data) restoreAllData(rows[0].data);
-    setStatus('connected', 'Connected');
-    document.getElementById('driveSaveBtn').style.display = 'block';
+    if (rows && rows.length > 0 && rows[0].data) {
+      // Supabase has real data — restore it and update local backup
+      restoreAllData(rows[0].data);
+      try { localStorage.setItem('dashboard_backup', JSON.stringify(rows[0].data)); } catch(e) {}
+      setStatus('connected', 'Connected');
+      document.getElementById('driveSaveBtn').style.display = 'block';
+      sbIsLoading = false;
+      savingAllowed = true;
+    } else {
+      // Supabase returned empty row — check localStorage before allowing any save
+      let restoredFromLocal = false;
+      try {
+        const local = localStorage.getItem('dashboard_backup');
+        if (local) {
+          const parsed = JSON.parse(local);
+          // Only trust localStorage if it has actual content
+          const hasContent = parsed && (
+            (parsed.tasks && Object.keys(parsed.tasks).length > 0) ||
+            (parsed.appointments && parsed.appointments.length > 0) ||
+            (parsed.groceries && Object.keys(parsed.groceries).length > 0) ||
+            (parsed.routines && (parsed.routines.morning || []).length > 0) ||
+            (parsed.rjCurrent && parsed.rjCurrent.length > 0) ||
+            (parsed.brainDumpNotes && parsed.brainDumpNotes.length > 0)
+          );
+          if (hasContent) {
+            restoreAllData(parsed);
+            restoredFromLocal = true;
+          }
+        }
+      } catch(e) {}
+      setStatus('connected', restoredFromLocal ? 'Loaded from backup' : 'Connected — no data yet');
+      document.getElementById('driveSaveBtn').style.display = 'block';
+      sbIsLoading = false;
+      // Only allow saving if we restored real data from localStorage, or Supabase is just a new empty row
+      savingAllowed = true;
+    }
+    setTimeout(renderBriefing, 200);
   } catch(e) {
+    // Supabase is down or unreachable — load from localStorage, do NOT save
     console.error('Load error:', e);
-    setStatus('connected', 'Connected');
+    let restoredFromLocal = false;
+    try {
+      const local = localStorage.getItem('dashboard_backup');
+      if (local) {
+        restoreAllData(JSON.parse(local));
+        restoredFromLocal = true;
+      }
+    } catch(le) {}
+    if (restoredFromLocal) {
+      setStatus('connected', 'Offline — using local backup. Changes will save when connection restores.');
+    } else {
+      setStatus('error', 'Could not connect to Supabase. Your data will appear once connection is restored.');
+    }
     document.getElementById('driveSaveBtn').style.display = 'block';
-  } finally {
     sbIsLoading = false;
+    // CRITICAL: do NOT set savingAllowed = true here.
+    // If Supabase is down, we must NOT save empty state over real data.
+    // The auto-retry below will set savingAllowed once Supabase is back.
+    savingAllowed = false;
+    // Retry load every 30 seconds until Supabase comes back
+    setTimeout(sbLoad, 30000);
     setTimeout(renderBriefing, 200);
   }
 }
@@ -3949,7 +4009,7 @@ function importAllData(event) {
 
 // ── AUTO-SAVE every 2 minutes as backup ───────────
 setInterval(() => {
-  if (!sbIsLoading && document.getElementById('driveStatusText').textContent.startsWith('Connected')) {
+  if (!sbIsLoading && savingAllowed && document.getElementById('driveStatusText').textContent.startsWith('Connected')) {
     sbSave();
   }
 }, 120000);
