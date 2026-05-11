@@ -2535,14 +2535,19 @@ rendG();
     </div>
   </div>`;
 });
+['wish','clothing','home','other'].forEach(function(tab){ rendShop(tab); });
 
+// ── SHOPPING (data-driven) ────────────────────────
+const shopData = { wish:[], clothing:[], home:[], other:[] };
 const shopImgCache = {};
+
 function handleShopImg(evt, tab) {
   const file = evt.target.files[0]; if (!file) return;
   const reader = new FileReader();
-  reader.onload = e => { shopImgCache[tab] = e.target.result; };
+  reader.onload = function(e) { shopImgCache[tab] = e.target.result; };
   reader.readAsDataURL(file);
 }
+
 function addShop(tab) {
   const name = document.getElementById('sh-'+tab+'-name').value.trim(); if (!name) return;
   const note = document.getElementById('sh-'+tab+'-note').value.trim();
@@ -2550,40 +2555,73 @@ function addShop(tab) {
   const priority = document.getElementById('sh-'+tab+'-priority').value;
   const url = document.getElementById('sh-'+tab+'-url').value.trim();
   const img = shopImgCache[tab] || url || '';
-  const el = document.createElement('div'); el.className = 'shop-item';
-  el.innerHTML = `${img ? `<img class="shop-img" src="${img}" alt="" onerror="this.style.display='none'">` : `<div class="shop-img-placeholder">🛍</div>`}
-    <div class="shop-body">
-      <div class="shop-name">${name}</div>
-      ${note?`<div class="shop-note">${note}</div>`:''}
-      <div style="display:flex;gap:6px;margin-top:4px;align-items:center">
-        ${price?`<span style="font-size:11px;font-weight:500;color:var(--creative)">${price}</span>`:''}
-        <span style="font-size:9px;padding:1px 6px;border-radius:3px;border:1px solid var(--bdr);color:${priority==='need'?'var(--urgent)':'var(--soft)'}">${priority}</span>
-      </div>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
-      <div class="shop-del" onclick="this.closest('.shop-item').remove();scheduleAutoSave()">✕</div>
-      <div style="font-size:10px;color:var(--dim);cursor:pointer" onclick="editShopItem(this)">edit</div>
-    </div>
-    <div class="shop-ck" onclick="event.stopPropagation();this.closest('.shop-item').classList.toggle('done');scheduleAutoSave()">✓</div>`;
-  el.onclick = () => el.classList.toggle('done');
-  document.getElementById('sh-'+tab+'-list').appendChild(el);
-  ['name','note','price','url'].forEach(f => { const el = document.getElementById('sh-'+tab+'-'+f); if(el) el.value=''; });
+  shopData[tab].unshift({ id: Date.now().toString(), name, note, price, priority, img, done: false });
+  ['name','note','price','url'].forEach(function(f) { const el = document.getElementById('sh-'+tab+'-'+f); if(el) el.value=''; });
   delete shopImgCache[tab];
+  rendShop(tab);
   scheduleAutoSave();
 }
 
-function editShopItem(btn) {
-  const item = btn.closest('.shop-item');
-  const nameEl = item.querySelector('.shop-name');
-  const noteEl = item.querySelector('.shop-note');
-  const priceEl = item.querySelector('[style*="var(--creative)"]');
-  const newName = prompt('Edit item name:', nameEl ? nameEl.textContent : '');
+function rendShop(tab) {
+  const el = document.getElementById('sh-'+tab+'-list');
+  if (!el) return;
+  if (!shopData[tab] || !shopData[tab].length) { el.innerHTML = '<div class="empty">Nothing here yet.</div>'; return; }
+  el.innerHTML = '';
+  shopData[tab].forEach(function(item) {
+    const div = document.createElement('div');
+    div.className = 'shop-item' + (item.done ? ' done' : '');
+    div.innerHTML =
+      (item.img ? '<img class="shop-img" src="'+item.img+'" alt="">' : '<div class="shop-img-placeholder">🛍</div>')
+      '<div class="shop-body">' +
+        '<div class="shop-name">' + item.name + '</div>' +
+        (item.note ? '<div class="shop-note">' + item.note + '</div>' : '') +
+        '<div style="display:flex;gap:6px;margin-top:4px;align-items:center">' +
+          (item.price ? '<span style="font-size:11px;font-weight:500;color:var(--creative)">' + item.price + '</span>' : '') +
+          '<span style="font-size:9px;padding:1px 6px;border-radius:3px;border:1px solid var(--bdr);color:' + (item.priority==='need'?'var(--urgent)':'var(--soft)') + '">' + (item.priority||'want') + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">' +
+        '<div class="shop-del" data-id="' + item.id + '" data-tab="' + tab + '">✕</div>' +
+        '<div style="font-size:10px;color:var(--dim);cursor:pointer" data-id="' + item.id + '" data-tab="' + tab + '" onclick="editShopItem(this.dataset.tab, this.dataset.id)">edit</div>' +
+      '</div>' +
+      '<div class="shop-ck" data-id="' + item.id + '" data-tab="' + tab + '">✓</div>';
+    div.querySelector('.shop-del').addEventListener('click', function(e) {
+      e.stopPropagation();
+      deleteShopItem(this.dataset.tab, this.dataset.id);
+    });
+    div.querySelector('.shop-ck').addEventListener('click', function(e) {
+      e.stopPropagation();
+      toggleShopItem(this.dataset.tab, this.dataset.id);
+    });
+    div.addEventListener('click', function() { toggleShopItem(tab, item.id); });
+    el.appendChild(div);
+  });
+}
+
+function deleteShopItem(tab, id) {
+  shopData[tab] = shopData[tab].filter(function(i){ return i.id !== id; });
+  rendShop(tab);
+  scheduleAutoSave();
+}
+
+function toggleShopItem(tab, id) {
+  const item = shopData[tab].find(function(i){ return i.id === id; });
+  if (item) { item.done = !item.done; rendShop(tab); scheduleAutoSave(); }
+}
+
+function editShopItem(tab, id) {
+  const item = shopData[tab].find(function(i){ return i.id === id; });
+  if (!item) return;
+  const newName = prompt('Edit item name:', item.name);
   if (newName === null) return;
-  if (newName.trim()) nameEl.textContent = newName.trim();
-  const newNote = prompt('Edit note:', noteEl ? noteEl.textContent : '');
-  if (newNote !== null && noteEl) noteEl.textContent = newNote;
-  const newPrice = prompt('Edit price:', priceEl ? priceEl.textContent : '');
-  if (newPrice !== null && priceEl) priceEl.textContent = newPrice;
+  const newNote = prompt('Edit note:', item.note || '');
+  if (newNote === null) return;
+  const newPrice = prompt('Edit price:', item.price || '');
+  if (newPrice === null) return;
+  item.name = newName.trim() || item.name;
+  item.note = newNote.trim();
+  item.price = newPrice.trim();
+  rendShop(tab);
   scheduleAutoSave();
 }
 
@@ -3480,13 +3518,7 @@ function collectAllData() {
   data.articles = articles.map(function(a){return Object.assign({},a);});
   data.podcasts = podcasts.map(function(p){return Object.assign({},p);});
   // shopping lists
-  data.shopping = {};
-  ['wish','clothing','home','other'].forEach(tab => {
-    data.shopping[tab] = Array.from(document.querySelectorAll('#sh-'+tab+'-list .ov-item')).map(el => ({
-      text: el.querySelector('.ov-txt') ? el.querySelector('.ov-txt').innerHTML : '',
-      done: el.classList.contains('done')
-    }));
-  });
+  data.shopping = JSON.parse(JSON.stringify(shopData));
   // brain dump archive
   data.brainDumpNotes = brainDumpNotes.map(n => ({...n}));
   // work
@@ -3634,15 +3666,18 @@ function restoreAllData(data) {
   if (data.curCal) { try { Object.entries(data.curCal).forEach(([k,v]) => localStorage.setItem(k, v)); } catch(e) {} buildCurCal(); }
   // restore shopping lists
   if (data.shopping) {
-    ['wish','clothing','home','other'].forEach(tab => {
-      const list = document.getElementById('sh-'+tab+'-list');
-      if (!list || !data.shopping[tab]) return;
-      data.shopping[tab].forEach(it => {
-        const el = document.createElement('div'); el.className = 'ov-item' + (it.done ? ' done' : '');
-        el.onclick = () => el.classList.toggle('done');
-        el.innerHTML = `<div class="ov-ck">✓</div><div class="ov-txt">${it.text}</div><div class="ov-del" onclick="event.stopPropagation();this.parentElement.remove()">✕</div>`;
-        list.appendChild(el);
-      });
+    ['wish','clothing','home','other'].forEach(function(tab) {
+      if (data.shopping[tab] && Array.isArray(data.shopping[tab])) {
+        shopData[tab] = data.shopping[tab];
+        // migrate old format (text/done) to new format if needed
+        shopData[tab] = shopData[tab].map(function(it) {
+          if (it.text && !it.name) {
+            return { id: Date.now().toString() + Math.random(), name: it.text, note: '', price: '', priority: 'want', img: '', done: it.done || false };
+          }
+          return it;
+        });
+        rendShop(tab);
+      }
     });
   }
   // restore brain dump archive
