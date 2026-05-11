@@ -2535,7 +2535,6 @@ rendG();
     </div>
   </div>`;
 });
-['wish','clothing','home','other'].forEach(function(tab){ rendShop(tab); });
 
 // ── SHOPPING (data-driven) ────────────────────────
 const shopData = { wish:[], clothing:[], home:[], other:[] };
@@ -2624,6 +2623,8 @@ function editShopItem(tab, id) {
   rendShop(tab);
   scheduleAutoSave();
 }
+// Init shop lists after all functions defined
+['wish','clothing','home','other'].forEach(function(tab){ rendShop(tab); });
 
 // ── FINANCE ───────────────────────────────────────
 function fmt(n){ return '$'+Math.abs(n).toLocaleString('en-CA',{minimumFractionDigits:2,maximumFractionDigits:2}); }
