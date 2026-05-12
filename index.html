@@ -489,9 +489,12 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
     <div class="nl">Lists</div>
     <div class="ni" onclick="nav('grocery',this)"><div class="nd"></div>Grocery</div>
     <div class="ni" onclick="nav('shopping',this)"><div class="nd"></div>Shopping</div>
+    <div class="ni" onclick="nav('cleaning',this)"><div class="nd"></div>Cleaning</div>
     <div class="nl">Summer</div>
     <div class="ni" onclick="nav('summer',this)"><div class="nd"></div>Becoming</div>
     <div class="nl">Growth</div>
+    <div class="ni" onclick="nav('habits',this)"><div class="nd"></div>Habit Tracker</div>
+    <div class="ni" onclick="nav('journal',this)"><div class="nd"></div>Journal</div>
     <div class="ni" onclick="nav('fitness',this)"><div class="nd"></div>Fitness & Meals</div>
     <div class="ni" onclick="nav('movies',this)"><div class="nd"></div>Movie Night</div>
     <div class="ni" onclick="nav('finance',this)"><div class="nd"></div>Finance</div>
@@ -813,6 +816,7 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
     <div class="tab active" onclick="stab('fin','income',this)">Income</div>
     <div class="tab" onclick="stab('fin','fixed',this)">Fixed Expenses</div>
     <div class="tab" onclick="stab('fin','envelopes',this)">Budget Envelopes</div>
+    <div class="tab" onclick="stab('fin','savings',this)">Savings Goals</div>
     <div class="tab" onclick="stab('fin','cc',this)">Credit Cards</div>
   </div>
 
@@ -856,6 +860,20 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
       </div>
     </div>
     <div id="envelopeList"><div class="empty">No budget envelopes yet.</div></div>
+  </div>
+
+  <!-- SAVINGS GOALS -->
+  <div class="tc" id="fin-savings">
+    <div class="notice">Set a goal, a target amount, and a target date. Log contributions as you make them. The bar shows your progress.</div>
+    <div class="card sec">
+      <div style="display:flex;gap:7px;flex-wrap:wrap">
+        <input type="text" id="savName" placeholder="What are you saving for?" style="flex:2;min-width:140px;padding:7px 9px">
+        <input type="number" id="savTarget" placeholder="Target ($)" style="flex:1;padding:7px 9px" min="0">
+        <input type="text" id="savDate" placeholder="Target date (e.g. Sep 2026)" style="flex:1;padding:7px 9px">
+        <button class="btn bd" onclick="addSavingsGoal()">+ Add goal</button>
+      </div>
+    </div>
+    <div id="savingsList"><div class="empty">No savings goals yet.</div></div>
   </div>
 
   <!-- CREDIT CARDS -->
@@ -1820,6 +1838,99 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
     </div>
   </div>
 </div>
+
+<!-- ══════ CLEANING ══════ -->
+<div class="page" id="p-cleaning">
+  <div class="ph"><div class="pl">Lists</div><div class="pt">Cleaning</div><div class="psub">Your apartment cleaning schedule. Edit anything to make it yours.</div></div>
+  <div class="tabs">
+    <div class="tab active" onclick="stab('cl','daily',this)">Daily</div>
+    <div class="tab" onclick="stab('cl','weekly',this)">Weekly</div>
+    <div class="tab" onclick="stab('cl','deep',this)">Deep Clean</div>
+  </div>
+
+  <div class="tc active" id="cl-daily">
+    <div class="notice" style="margin-bottom:12px">Check off tasks as you go. Reset resets all checks for today.</div>
+    <div style="display:flex;gap:6px;margin-bottom:12px">
+      <input type="text" id="clDailyInput" placeholder="Add a daily task..." style="flex:1;padding:7px 9px;font-size:12px" onkeydown="if(event.key==='Enter')addCleanTask('daily')">
+      <button class="btn bsm" onclick="addCleanTask('daily')">+ Add</button>
+      <button class="btn bsm" onclick="resetClean('daily')">Reset</button>
+    </div>
+    <div id="cl-daily-list"></div>
+  </div>
+
+  <div class="tc" id="cl-weekly">
+    <div id="cl-weekly-list"></div>
+  </div>
+
+  <div class="tc" id="cl-deep">
+    <div class="tabs" style="margin-bottom:14px">
+      <div class="tab active" onclick="stab('cld','monthly',this)" style="font-size:11px">Monthly</div>
+      <div class="tab" onclick="stab('cld','quarterly',this)" style="font-size:11px">Every 3 months</div>
+      <div class="tab" onclick="stab('cld','biannual',this)" style="font-size:11px">Every 6 months</div>
+    </div>
+    <div class="tc active" id="cld-monthly">
+      <div style="display:flex;gap:6px;margin-bottom:12px">
+        <input type="text" id="clMonthInput" placeholder="Add a monthly task..." style="flex:1;padding:7px 9px;font-size:12px" onkeydown="if(event.key==='Enter')addCleanTask('monthly')">
+        <button class="btn bsm" onclick="addCleanTask('monthly')">+ Add</button>
+        <button class="btn bsm" onclick="resetClean('monthly')">Reset</button>
+      </div>
+      <div id="cl-monthly-list"></div>
+    </div>
+    <div class="tc" id="cld-quarterly">
+      <div style="display:flex;gap:6px;margin-bottom:12px">
+        <input type="text" id="clQuarterInput" placeholder="Add a quarterly task..." style="flex:1;padding:7px 9px;font-size:12px" onkeydown="if(event.key==='Enter')addCleanTask('quarterly')">
+        <button class="btn bsm" onclick="addCleanTask('quarterly')">+ Add</button>
+        <button class="btn bsm" onclick="resetClean('quarterly')">Reset</button>
+      </div>
+      <div id="cl-quarterly-list"></div>
+    </div>
+    <div class="tc" id="cld-biannual">
+      <div style="display:flex;gap:6px;margin-bottom:12px">
+        <input type="text" id="clBiannualInput" placeholder="Add a bi-annual task..." style="flex:1;padding:7px 9px;font-size:12px" onkeydown="if(event.key==='Enter')addCleanTask('biannual')">
+        <button class="btn bsm" onclick="addCleanTask('biannual')">+ Add</button>
+        <button class="btn bsm" onclick="resetClean('biannual')">Reset</button>
+      </div>
+      <div id="cl-biannual-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ HABIT TRACKER ══════ -->
+<div class="page" id="p-habits">
+  <div class="ph"><div class="pl">Growth</div><div class="pt">Habit Tracker</div><div class="psub">Add habits, check off each day, watch your streaks build.</div></div>
+  <div class="card sec" style="margin-bottom:16px">
+    <div style="display:flex;gap:7px;flex-wrap:wrap">
+      <input type="text" id="habitName" placeholder="Habit name..." style="flex:2;min-width:140px;padding:7px 9px">
+      <select id="habitColor" style="padding:7px 9px">
+        <option value="#3d7a52">Green</option>
+        <option value="#2a6480">Blue</option>
+        <option value="#b83232">Red</option>
+        <option value="#c47d0e">Amber</option>
+        <option value="#503c8c">Purple</option>
+        <option value="#b4508c">Pink</option>
+        <option value="#4a78b4">Sky</option>
+      </select>
+      <button class="btn bd" onclick="addHabit()">+ Add habit</button>
+    </div>
+  </div>
+  <div id="habitSummary" style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap"></div>
+  <div id="habitGrid"></div>
+</div>
+
+<!-- ══════ JOURNAL ══════ -->
+<div class="page" id="p-journal">
+  <div class="ph"><div class="pl">Growth</div><div class="pt">Journal</div><div class="psub">Daily reflections. Write freely — entries are dated and saved automatically.</div></div>
+  <div class="card" style="margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div style="font-size:11px;color:var(--soft)" id="journalDateLabel"></div>
+      <button class="btn bsm" onclick="saveJournalEntry()">Save entry</button>
+    </div>
+    <textarea id="journalEntry" placeholder="Write your reflection for today — what went well, what didn't, what you want to carry into tomorrow..." style="width:100%;min-height:180px;background:transparent;border:none;resize:vertical;font-family:var(--mono);font-size:12.5px;color:var(--txt);outline:none;line-height:1.8"></textarea>
+  </div>
+  <div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:10px">Past entries</div>
+  <div id="journalArchive"><div class="empty">No entries yet.</div></div>
+</div>
+
 </main>
 
 <script>
@@ -3534,6 +3645,10 @@ function collectAllData() {
   data.weekRecurring = JSON.parse(JSON.stringify(weekRecurring));
   data.typicalWeek = typicalWeek ? JSON.parse(JSON.stringify(typicalWeek)) : null;
   data.ttSessions = ttSessions.map(s => ({...s}));
+  data.cleanData = JSON.parse(JSON.stringify(cleanData));
+  data.habits = habits.map(function(h){ return Object.assign({},h,{checks:Object.assign({},h.checks)}); });
+  data.journalEntries = journalEntries.map(function(e){ return Object.assign({},e); });
+  data.savingsGoals = savingsGoals.map(function(g){ return Object.assign({},g,{log:[...(g.log||[])]}); });
   data.references = references.map(r => ({...r}));
   // fitness
   data.fitData = JSON.parse(JSON.stringify(fitData));
@@ -3710,6 +3825,17 @@ function restoreAllData(data) {
     renderMNTonight();
   }
   if (data.fcCards && Array.isArray(data.fcCards)) { fcCards.length = 0; data.fcCards.forEach(c => fcCards.push(c)); }
+  if (data.cleanData) {
+    if (data.cleanData.daily) cleanData.daily = data.cleanData.daily;
+    if (data.cleanData.weekly) cleanData.weekly = data.cleanData.weekly;
+    if (data.cleanData.monthly) cleanData.monthly = data.cleanData.monthly;
+    if (data.cleanData.quarterly) cleanData.quarterly = data.cleanData.quarterly;
+    if (data.cleanData.biannual) cleanData.biannual = data.cleanData.biannual;
+    rendAllClean();
+  }
+  if (data.habits && Array.isArray(data.habits)) { habits.length = 0; data.habits.forEach(function(h){ habits.push(h); }); rendHabits(); }
+  if (data.journalEntries && Array.isArray(data.journalEntries)) { journalEntries.length = 0; data.journalEntries.forEach(function(e){ journalEntries.push(e); }); rendJournal(); }
+  if (data.savingsGoals && Array.isArray(data.savingsGoals)) { savingsGoals.length = 0; data.savingsGoals.forEach(function(g){ savingsGoals.push(g); }); rendSavings(); }
   if (data.fcDecks && Array.isArray(data.fcDecks)) { fcDecks.length = 0; data.fcDecks.forEach(d => { if(!fcDecks.includes(d)) fcDecks.push(d); }); }
   renderFcDeckSelect(); renderFcCards();
   // restore weekly view
@@ -4720,6 +4846,405 @@ function mnPickOne() {
   const pick = unwatched[Math.floor(Math.random() * unwatched.length)];
   resultEl.textContent = '🎬 ' + pick.title + (pick.year?' ('+pick.year+')':'') + (pick.notes?' — '+pick.notes:'');
 }
+
+
+// ── CLEANING ──────────────────────────────────────
+const cleanData = {
+  daily: [
+    {id:'cd1', text:'Wash dishes / load dishwasher', done:false},
+    {id:'cd2', text:'Wipe down counters', done:false},
+    {id:'cd3', text:'Put away cups and bowls', done:false},
+    {id:'cd4', text:'Empty kitchen trash if full', done:false},
+    {id:'cd5', text:'Put clothes away', done:false},
+    {id:'cd6', text:'Make bed', done:false},
+    {id:'cd7', text:'10–15 minute tidy at end of day', done:false}
+  ],
+  weekly: {
+    Monday: [{id:'cw1', text:'Vacuum floors', done:false},{id:'cw2', text:'Dust surfaces', done:false}],
+    Tuesday: [{id:'cw3', text:'Wash coloured laundry', done:false},{id:'cw4', text:'Clean bathroom — wipe surfaces, toilet, mirrors, mop', done:false}],
+    Wednesday: [{id:'cw5', text:'Scrub stove and wipe appliances', done:false},{id:'cw6', text:'Wipe kitchen table', done:false},{id:'cw7', text:'Clear out fridge', done:false}],
+    Thursday: [{id:'cw8', text:'Wash white laundry', done:false},{id:'cw9', text:'Vacuum floors', done:false}],
+    Friday: [{id:'cw10', text:'Wash and change bedsheets', done:false},{id:'cw11', text:'Empty small trash cans', done:false}]
+  },
+  monthly: [
+    {id:'cm1', text:'Wash and change duvet cover', done:false},
+    {id:'cm2', text:'Clean out and organise fridge', done:false},
+    {id:'cm3', text:'Check pantry for expired items', done:false},
+    {id:'cm4', text:'Big shower clean — scrub everything', done:false},
+    {id:'cm5', text:'Dry cleaning if needed', done:false}
+  ],
+  quarterly: [
+    {id:'cq1', text:'Clean out products and donate', done:false},
+    {id:'cq2', text:'Deep clean rugs or carpets', done:false},
+    {id:'cq3', text:'Clean air vents', done:false},
+    {id:'cq4', text:'Tidy drawers', done:false},
+    {id:'cq5', text:'Clean out closet and donate', done:false},
+    {id:'cq6', text:'Rotate closet seasonally', done:false}
+  ],
+  biannual: [
+    {id:'cb1', text:'Organise junk drawer', done:false},
+    {id:'cb2', text:'Clean out vitamins and supplements', done:false},
+    {id:'cb3', text:'Wash windows', done:false},
+    {id:'cb4', text:'Clean upholstered furniture', done:false},
+    {id:'cb5', text:'Check and replace smoke detector batteries', done:false},
+    {id:'cb6', text:'Deep clean oven', done:false}
+  ]
+};
+
+function rendCleanList(type, items, listId) {
+  const el = document.getElementById(listId);
+  if (!el) return;
+  if (!items || !items.length) { el.innerHTML = '<div class="empty">No tasks yet.</div>'; return; }
+  el.innerHTML = items.map(function(item) {
+    return '<div class="r-item" style="margin-bottom:3px">' +
+      '<div class="r-item-header">' +
+        '<div class="r-ck" data-id="'+item.id+'" data-type="'+type+'" onclick="toggleClean(this.dataset.type,this.dataset.id)" style="'+(item.done?'background:var(--txt);border-color:var(--txt);color:#fff':'')+'">✓</div>' +
+        '<div class="r-lbl" style="'+(item.done?'text-decoration:line-through;color:var(--dim)':'')+'">'+item.text+'</div>' +
+        '<div class="ov-del" data-id="'+item.id+'" data-type="'+type+'" onclick="deleteClean(this.dataset.type,this.dataset.id)" style="opacity:0;transition:opacity .1s">✕</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+  el.querySelectorAll('.r-item').forEach(function(el) {
+    el.addEventListener('mouseenter', function(){ var d = el.querySelector('.ov-del'); if(d) d.style.opacity='1'; });
+    el.addEventListener('mouseleave', function(){ var d = el.querySelector('.ov-del'); if(d) d.style.opacity='0'; });
+  });
+}
+
+function rendCleanWeekly() {
+  var el = document.getElementById('cl-weekly-list');
+  if (!el) return;
+  var days = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+  el.innerHTML = '';
+  days.forEach(function(day) {
+    var items = cleanData.weekly[day] || [];
+    var done = items.filter(function(i){ return i.done; }).length;
+    var card = document.createElement('div');
+    card.className = 'card';
+    card.style.marginBottom = '10px';
+
+    var header = document.createElement('div');
+    header.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:10px';
+    header.innerHTML = '<div style="font-size:12px;font-weight:500">'+day+'</div>';
+    var btns = document.createElement('div');
+    btns.style.cssText = 'display:flex;gap:6px';
+    btns.innerHTML = '<span style="font-size:10px;color:var(--soft)">'+done+'/'+items.length+'</span>';
+    var resetBtn = document.createElement('button');
+    resetBtn.className = 'btn bsm';
+    resetBtn.style.fontSize = '9px';
+    resetBtn.textContent = 'Reset';
+    resetBtn.addEventListener('click', function(){ resetCleanDay(day); });
+    var addBtn = document.createElement('button');
+    addBtn.className = 'btn bsm';
+    addBtn.style.fontSize = '9px';
+    addBtn.textContent = '+ Add';
+    addBtn.addEventListener('click', function(){ addCleanWeeklyTask(day); });
+    btns.appendChild(resetBtn);
+    btns.appendChild(addBtn);
+    header.appendChild(btns);
+    card.appendChild(header);
+
+    items.forEach(function(item) {
+      var row = document.createElement('div');
+      row.className = 'r-item';
+      row.style.marginBottom = '3px';
+      var ck = document.createElement('div');
+      ck.className = 'r-ck';
+      if (item.done) ck.style.cssText = 'background:var(--txt);border-color:var(--txt);color:#fff';
+      ck.textContent = '✓';
+      ck.addEventListener('click', function(){ toggleCleanWeekly(day, item.id); });
+      var lbl = document.createElement('div');
+      lbl.className = 'r-lbl';
+      if (item.done) lbl.style.cssText = 'text-decoration:line-through;color:var(--dim)';
+      lbl.textContent = item.text;
+      var del = document.createElement('div');
+      del.className = 'ov-del';
+      del.style.cssText = 'opacity:0;transition:opacity .1s';
+      del.textContent = '✕';
+      del.addEventListener('click', function(){ deleteCleanWeekly(day, item.id); });
+      var rowHeader = document.createElement('div');
+      rowHeader.className = 'r-item-header';
+      rowHeader.appendChild(ck); rowHeader.appendChild(lbl); rowHeader.appendChild(del);
+      row.appendChild(rowHeader);
+      row.addEventListener('mouseenter', function(){ del.style.opacity='1'; });
+      row.addEventListener('mouseleave', function(){ del.style.opacity='0'; });
+      card.appendChild(row);
+    });
+    el.appendChild(card);
+  });
+}
+
+
+function rendAllClean() {
+  rendCleanList('daily', cleanData.daily, 'cl-daily-list');
+  rendCleanWeekly();
+  rendCleanList('monthly', cleanData.monthly, 'cl-monthly-list');
+  rendCleanList('quarterly', cleanData.quarterly, 'cl-quarterly-list');
+  rendCleanList('biannual', cleanData.biannual, 'cl-biannual-list');
+}
+
+function toggleClean(type, id) {
+  var item = cleanData[type].find(function(i){ return i.id === id; });
+  if (item) { item.done = !item.done; rendCleanList(type, cleanData[type], 'cl-'+type+'-list'); scheduleAutoSave(); }
+}
+function deleteClean(type, id) {
+  cleanData[type] = cleanData[type].filter(function(i){ return i.id !== id; });
+  rendCleanList(type, cleanData[type], 'cl-'+type+'-list'); scheduleAutoSave();
+}
+function toggleCleanWeekly(day, id) {
+  var item = (cleanData.weekly[day]||[]).find(function(i){ return i.id === id; });
+  if (item) { item.done = !item.done; rendCleanWeekly(); scheduleAutoSave(); }
+}
+function deleteCleanWeekly(day, id) {
+  cleanData.weekly[day] = (cleanData.weekly[day]||[]).filter(function(i){ return i.id !== id; });
+  rendCleanWeekly(); scheduleAutoSave();
+}
+function addCleanTask(type) {
+  var inputMap = {daily:'clDailyInput', monthly:'clMonthInput', quarterly:'clQuarterInput', biannual:'clBiannualInput'};
+  var input = document.getElementById(inputMap[type]);
+  if (!input || !input.value.trim()) return;
+  cleanData[type].push({id: 'c'+Date.now(), text: input.value.trim(), done: false});
+  input.value = '';
+  rendCleanList(type, cleanData[type], 'cl-'+type+'-list'); scheduleAutoSave();
+}
+function addCleanWeeklyTask(day) {
+  var text = prompt('Add task for '+day+':');
+  if (!text || !text.trim()) return;
+  if (!cleanData.weekly[day]) cleanData.weekly[day] = [];
+  cleanData.weekly[day].push({id: 'c'+Date.now(), text: text.trim(), done: false});
+  rendCleanWeekly(); scheduleAutoSave();
+}
+function resetClean(type) {
+  if (!confirm('Reset all '+type+' tasks?')) return;
+  cleanData[type].forEach(function(i){ i.done = false; });
+  rendCleanList(type, cleanData[type], 'cl-'+type+'-list'); scheduleAutoSave();
+}
+function resetCleanDay(day) {
+  (cleanData.weekly[day]||[]).forEach(function(i){ i.done = false; });
+  rendCleanWeekly(); scheduleAutoSave();
+}
+rendAllClean();
+
+// ── HABIT TRACKER ─────────────────────────────────
+const habits = []; // {id, name, color, checks: {'YYYY-MM-DD': true}}
+
+function addHabit() {
+  var name = document.getElementById('habitName').value.trim();
+  var color = document.getElementById('habitColor').value;
+  if (!name) return;
+  habits.push({id: 'h'+Date.now(), name: name, color: color, checks: {}});
+  document.getElementById('habitName').value = '';
+  rendHabits(); scheduleAutoSave();
+}
+
+function rendHabits() {
+  var summaryEl = document.getElementById('habitSummary');
+  var gridEl = document.getElementById('habitGrid');
+  if (!habits.length) {
+    if (summaryEl) summaryEl.innerHTML = '';
+    if (gridEl) gridEl.innerHTML = '<div class="empty">No habits yet. Add one above.</div>';
+    return;
+  }
+
+  var now = new Date();
+  var year = now.getFullYear();
+  var month = now.getMonth();
+  var daysInMonth = new Date(year, month+1, 0).getDate();
+  var todayStr = year+'-'+String(month+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+
+  // Summary
+  var totalChecks = 0, totalPossible = 0;
+  habits.forEach(function(h) { totalChecks += Object.keys(h.checks).length; totalPossible += now.getDate(); });
+  var avgPct = totalPossible > 0 ? Math.round((totalChecks/totalPossible)*100) : 0;
+  if (summaryEl) summaryEl.innerHTML =
+    '<div class="fin-chip"><div class="fc-lbl">Habits</div><div class="fc-val">'+habits.length+'</div></div>' +
+    '<div class="fin-chip"><div class="fc-lbl">Avg completion</div><div class="fc-val">'+avgPct+'%</div></div>';
+
+  // Grid header
+  var days = [];
+  for (var d = 1; d <= daysInMonth; d++) days.push(d);
+  var monthName = MONTHS[month]+' '+year;
+
+  if (gridEl) {
+    gridEl.innerHTML = '<div style="margin-bottom:8px;font-size:11px;color:var(--soft)">'+monthName+'</div>';
+    habits.forEach(function(h) {
+      var checked = Object.keys(h.checks).filter(function(k){ return k.startsWith(year+'-'+String(month+1).padStart(2,'0')); }).length;
+      var streak = 0;
+      for (var dd = now.getDate(); dd >= 1; dd--) {
+        var key = year+'-'+String(month+1).padStart(2,'0')+'-'+String(dd).padStart(2,'0');
+        if (h.checks[key]) streak++;
+        else break;
+      }
+      var pct = Math.round((checked/daysInMonth)*100);
+
+      var row = document.createElement('div');
+      row.style.cssText = 'margin-bottom:12px;padding:12px 14px;background:var(--surf);border:1px solid var(--bdr);border-radius:5px';
+      var header = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">' +
+        '<div style="display:flex;align-items:center;gap:8px">' +
+          '<div style="width:10px;height:10px;border-radius:50%;background:'+h.color+';flex-shrink:0"></div>' +
+          '<div style="font-size:12.5px;font-weight:500">'+h.name+'</div>' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:10px">' +
+          '<span style="font-size:10px;color:var(--soft)">'+checked+' days · '+streak+' streak</span>' +
+          '<div class="pb" style="width:80px"><div class="pbf" style="width:'+pct+'%;background:'+h.color+'"></div></div>' +
+          '<span style="font-size:10px;color:var(--soft)">'+pct+'%</span>' +
+          '<button class="btn bsm" style="color:var(--urgent);font-size:9px" data-id="'+h.id+'" onclick="deleteHabit(this.dataset.id)">Remove</button>' +
+        '</div>' +
+      '</div>';
+
+      var cells = '<div style="display:flex;flex-wrap:wrap;gap:3px">';
+      for (var d = 1; d <= daysInMonth; d++) {
+        var key = year+'-'+String(month+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+        var isDone = !!h.checks[key];
+        var isToday = key === todayStr;
+        cells += '<div data-habitid="'+h.id+'" data-key="'+key+'" onclick="toggleHabit(this.dataset.habitid,this.dataset.key)" ' +
+          'style="width:22px;height:22px;border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px;' +
+          'background:'+(isDone?h.color:'var(--surf2)')+';' +
+          'color:'+(isDone?'#fff':'var(--dim)')+';' +
+          'border:1px solid '+(isToday?h.color:'var(--bdr)')+';' +
+          'font-weight:'+(isToday?'700':'400')+'">' +
+          d + '</div>';
+      }
+      cells += '</div>';
+      row.innerHTML = header + cells;
+      gridEl.appendChild(row);
+    });
+  }
+}
+
+function toggleHabit(id, key) {
+  var h = habits.find(function(h){ return h.id === id; });
+  if (!h) return;
+  if (h.checks[key]) delete h.checks[key];
+  else h.checks[key] = true;
+  rendHabits(); scheduleAutoSave();
+}
+function deleteHabit(id) {
+  var idx = habits.findIndex(function(h){ return h.id === id; });
+  if (idx !== -1) habits.splice(idx, 1);
+  rendHabits(); scheduleAutoSave();
+}
+rendHabits();
+
+// ── JOURNAL ───────────────────────────────────────
+const journalEntries = [];
+
+function initJournal() {
+  var now = new Date();
+  var el = document.getElementById('journalDateLabel');
+  if (el) el.textContent = MONTHS[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
+}
+
+function saveJournalEntry() {
+  var text = document.getElementById('journalEntry').value.trim();
+  if (!text) return;
+  var now = new Date();
+  var dateLabel = MONTHS[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
+  var timeLabel = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  journalEntries.unshift({id: Date.now().toString(), date: dateLabel, time: timeLabel, text: text});
+  document.getElementById('journalEntry').value = '';
+  rendJournal(); scheduleAutoSave();
+}
+
+function rendJournal() {
+  var el = document.getElementById('journalArchive');
+  if (!el) return;
+  if (!journalEntries.length) { el.innerHTML = '<div class="empty">No entries yet.</div>'; return; }
+  el.innerHTML = '';
+  journalEntries.forEach(function(entry, i) {
+    var div = document.createElement('div');
+    div.className = 'note-entry';
+    div.id = 'jentry-' + i;
+    var header = document.createElement('div');
+    header.className = 'note-header';
+    header.innerHTML =
+      '<span class="note-arrow">▶</span>' +
+      '<span class="note-title">' + entry.date + '</span>' +
+      '<span class="note-date">' + entry.time + '</span>';
+    var delBtn = document.createElement('span');
+    delBtn.style.cssText = 'font-size:10px;color:var(--dim);cursor:pointer;padding:0 4px';
+    delBtn.textContent = '✕';
+    delBtn.addEventListener('click', function(e){ e.stopPropagation(); deleteJournalEntry(entry.id); });
+    header.appendChild(delBtn);
+    header.addEventListener('click', function(){ toggleNote('jentry-' + i); });
+    var body = document.createElement('div');
+    body.className = 'note-body';
+    body.innerHTML = '<div class="note-text" style="white-space:pre-wrap">' + entry.text + '</div>';
+    div.appendChild(header);
+    div.appendChild(body);
+    el.appendChild(div);
+  });
+}
+
+
+function deleteJournalEntry(id) {
+  var idx = journalEntries.findIndex(function(e){ return e.id === id; });
+  if (idx !== -1) journalEntries.splice(idx, 1);
+  rendJournal(); scheduleAutoSave();
+}
+initJournal();
+rendJournal();
+
+// ── SAVINGS GOALS ─────────────────────────────────
+const savingsGoals = [];
+
+function addSavingsGoal() {
+  var name = document.getElementById('savName').value.trim();
+  var target = parseFloat(document.getElementById('savTarget').value) || 0;
+  var date = document.getElementById('savDate').value.trim();
+  if (!name || target <= 0) return;
+  savingsGoals.push({id: 'sg'+Date.now(), name: name, target: target, saved: 0, date: date, log: []});
+  ['savName','savTarget','savDate'].forEach(function(id){ document.getElementById(id).value = ''; });
+  rendSavings(); updFinSum(); scheduleAutoSave();
+}
+
+function rendSavings() {
+  var el = document.getElementById('savingsList');
+  if (!el) return;
+  if (!savingsGoals.length) { el.innerHTML = '<div class="empty">No savings goals yet.</div>'; return; }
+  el.innerHTML = savingsGoals.map(function(g) {
+    var pct = g.target > 0 ? Math.min(100, Math.round((g.saved/g.target)*100)) : 0;
+    var left = Math.max(0, g.target - g.saved);
+    var barColor = pct >= 100 ? 'var(--creative)' : pct >= 50 ? 'var(--admin)' : 'var(--deadline)';
+    return '<div class="sav-item" style="margin-bottom:12px">' +
+      '<div class="sav-head">' +
+        '<div>' +
+          '<div class="sav-name">'+g.name+'</div>' +
+          '<div class="sav-meta">'+fmt(g.saved)+' saved of '+fmt(g.target)+(g.date?' · target: '+g.date:'')+'</div>' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:8px">' +
+          '<div class="sav-pct" style="color:'+barColor+'">'+pct+'%</div>' +
+          '<button class="btn bsm" style="color:var(--urgent)" data-id="'+g.id+'" onclick="deleteSaving(this.dataset.id)">Remove</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="pb"><div class="pbf" style="width:'+pct+'%;background:'+barColor+'"></div></div>' +
+      '<div style="display:flex;gap:6px;margin-top:10px;align-items:center">' +
+        '<span style="font-size:10px;color:var(--soft)">Log contribution:</span>' +
+        '<input type="number" placeholder="Amount ($)" min="0" data-id="'+g.id+'" id="savlog-'+g.id+'" style="flex:1;padding:5px 8px;font-size:11px">' +
+        '<button class="btn bsm" data-id="'+g.id+'" onclick="logSaving(this.dataset.id)">+ Add</button>' +
+      '</div>' +
+      (g.log && g.log.length ? '<div style="margin-top:8px">'+g.log.slice(0,5).map(function(l){ return '<div style="font-size:10px;color:var(--soft);padding:2px 0">+'+fmt(l.amount)+' · '+l.date+'</div>'; }).join('')+'</div>' : '') +
+    '</div>';
+  }).join('');
+}
+
+function logSaving(id) {
+  var g = savingsGoals.find(function(g){ return g.id === id; });
+  var input = document.getElementById('savlog-'+id);
+  var amt = parseFloat(input ? input.value : 0) || 0;
+  if (!g || amt <= 0) return;
+  g.saved = Math.min(g.target, g.saved + amt);
+  var now = new Date();
+  g.log.unshift({amount: amt, date: MONTHS[now.getMonth()].slice(0,3)+' '+now.getDate()});
+  if (input) input.value = '';
+  rendSavings(); updFinSum(); scheduleAutoSave();
+}
+
+function deleteSaving(id) {
+  var idx = savingsGoals.findIndex(function(g){ return g.id === id; });
+  if (idx !== -1) savingsGoals.splice(idx, 1);
+  rendSavings(); updFinSum(); scheduleAutoSave();
+}
+rendSavings();
 
 window.addEventListener('load', () => { setTimeout(sbLoad, 500); });
 </script>
