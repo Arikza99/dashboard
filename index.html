@@ -1380,15 +1380,18 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
 
 <!-- ══════ SUMMER PLAN ══════ -->
 <div class="page" id="p-summer">
-  <div class="ph"><div class="pl">Summer</div><div class="pt">Becoming</div><div class="psub">Your reference for becoming the best version of yourself. Come here when you need direction.</div></div>
+  <div class="ph"><div class="pl">Becoming</div><div class="pt">Becoming</div><div class="psub">Your complete reference for becoming the best version of yourself. Come here when you need direction.</div></div>
   <div class="tabs" style="flex-wrap:wrap;gap:4px;margin-bottom:20px">
     <div class="tab active" onclick="stab('sp','training',this)">Training</div>
     <div class="tab" onclick="stab('sp','running',this)">Running</div>
     <div class="tab" onclick="stab('sp','nutrition',this)">Nutrition</div>
     <div class="tab" onclick="stab('sp','skin',this)">Skin & Glow</div>
     <div class="tab" onclick="stab('sp','presence',this)">Presence</div>
+    <div class="tab" onclick="stab('sp','confidence',this)">Confidence</div>
+    <div class="tab" onclick="stab('sp','style',this)">Style</div>
+    <div class="tab" onclick="stab('sp','recipes',this)">Recipes</div>
+    <div class="tab" onclick="stab('sp','curriculum',this)">Curriculum</div>
     <div class="tab" onclick="stab('sp','daily',this)">Daily Template</div>
-    <div class="tab" onclick="stab('sp','acquire',this)">To Acquire</div>
   </div>
 
   <style>
@@ -1412,6 +1415,7 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
     .ex-tbl tr:last-child td{border-bottom:none}
     .ex-tbl tr:hover td{background:var(--surf2)}
     .ex-sets{color:var(--creative);font-weight:500;white-space:nowrap}
+    .ex-fin{color:var(--deadline);font-weight:500;white-space:nowrap}
     .skin-row{display:flex;align-items:flex-start;gap:12px;padding:9px 12px;background:var(--surf);border:1px solid var(--bdr);border-radius:4px;margin-bottom:4px}
     .skin-day{font-size:11px;font-weight:500;min-width:80px;color:var(--txt)}
     .skin-items{font-size:12px;color:var(--mid);flex:1;line-height:1.6}
@@ -1420,8 +1424,7 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
     .skin-ret{background:rgba(80,60,140,.1);color:#503c8c}
     .skin-rec{background:rgba(61,122,82,.1);color:#3d7a52}
     .skin-dry{background:rgba(42,100,128,.1);color:#2a6480}
-    .phase-hdr{padding:10px 14px;background:var(--surf2);border:1px solid var(--bdr);border-radius:5px 5px 0 0;display:flex;justify-content:space-between;align-items:center;margin-top:12px}
-    .phase-body{border:1px solid var(--bdr);border-top:none;border-radius:0 0 5px 5px;overflow:hidden}
+    .phase-body{border:1px solid var(--bdr);border-radius:5px;overflow:hidden;margin-bottom:12px}
     .run-row{display:flex;gap:12px;padding:9px 14px;border-bottom:1px solid var(--bdr)}
     .run-row:last-child{border-bottom:none}
     .run-day-lbl{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);min-width:70px}
@@ -1430,14 +1433,53 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
     .stat-chip{background:var(--surf);border:1px solid var(--bdr);border-radius:5px;padding:10px 12px}
     .stat-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:3px}
     .stat-val{font-size:16px;font-weight:500;color:var(--txt)}
+    .prin-row{display:flex;gap:14px;padding:12px 14px;border:1px solid var(--bdr);border-radius:4px;margin-bottom:4px;background:var(--surf)}
+    .prin-num{font-size:18px;font-weight:500;color:var(--creative);min-width:24px;flex-shrink:0}
+    .prin-title{font-size:12.5px;font-weight:500;color:var(--txt);margin-bottom:4px}
+    .prin-body{font-size:12px;color:var(--mid);line-height:1.6}
+    .quote-block{border-left:3px solid var(--creative);padding:10px 14px;margin-bottom:8px;background:var(--surf)}
+    .quote-text{font-size:13px;font-style:italic;color:var(--txt);line-height:1.6;margin-bottom:4px}
+    .quote-attr{font-size:10px;color:var(--dim);letter-spacing:.06em}
+    .swatch-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+    .swatch{display:flex;flex-direction:column;align-items:center;gap:5px}
+    .swatch-box{width:44px;height:44px;border-radius:3px;border:1px solid var(--bdr)}
+    .swatch-lbl{font-size:9px;color:var(--dim);letter-spacing:.08em;text-align:center}
+    .phase-hdr{padding:10px 14px;background:var(--surf2);border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center}
+    .phase-hdr-title{font-size:13px;font-weight:500;color:var(--txt)}
+    .phase-hdr-tag{font-size:10px;color:var(--soft)}
+    .rec-card{border:1px solid var(--bdr);border-radius:5px;overflow:hidden;margin-bottom:10px;background:var(--surf)}
+    .rec-card-hdr{padding:10px 14px;background:var(--surf2);border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
+    .rec-card-name{font-size:13px;font-weight:500;color:var(--txt)}
+    .rec-card-macros{font-size:10px;color:var(--soft)}
+    .rec-card-body{padding:10px 14px}
+    .rec-card-body ul{padding-left:14px;margin-bottom:8px}
+    .rec-card-body li{font-size:12px;color:var(--mid);margin-bottom:3px;line-height:1.5}
+    .rec-note{font-size:11px;color:var(--soft);font-style:italic;padding:6px 10px;background:var(--surf2);border-radius:3px;margin-top:6px}
+    .book-card{border:1px solid var(--bdr);border-radius:5px;overflow:hidden;margin-bottom:10px;background:var(--surf)}
+    .book-card-hdr{padding:10px 14px;background:var(--surf2);border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:10px}
+    .book-vol{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);min-width:60px}
+    .book-title{font-size:13px;font-weight:500;color:var(--txt)}
+    .book-card-body{padding:10px 14px}
+    .book-chapter{margin-bottom:8px}
+    .book-chapter-title{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--soft);margin-bottom:4px;font-weight:500}
+    .book-dishes{font-size:12px;color:var(--mid);line-height:1.7}
+    .cur-sem{border:1px solid var(--bdr);border-radius:5px;overflow:hidden;margin-bottom:10px}
+    .cur-sem-hdr{padding:10px 14px;background:var(--surf2);border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center}
+    .cur-sem-title{font-size:13px;font-weight:500;color:var(--txt)}
+    .cur-sem-tag{font-size:10px;color:var(--creative)}
+    .cur-course{padding:10px 14px;border-bottom:1px solid var(--bdr)}
+    .cur-course:last-child{border-bottom:none}
+    .cur-course-name{font-size:12.5px;font-weight:500;color:var(--txt);margin-bottom:3px}
+    .cur-course-hrs{font-size:10px;color:var(--soft);margin-bottom:4px}
+    .cur-course-desc{font-size:11px;color:var(--mid);line-height:1.5}
   </style>
 
   <!-- TRAINING -->
   <div class="tc active" id="sp-training">
     <div class="stat-row">
-      <div class="stat-chip"><div class="stat-lbl">Start date</div><div class="stat-val" style="font-size:13px">May 17</div></div>
-      <div class="stat-chip"><div class="stat-lbl">Current weight</div><div class="stat-val">147.2</div></div>
-      <div class="stat-chip"><div class="stat-lbl">Goal weight</div><div class="stat-val" style="color:var(--creative)">125</div></div>
+      <div class="stat-chip"><div class="stat-lbl">Start date</div><div class="stat-val" style="font-size:13px">May 14</div></div>
+      <div class="stat-chip"><div class="stat-lbl">Current weight</div><div class="stat-val">147.2 lbs</div></div>
+      <div class="stat-chip"><div class="stat-lbl">Goal weight</div><div class="stat-val" style="color:var(--creative)">125 lbs</div></div>
       <div class="stat-chip"><div class="stat-lbl">To lose</div><div class="stat-val" style="color:var(--deadline)">22.2 lbs</div></div>
       <div class="stat-chip"><div class="stat-lbl">Race goal</div><div class="stat-val">10K</div></div>
       <div class="stat-chip"><div class="stat-lbl">Days / week</div><div class="stat-val">7</div></div>
@@ -1445,34 +1487,61 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
 
     <div class="sp2-h2">Weekly schedule</div>
     <div class="wk-row"><div class="wk-day">Monday</div><span class="wk-tag wk-strength">Strength</span><div class="wk-focus">Lower Body + Core — Gym</div></div>
-    <div class="wk-row"><div class="wk-day">Tuesday</div><span class="wk-tag wk-run">Run</span><div class="wk-focus">Easy Zone 2 Run — Treadmill or outside</div></div>
+    <div class="wk-row"><div class="wk-day">Tuesday</div><span class="wk-tag wk-run">Run</span><div class="wk-focus">Walk/Run Intervals — Treadmill or outside</div></div>
     <div class="wk-row"><div class="wk-day">Wednesday</div><span class="wk-tag wk-strength">Strength</span><div class="wk-focus">Upper Body Push + Pull — Gym</div></div>
-    <div class="wk-row"><div class="wk-day">Thursday</div><span class="wk-tag wk-run">Run</span><div class="wk-focus">Tempo or Intervals — Treadmill or outside</div></div>
+    <div class="wk-row"><div class="wk-day">Thursday</div><span class="wk-tag wk-run">Run</span><div class="wk-focus">Walk/Run Intervals — Treadmill or outside</div></div>
     <div class="wk-row"><div class="wk-day">Friday</div><span class="wk-tag wk-strength">Strength</span><div class="wk-focus">Full Body — Gym</div></div>
-    <div class="wk-row"><div class="wk-day">Saturday</div><span class="wk-tag wk-run">Run</span><div class="wk-focus">Long Run — easy pace, Treadmill or outside</div></div>
+    <div class="wk-row"><div class="wk-day">Saturday</div><span class="wk-tag wk-run">Run</span><div class="wk-focus">Longer Walk/Run — easy pace</div></div>
     <div class="wk-row"><div class="wk-day">Sunday</div><span class="wk-tag wk-mobility">Mobility</span><div class="wk-focus">Flexibility + Recovery — Apartment</div></div>
+
+    <div class="sp2-h2">Progressive overload — the rule</div>
+    <div class="sp2-note">Pick a weight where the last 2 reps of your last set feel genuinely hard but your form stays clean. When you can complete all sets and reps and the last 2 reps of your final set feel easy, add weight next session. Week one is for learning movement patterns — go lighter than you think you need to. Never add weight to bad form.</div>
+    <table class="ex-tbl">
+      <tr><th>Exercise</th><th>Start here</th><th>Add when ready</th></tr>
+      <tr><td>Chest Press Machine</td><td>20–30 lbs</td><td class="ex-sets">+5 lbs</td></tr>
+      <tr><td>Incline Press Machine</td><td>15–25 lbs</td><td class="ex-sets">+5 lbs</td></tr>
+      <tr><td>Shoulder Press Machine</td><td>15–25 lbs</td><td class="ex-sets">+5 lbs</td></tr>
+      <tr><td>Lat Pulldown Cable</td><td>30–40 lbs</td><td class="ex-sets">+5 lbs</td></tr>
+      <tr><td>Cable Row</td><td>25–35 lbs</td><td class="ex-sets">+5 lbs</td></tr>
+      <tr><td>Leg Press</td><td>50–70 lbs</td><td class="ex-sets">+10 lbs</td></tr>
+      <tr><td>Leg Extension</td><td>20–30 lbs</td><td class="ex-sets">+5 lbs</td></tr>
+      <tr><td>Lying Leg Curl</td><td>20–30 lbs</td><td class="ex-sets">+5 lbs</td></tr>
+      <tr><td>Cable Tricep Pushdown</td><td>15–20 lbs</td><td class="ex-sets">+5 lbs</td></tr>
+      <tr><td>Dumbbell Bicep Curls</td><td>10–15 lbs</td><td class="ex-sets">+2.5–5 lbs</td></tr>
+      <tr><td>Hip Thrusts (dumbbell)</td><td>20–25 lbs</td><td class="ex-sets">+5 lbs</td></tr>
+      <tr><td>Bulgarian Split Squats</td><td>10–15 lbs each</td><td class="ex-sets">+2.5–5 lbs</td></tr>
+    </table>
 
     <div class="sp2-h2">Monday — Lower Body + Core</div>
     <table class="ex-tbl">
       <tr><th>Exercise</th><th>Note</th><th>Sets</th></tr>
-      <tr><td>Leg Press or Leg Extension Machine</td><td></td><td class="ex-sets">4 × 12</td></tr>
+      <tr><td>Leg Press</td><td></td><td class="ex-sets">4 × 12</td></tr>
       <tr><td>Lying Leg Curl</td><td></td><td class="ex-sets">3 × 12</td></tr>
+      <tr><td>Bulgarian Split Squats</td><td>10–15 lb kettlebells at sides — expect awkward first 2 weeks</td><td class="ex-sets">3 × 10 each</td></tr>
       <tr><td>Dumbbell Romanian Deadlift</td><td>15 lb each hand</td><td class="ex-sets">3 × 12</td></tr>
-      <tr><td>Dumbbell Walking Lunges</td><td>15 lb each hand</td><td class="ex-sets">3 × 10 each</td></tr>
+      <tr><td>Dumbbell Hip Thrusts</td><td>Upper back on bench, dumbbell across hips</td><td class="ex-sets">3 × 12</td></tr>
+      <tr><td>Cable Kickbacks</td><td>Glute isolation finisher</td><td class="ex-sets">3 × 15 each</td></tr>
       <tr><td>Plank Hold</td><td></td><td class="ex-sets">3 × 45 sec</td></tr>
       <tr><td>Dumbbell Russian Twists</td><td>10 lb</td><td class="ex-sets">3 × 15</td></tr>
+      <tr><td>Incline Treadmill Walk</td><td>10–12% incline, slow pace</td><td class="ex-fin">10–15 min</td></tr>
     </table>
 
     <div class="sp2-h2">Wednesday — Upper Body Push + Pull</div>
     <table class="ex-tbl">
       <tr><th>Exercise</th><th>Note</th><th>Sets</th></tr>
+      <tr><td colspan="3" style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);padding:8px 10px 4px;background:var(--surf2)">Push</td></tr>
       <tr><td>Chest Press Machine</td><td></td><td class="ex-sets">4 × 10</td></tr>
       <tr><td>Incline Press Machine</td><td></td><td class="ex-sets">3 × 10</td></tr>
       <tr><td>Shoulder Press Machine</td><td></td><td class="ex-sets">3 × 10</td></tr>
+      <tr><td>Cable Tricep Pushdown</td><td></td><td class="ex-sets">3 × 12</td></tr>
+      <tr><td colspan="3" style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);padding:8px 10px 4px;background:var(--surf2)">Pull</td></tr>
       <tr><td>Lat Pulldown Cable</td><td></td><td class="ex-sets">4 × 10</td></tr>
       <tr><td>Seated Cable Row</td><td></td><td class="ex-sets">3 × 12</td></tr>
+      <tr><td>Cable Face Pulls</td><td>Shoulder health — do not skip</td><td class="ex-sets">3 × 15</td></tr>
+      <tr><td colspan="3" style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);padding:8px 10px 4px;background:var(--surf2)">Arms</td></tr>
+      <tr><td>Dumbbell Bicep Curls</td><td>10–15 lb</td><td class="ex-sets">3 × 12</td></tr>
       <tr><td>Dumbbell Lateral Raises</td><td>10 lb</td><td class="ex-sets">3 × 12</td></tr>
-      <tr><td>Cable Tricep Pushdown</td><td></td><td class="ex-sets">3 × 12</td></tr>
+      <tr><td>Incline Treadmill Walk</td><td>10–12% incline, slow pace</td><td class="ex-fin">10–15 min</td></tr>
     </table>
 
     <div class="sp2-h2">Friday — Full Body</div>
@@ -1483,8 +1552,10 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
       <tr><td>Shoulder Press Machine</td><td></td><td class="ex-sets">3 × 10</td></tr>
       <tr><td>Leg Press or Leg Extension</td><td></td><td class="ex-sets">3 × 12</td></tr>
       <tr><td>Dumbbell Romanian Deadlift</td><td>15 lb each hand</td><td class="ex-sets">3 × 10</td></tr>
-      <tr><td>Dumbbell Bicep Curls</td><td>10 or 15 lb</td><td class="ex-sets">3 × 12</td></tr>
+      <tr><td>Dumbbell Bicep Curls</td><td>10–15 lb</td><td class="ex-sets">3 × 12</td></tr>
+      <tr><td>Cable Tricep Pushdown</td><td></td><td class="ex-sets">3 × 12</td></tr>
       <tr><td>Plank Hold</td><td></td><td class="ex-sets">3 × 45 sec</td></tr>
+      <tr><td>Incline Treadmill Walk</td><td>10–12% incline, slow pace</td><td class="ex-fin">10–15 min</td></tr>
     </table>
 
     <div class="sp2-h2">Sunday — Mobility (25–35 min, apartment)</div>
@@ -1492,10 +1563,12 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
       <tr><th>Exercise</th><th>Duration</th></tr>
       <tr><td>Cat-Cow</td><td class="ex-sets">10 slow reps</td></tr>
       <tr><td>Child's Pose</td><td class="ex-sets">60 sec</td></tr>
+      <tr><td>Thread the Needle (thoracic rotation)</td><td class="ex-sets">8 each side</td></tr>
       <tr><td>90/90 Hip Stretch</td><td class="ex-sets">90 sec each</td></tr>
       <tr><td>Pigeon Pose</td><td class="ex-sets">90 sec each</td></tr>
       <tr><td>Standing Quad Stretch</td><td class="ex-sets">45 sec each</td></tr>
       <tr><td>Lying Hamstring Stretch</td><td class="ex-sets">60 sec each</td></tr>
+      <tr><td>Calf Stretch Against Wall</td><td class="ex-sets">45 sec each</td></tr>
       <tr><td>Doorframe Chest Opener</td><td class="ex-sets">60 sec</td></tr>
       <tr><td>Seated Spinal Twist</td><td class="ex-sets">60 sec each</td></tr>
       <tr><td>Legs Up the Wall</td><td class="ex-sets">3 min</td></tr>
@@ -1503,32 +1576,39 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
     </table>
 
     <div class="sp2-h2">Recovery rules</div>
-    <div class="sp2-note">On any day combining strength and running, always lift first, run after. Sleep 7–9 hours — poor sleep spikes hunger and tanks both fat loss and run performance. Sunday mobility is low intensity by design. As machines get easy, increase weight rather than adding more volume.</div>
+    <div class="sp2-note">On any day combining strength and running, always lift first, run after. Sleep 7–9 hours. Sunday mobility is low intensity by design — do not turn it into a workout. Never add weight to bad form. Stay at the same weight until the movement is clean.</div>
   </div>
 
   <!-- RUNNING -->
   <div class="tc" id="sp-running">
-    <div class="sp2-note">Easy runs: treadmill 1% incline, conversational pace, 4–5 effort out of 10. You should be able to hold a full sentence. Tempo runs: 7–8 out of 10, uncomfortable but sustainable.</div>
+    <div class="sp2-note">All easy running: 4–5 out of 10 effort. Conversational pace — if you cannot speak a sentence, slow down. Treadmill at 1% incline for all runs. Do not skip Phase 0. Jumping ahead is the fastest way to get a shin splint or knee issue that sets you back weeks.</div>
 
-    <div class="sp2-h2">Phase 1 — Base Building (Weeks 1–4)</div>
+    <div class="sp2-h2">Phase 0 — Foundation (Weeks 1–3)</div>
     <div class="phase-body">
-      <div class="run-row"><div class="run-day-lbl">Tuesday</div><div class="run-desc">25–30 min easy run</div></div>
-      <div class="run-row"><div class="run-day-lbl">Thursday</div><div class="run-desc">4 × 5 min at slightly uncomfortable pace, 2 min walk recovery between</div></div>
-      <div class="run-row"><div class="run-day-lbl">Saturday</div><div class="run-desc">35–40 min easy long run</div></div>
+      <div class="run-row"><div class="run-day-lbl">Tuesday</div><div class="run-desc">5 min walk warmup → 8 × (1 min run / 2 min walk) → 5 min walk cooldown</div></div>
+      <div class="run-row"><div class="run-day-lbl">Thursday</div><div class="run-desc">5 min walk warmup → 8 × (1 min run / 2 min walk) → 5 min walk cooldown</div></div>
+      <div class="run-row"><div class="run-day-lbl">Saturday</div><div class="run-desc">5 min walk warmup → 10 × (1 min run / 2 min walk) → 5 min walk cooldown</div></div>
     </div>
 
-    <div class="sp2-h2">Phase 2 — Build (Weeks 5–8)</div>
+    <div class="sp2-h2">Phase 1 — Build Intervals (Weeks 4–6)</div>
     <div class="phase-body">
-      <div class="run-row"><div class="run-day-lbl">Tuesday</div><div class="run-desc">35 min easy</div></div>
-      <div class="run-row"><div class="run-day-lbl">Thursday</div><div class="run-desc">5 × 5 min tempo, or 6 × 400m hard with 90 sec recovery</div></div>
-      <div class="run-row"><div class="run-day-lbl">Saturday</div><div class="run-desc">50–55 min easy long run</div></div>
+      <div class="run-row"><div class="run-day-lbl">Tuesday</div><div class="run-desc">8 × (2 min run / 1 min walk)</div></div>
+      <div class="run-row"><div class="run-day-lbl">Thursday</div><div class="run-desc">8 × (2 min run / 1 min walk)</div></div>
+      <div class="run-row"><div class="run-day-lbl">Saturday</div><div class="run-desc">10 × (2 min run / 1 min walk)</div></div>
     </div>
 
-    <div class="sp2-h2">Phase 3 — Peak (Weeks 9–12)</div>
+    <div class="sp2-h2">Phase 2 — Longer Efforts (Weeks 7–9)</div>
     <div class="phase-body">
-      <div class="run-row"><div class="run-day-lbl">Tuesday</div><div class="run-desc">40 min easy</div></div>
-      <div class="run-row"><div class="run-day-lbl">Thursday</div><div class="run-desc">3 × 10 min at 10K goal pace, 2 min recovery</div></div>
-      <div class="run-row"><div class="run-day-lbl">Saturday</div><div class="run-desc">60–65 min easy, or practice 8K race effort</div></div>
+      <div class="run-row"><div class="run-day-lbl">Tuesday</div><div class="run-desc">5 × (4 min run / 1 min walk)</div></div>
+      <div class="run-row"><div class="run-day-lbl">Thursday</div><div class="run-desc">5 × (4 min run / 1 min walk)</div></div>
+      <div class="run-row"><div class="run-day-lbl">Saturday</div><div class="run-desc">6 × (4 min run / 1 min walk)</div></div>
+    </div>
+
+    <div class="sp2-h2">Phase 3 — Continuous Running (Weeks 10–12)</div>
+    <div class="phase-body">
+      <div class="run-row"><div class="run-day-lbl">Tuesday</div><div class="run-desc">3 × (8 min run / 1 min walk)</div></div>
+      <div class="run-row"><div class="run-day-lbl">Thursday</div><div class="run-desc">3 × (8 min run / 1 min walk)</div></div>
+      <div class="run-row"><div class="run-day-lbl">Saturday</div><div class="run-desc">30–35 min continuous easy run — ready for the 10K training plan</div></div>
     </div>
 
     <div class="sp2-h2">Stair stepper — apartment tool</div>
@@ -1542,6 +1622,7 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
       <div class="stat-chip"><div class="stat-lbl">Protein</div><div class="stat-val" style="color:var(--creative)">100–115g</div></div>
       <div class="stat-chip"><div class="stat-lbl">Carbs</div><div class="stat-val" style="color:var(--deadline)">150–180g</div></div>
       <div class="stat-chip"><div class="stat-lbl">Fat</div><div class="stat-val">45–60g</div></div>
+      <div class="stat-chip"><div class="stat-lbl">Fibre</div><div class="stat-val" style="color:var(--admin)">35g min</div></div>
       <div class="stat-chip"><div class="stat-lbl">Water</div><div class="stat-val">4L min</div></div>
     </div>
 
@@ -1555,69 +1636,570 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
       <tr><td>Month 7–9</td><td>Goal weight reached at healthy pace</td><td class="ex-sets" style="color:var(--creative)">125 lbs</td></tr>
     </table>
 
-    <div class="sp2-h2">Protein sources</div>
-    <div class="sp2-note">Eggs, Greek yogurt, cottage cheese, chicken, fish, tofu, lentils. Protein at every meal without exception. Within 30–60 minutes after every strength session. This is the one number that matters most — hit 100g every day regardless of anything else.</div>
-
     <div class="sp2-h2">Principles</div>
     <div class="sp2-grid">
-      <div class="sp2-card"><h3>Every day</h3><ul><li>High-volume low-calorie foods first — vegetables, broth soups, fruit</li><li>Prep tomorrow's food during your closing shift</li><li>No decisions when hungry</li><li>Track calories for 2–3 weeks to calibrate</li></ul></div>
-      <div class="sp2-card"><h3>Run days (Tue, Thu, Sat)</h3><ul><li>Eat more carbs to fuel performance</li><li>Complex carbs before runs — oats, rice, sweet potato</li><li>Electrolytes on long run days</li><li>Post-run protein within the hour</li></ul></div>
+      <div class="sp2-card"><h3>Every day</h3><ul>
+        <li>Protein at every meal — eggs, Greek yogurt, cottage cheese, chicken, fish, tofu, lentils</li>
+        <li>High-volume low-calorie foods first — vegetables, broth soups, fruit</li>
+        <li>Track calories for 2–3 weeks to calibrate, then eat intuitively</li>
+        <li>Protein within 30–60 min after every strength session</li>
+        <li>No pork, no lamb, minimal alcohol in cooking</li>
+      </ul></div>
+      <div class="sp2-card"><h3>Fibre targets (35g minimum)</h3><ul>
+        <li>Oats, lentils, black beans, chia seeds</li>
+        <li>Apples, pears, broccoli, carrots, avocado</li>
+        <li>Whole grain bread, rye crispbreads</li>
+        <li>Fibre manages hunger on a deficit — prioritise it on snack-heavy days</li>
+        <li>Add 1 tbsp ground flaxseed to smoothie: +10g fibre, 37 cal</li>
+      </ul></div>
+      <div class="sp2-card"><h3>Run days (Tue, Thu, Sat)</h3><ul>
+        <li>Eat more carbs to fuel performance</li>
+        <li>Complex carbs before runs — oats, rice, sweet potato</li>
+        <li>Post-run protein within the hour</li>
+      </ul></div>
+      <div class="sp2-card"><h3>Training day targets</h3><ul>
+        <li>Training days: ~1,850 kcal</li>
+        <li>Rest days: ~1,650 kcal</li>
+        <li>Protein before carbs, always</li>
+      </ul></div>
     </div>
   </div>
 
   <!-- SKIN & GLOW -->
   <div class="tc" id="sp-skin">
     <div class="sp2-h2">Skin cycling — evening routine</div>
-    <div class="sp2-note">Skin cycling is a 4-night rotating schedule. It gives your skin the active treatments it needs while building in recovery time so you don't over-strip or irritate. Drysol (antiperspirant treatment) goes on a separate night away from any acids or retinol.</div>
+    <div class="sp2-note">Skin cycling is a 4-night rotating schedule. It gives your skin active treatments while building in recovery time. Drysol goes on a separate night away from all acids and retinol — never combine them.</div>
 
     <div class="skin-row"><div class="skin-day">Night 1</div><span class="skin-label skin-exf">Exfoliation</span><div class="skin-items">Cleanse · BHA or AHA exfoliant · niacinamide serum · moisturiser · no actives after the exfoliant</div></div>
-    <div class="skin-row"><div class="skin-day">Night 2</div><span class="skin-label skin-ret">Retinol</span><div class="skin-items">Cleanse · retinol (buffered — apply moisturiser first if sensitive) · niacinamide serum · slugging (Vaseline or Aquaphor over everything as final step)</div></div>
+    <div class="skin-row"><div class="skin-day">Night 2</div><span class="skin-label skin-ret">Retinol</span><div class="skin-items">Cleanse · retinol (buffer with moisturiser first if sensitive) · niacinamide serum · slugging (Vaseline or Aquaphor as final step)</div></div>
     <div class="skin-row"><div class="skin-day">Night 3</div><span class="skin-label skin-rec">Recovery</span><div class="skin-items">Cleanse · niacinamide serum · barrier repair moisturiser · slugging — no actives, let skin recover</div></div>
-    <div class="skin-row"><div class="skin-day">Night 4</div><span class="skin-label skin-dry">Drysol</span><div class="skin-items">Cleanse · apply Drysol to underarms only on dry skin · niacinamide serum · moisturiser · no actives this night — Drysol + acids = irritation</div></div>
-    <div class="skin-row"><div class="skin-day">Then repeat</div><span class="skin-label skin-exf">Back to Night 1</span><div class="skin-items">The cycle repeats. After 8–12 weeks retinol tolerance builds — you can move to Night 1: exfoliant, Night 2: retinol, Nights 3–4 recovery, Drysol wherever it fits in recovery nights.</div></div>
+    <div class="skin-row"><div class="skin-day">Night 4</div><span class="skin-label skin-dry">Drysol</span><div class="skin-items">Cleanse · apply Drysol to underarms on dry skin · niacinamide serum · moisturiser · no actives this night</div></div>
+    <div class="skin-row" style="margin-bottom:14px"><div class="skin-day">Repeat</div><span class="skin-label skin-exf">Back to Night 1</span><div class="skin-items">Cycle repeats. After 8–12 weeks retinol tolerance builds — you can increase frequency within the recovery nights.</div></div>
 
     <div class="sp2-h2">Morning skincare routine</div>
-    <div class="skin-row"><div class="skin-day">Step 1</div><div class="skin-items" style="color:var(--txt)">Gentle cleanser — or just water if skin feels balanced</div></div>
-    <div class="skin-row"><div class="skin-day">Step 2</div><div class="skin-items" style="color:var(--txt)">Niacinamide serum — pore-minimising, brightening, anti-inflammatory</div></div>
-    <div class="skin-row"><div class="skin-day">Step 3</div><div class="skin-items" style="color:var(--txt)">Lightweight moisturiser</div></div>
-    <div class="skin-row"><div class="skin-day">Step 4</div><div class="skin-items" style="color:var(--txt)">SPF 30+ — every single morning, rain or shine. This is the single most anti-ageing thing you can do.</div></div>
-    <div class="skin-row"><div class="skin-day">Step 5</div><div class="skin-items" style="color:var(--txt)">Lash serum (Latisse or Ordinary) on lash line — apply before moisturiser</div></div>
+    <div class="skin-row"><div class="skin-day">Step 1</div><div class="skin-items" style="color:var(--txt)">Gentle cleanser — CeraVe Hydrating ($14) or La Roche-Posay Toleriane ($20)</div></div>
+    <div class="skin-row"><div class="skin-day">Step 2</div><div class="skin-items" style="color:var(--txt)">Vitamin C serum — The Ordinary Ascorbyl Glucoside 12% ($12) or SkinCeuticals C E Ferulic ($182)</div></div>
+    <div class="skin-row"><div class="skin-day">Step 3</div><div class="skin-items" style="color:var(--txt)">Niacinamide 10% — The Ordinary ($6). Pore-minimising, brightening, barrier-strengthening.</div></div>
+    <div class="skin-row"><div class="skin-day">Step 4</div><div class="skin-items" style="color:var(--txt)"><strong>SPF 50 every single morning.</strong> EltaMD UV Clear SPF 46 ($39) or La Roche-Posay Anthelios SPF 50 ($36). This is the single most anti-ageing and PIH-fighting step.</div></div>
+    <div class="skin-row" style="margin-bottom:14px"><div class="skin-day">Step 5</div><div class="skin-items" style="color:var(--txt)">Lash serum (Latisse or The Ordinary) on lash line before moisturiser</div></div>
+
+    <div class="sp2-h2">PIH fighting ingredients</div>
+    <div class="sp2-note">Niacinamide (5–10%), tranexamic acid, azelaic acid (10–20%), alpha arbutin, vitamin C. Look for these when choosing any new product. UV exposure is the single greatest factor that darkens PIH — SPF is the most important step in your routine.</div>
+
+    <div class="sp2-h2">Latisse</div>
+    <div class="sp2-note">FDA-approved for lash growth. Ask your dermatologist, GP, or ophthalmologist — requires a prescription but routinely prescribed. Apply once nightly to upper lash line. Results: subtle at 4 weeks, noticeable at 8 weeks, full at 16 weeks. Generic bimatoprost 0.03% is significantly cheaper ($20–40) — ask your pharmacist.</div>
 
     <div class="sp2-h2">Body care</div>
     <div class="sp2-grid">
-      <div class="sp2-card"><h3>Daily</h3><ul><li>Body moisturiser after every shower while skin is still damp</li><li>SPF on any exposed skin</li><li>Lip balm with SPF during the day</li><li>Dry brush before shower on strength days — circulation and texture</li></ul></div>
-      <div class="sp2-card"><h3>Weekly</h3><ul><li>Body exfoliant — focus on upper arms, thighs, anywhere rough</li><li>Hair mask or deep conditioner — leave in while doing Sunday mobility</li><li>Eyebrow grooming</li><li>Cuticle oil on nails</li></ul></div>
+      <div class="sp2-card"><h3>Daily</h3><ul>
+        <li>Body moisturiser after every shower while skin is still damp</li>
+        <li>SPF on any exposed skin</li>
+        <li>Lip balm with SPF during the day</li>
+        <li>Dry brush before shower on strength days</li>
+      </ul></div>
+      <div class="sp2-card"><h3>Weekly</h3><ul>
+        <li>Body exfoliant — upper arms, thighs, anywhere rough</li>
+        <li>Hair mask or deep conditioner during Sunday mobility</li>
+        <li>Eyebrow grooming</li>
+        <li>Cuticle oil on nails</li>
+      </ul></div>
     </div>
 
     <div class="sp2-h2">Hair</div>
-    <div class="sp2-note">Target style: Dakota Johnson bottleneck/Birkin bangs. Products: Kevin Murphy Heated Defense (before heat), Doo.Over Spray (texture and hold), Hair.Resort Spray (beachy texture), R+Co Rockaway Salt Spray. Wash 2–3 times per week maximum for oily scalp. Cold rinse at the end seals the cuticle and adds shine. Braid loosely before bed every night.</div>
-
-    <div class="sp2-h2">The glow-up non-negotiables</div>
-    <div class="sp2-note">These are the things that actually compound. Skincare every single night without exception. SPF every morning. Sleep with hair braided. Body moisturiser after every shower. Drink your 4L of water — it shows on your skin within two weeks. Sunglasses outside — squinting causes lines. These feel small but over a summer they add up to a visible change.</div>
+    <div class="sp2-note">Target: Dakota Johnson bottleneck/Birkin bangs. Products: Kevin Murphy Heated Defense (before heat), Doo.Over Spray (texture and hold), Hair.Resort Spray (beachy texture), R+Co Rockaway Salt Spray. Wash 2–3 times per week. Cold rinse at end seals cuticle and adds shine. Braid loosely before bed every night. Silk pillowcase reduces frizz and breakage significantly.</div>
   </div>
 
   <!-- PRESENCE -->
   <div class="tc" id="sp-presence">
-    <div class="sp2-note">What you're working on — talking more deliberately, not qualifying every statement, feeling genuine with people — is not a personality flaw. It is self-consciousness, and the fix is redirecting attention outward until it becomes automatic.</div>
+    <div class="sp2-note">What you are working on — talking more deliberately, not qualifying every statement, feeling genuine with people — is not a personality flaw. It is self-consciousness, and the fix is redirecting attention outward until it becomes automatic.</div>
 
     <div class="sp2-h2">Daily practices</div>
-    <div class="skin-row" style="margin-bottom:4px"><div class="skin-day">Morning</div><div class="skin-items" style="color:var(--txt)"><strong>One word intention.</strong> Inside morning pages or just after: pick one word for who you want to be today. Grounded. Curious. Present. Carry it.</div></div>
-    <div class="skin-row" style="margin-bottom:4px"><div class="skin-day">Daily</div><div class="skin-items" style="color:var(--txt)"><strong>One unqualified statement.</strong> In one conversation today, say something and do not add "I don't know" or "if that makes sense." Make the statement. Stop. Let it sit.</div></div>
+    <div class="skin-row" style="margin-bottom:4px"><div class="skin-day">Morning</div><div class="skin-items" style="color:var(--txt)"><strong>One word intention.</strong> Pick one word for who you want to be today. Grounded. Curious. Present. Carry it.</div></div>
+    <div class="skin-row" style="margin-bottom:4px"><div class="skin-day">Daily</div><div class="skin-items" style="color:var(--txt)"><strong>One unqualified statement.</strong> In one conversation today, say something and do not add "I don't know" or "if that makes sense." Say it. Stop. Let it sit.</div></div>
     <div class="skin-row" style="margin-bottom:4px"><div class="skin-day">Groups</div><div class="skin-items" style="color:var(--txt)"><strong>Outward redirect.</strong> When you notice self-consciousness, ask: what is genuinely interesting about this person right now? Your self-consciousness disappears when your attention is fully on someone else.</div></div>
-    <div class="skin-row" style="margin-bottom:4px"><div class="skin-day">Sunday</div><div class="skin-items" style="color:var(--txt)"><strong>One reach-out.</strong> One message to one person you've been meaning to contact. "I've been bad at staying in touch and I'm trying to change that. How are you?" is enough.</div></div>
+    <div class="skin-row" style="margin-bottom:4px"><div class="skin-day">Sunday</div><div class="skin-items" style="color:var(--txt)"><strong>One reach-out.</strong> One message to one person you've been meaning to contact.</div></div>
     <div class="skin-row" style="margin-bottom:14px"><div class="skin-day">Evening</div><div class="skin-items" style="color:var(--txt)"><strong>Journal reflection.</strong> What did I do well today in how I showed up? What didn't reflect who I want to be? One thing I'll do differently tomorrow.</div></div>
 
-    <div class="sp2-h2">Speaking</div>
+    <div class="sp2-h2">Speaking habits</div>
     <div class="sp2-grid">
-      <div class="sp2-card"><h3>Do this</h3><ul><li>Slow down by 20% — deliberate pace reads as considered</li><li>Ask one good question then fully listen to the answer</li><li>Have positions — "whatever you think" is an absence</li><li>Comfortable eye contact — genuine interest, not performance</li></ul></div>
-      <div class="sp2-card"><h3>Stop doing this</h3><ul><li>"I don't know" after every statement</li><li>"If that makes sense" as a filler</li><li>Justifying choices that don't need justification</li><li>"I don't drink tonight" needs no explanation. Neither does leaving early.</li></ul></div>
+      <div class="sp2-card"><h3>Do this</h3><ul>
+        <li>Slow down by 20% — deliberate pace reads as considered</li>
+        <li>Ask one good question then fully listen</li>
+        <li>Have positions — "whatever you think" is an absence</li>
+        <li>Comfortable eye contact — genuine interest, not performance</li>
+        <li>Pause before answering rather than filling silence with "um"</li>
+      </ul></div>
+      <div class="sp2-card"><h3>Stop doing this</h3><ul>
+        <li>"I don't know" after every statement</li>
+        <li>"If that makes sense" as a filler</li>
+        <li>Justifying choices that don't need justification</li>
+        <li>"I don't drink tonight" needs no explanation</li>
+        <li>Leaving early needs no justification</li>
+      </ul></div>
     </div>
 
     <div class="sp2-h2">Professional edge</div>
     <div class="sp2-grid">
-      <div class="sp2-card"><h3>The anticipation habit</h3><ul><li>At end of each work day: what will someone need from me tomorrow that I could prepare tonight?</li><li>When you finish a task: what's the logical next question? Answer it before they ask</li><li>Never send a problem without a proposed solution</li></ul></div>
-      <div class="sp2-card"><h3>Communication</h3><ul><li>Say what it is and what you need in the first sentence</li><li>Confirm your understanding of a task before starting, not halfway through</li><li>If something will be late, say so 24 hours before — not after</li><li>"I'll confirm that" is a power move when you deliver</li></ul></div>
+      <div class="sp2-card"><h3>The anticipation habit</h3><ul>
+        <li>End of each work day: what will someone need from me tomorrow that I could prepare tonight?</li>
+        <li>When you finish a task: what is the logical next question? Answer it before they ask.</li>
+        <li>Never send a problem without a proposed solution</li>
+      </ul></div>
+      <div class="sp2-card"><h3>Communication</h3><ul>
+        <li>Say what it is and what you need in the first sentence</li>
+        <li>Confirm your understanding of a task before starting</li>
+        <li>If something will be late, say so 24 hours before — not after</li>
+        <li>"I'll confirm that" is a power move when you deliver</li>
+      </ul></div>
     </div>
+  </div>
+
+  <!-- CONFIDENCE -->
+  <div class="tc" id="sp-confidence">
+    <div class="sp2-note">Confidence is not a feeling you wait to have. It is a practice — a set of behaviours you adopt first, which then generate the feeling. Every time you say you will do something and then do it, you build self-trust. Every time you don't, you erode it. Your fitness plan, your reading practice, your writing routine — these are not separate from your confidence project. They are the confidence project.</div>
+
+    <div class="sp2-h2">The 6 Stoic principles</div>
+    <div class="prin-row"><div class="prin-num">1</div><div><div class="prin-title">Practice the Full Stop</div><div class="prin-body">Say the thing. Then stop. Do not add "I don't know," "if that makes sense," "maybe that's wrong." The silence after a considered statement is not awkward — it is authority. Most people rush to fill silence. You don't have to be one of them.</div></div></div>
+    <div class="prin-row"><div class="prin-num">2</div><div><div class="prin-title">Have Positions</div><div class="prin-body">Stoic confidence means being willing to actually think something. "Whatever you think" as a default is not a position — it is an absence. Quiet confidence holds opinions lightly but holds them. People who have no positions are not mysterious. They are forgettable.</div></div></div>
+    <div class="prin-row"><div class="prin-num">3</div><div><div class="prin-title">Stop Explaining Yourself</div><div class="prin-body">You do not owe anyone the reasoning behind your choices unless you want to share it. "I don't drink" needs no explanation. "I prefer to go home" needs no justification. The instinct to justify is the instinct to seek approval. Quiet it.</div></div></div>
+    <div class="prin-row"><div class="prin-num">4</div><div><div class="prin-title">Redirect Attention Outward</div><div class="prin-body">When you're self-conscious in conversation, you're watching yourself from the outside. The fix: redirect attention to the other person. Get curious about them. What is interesting about this person? Find it. Your self-consciousness cannot survive genuine curiosity.</div></div></div>
+    <div class="prin-row"><div class="prin-num">5</div><div><div class="prin-title">Slow Down by 20%</div><div class="prin-body">Nervous speech is fast speech. A slower pace reads as considered. The people you find most compelling in conversation almost certainly speak at a pace that feels slightly deliberate. This is not an accident.</div></div></div>
+    <div class="prin-row" style="margin-bottom:14px"><div class="prin-num">6</div><div><div class="prin-title">Read the Stoics Directly</div><div class="prin-body">Marcus Aurelius's Meditations. Epictetus's Enchiridion (53 short chapters — one per day). Seneca's Letters to Lucilius. Not summaries. The actual texts. These are private correspondence with the best version of themselves.</div></div></div>
+
+    <div class="sp2-h2">Stoic quotes</div>
+    <div class="quote-block"><div class="quote-text">"You have power over your mind — not outside events. Realise this and you will find strength."</div><div class="quote-attr">Marcus Aurelius — Meditations</div></div>
+    <div class="quote-block"><div class="quote-text">"First say to yourself what you would be; and then do what you have to do."</div><div class="quote-attr">Epictetus — Discourses</div></div>
+    <div class="quote-block" style="margin-bottom:14px"><div class="quote-text">"Begin at once to live, and count each separate day as a separate life."</div><div class="quote-attr">Seneca — Letters to Lucilius</div></div>
+
+    <div class="sp2-h2">Posture and physical presence</div>
+    <div class="sp2-note">Shoulders back and down — not forced, just not rounded forward. Chin parallel to the floor. Weight distributed evenly when standing. Eye contact held comfortably — look for the colour of someone's eyes when you meet them. Take up your full space — people with low confidence contract. Sit with both feet on the floor, arms not crossed, occupying your full seat.</div>
+
+    <div class="sp2-h2">Voice work</div>
+    <div class="sp2-note">Pace: slow down by 20%. Upspeak: statements end with a falling or level tone, not a rising one. Volume: slightly louder than you think is necessary. Pausing: the ability to pause before answering reads as extremely confident. Record yourself speaking for 2 minutes once a week — the gap between how you think you sound and how you actually sound is where all your voice work lives.</div>
+
+    <div class="sp2-h2">Identity — the inside game</div>
+    <div class="sp2-grid">
+      <div class="sp2-card"><h3>The identity approach</h3><ul>
+        <li>Every action is a vote for the kind of person you are</li>
+        <li>Not "I want to work out" — "I am someone who takes care of her body"</li>
+        <li>Identity is not what you announce. It is what you do when no one is watching.</li>
+        <li>Dress as that person every day, even when staying home</li>
+      </ul></div>
+      <div class="sp2-card"><h3>Never miss twice</h3><ul>
+        <li>Miss once — that is life. Miss twice and you are building a different habit.</li>
+        <li>Excuses are not the problem. Using them as the endpoint is.</li>
+        <li>Something prevented you — what specifically? What changes tomorrow?</li>
+        <li>Smaller commitments kept perfectly build more self-trust than large ones kept inconsistently</li>
+      </ul></div>
+      <div class="sp2-card"><h3>Morning practice</h3><ul>
+        <li>Five minutes before the phone — give them to yourself</li>
+        <li>Ask: who do I want to be today?</li>
+        <li>Name one thing you will do today that matters</li>
+        <li>Set a single intention. Carry it.</li>
+      </ul></div>
+      <div class="sp2-card"><h3>Evening review</h3><ul>
+        <li>What did I do well today — specifically?</li>
+        <li>What didn't reflect who I want to be — specifically, not globally?</li>
+        <li>What will I do differently tomorrow — one thing, actionable?</li>
+        <li>Then let the day go. The review is for learning, not re-experiencing.</li>
+      </ul></div>
+    </div>
+
+    <div class="sp2-h2">The charisma framework</div>
+    <div class="sp2-grid">
+      <div class="sp2-card"><h3>Presence</h3><ul>
+        <li>Phone away when with people — not face-down on the table, away</li>
+        <li>Make your listening visible — respond to specific things they said</li>
+        <li>Ask one follow-up question for every answer before moving to a new topic</li>
+        <li>Remember one specific thing from every conversation and mention it next time</li>
+      </ul></div>
+      <div class="sp2-card"><h3>Warmth</h3><ul>
+        <li>Use people's names — once, naturally, sincerely</li>
+        <li>Remember what matters to them — their work, their relationships, the thing they mentioned</li>
+        <li>Compliment specifically and sincerely</li>
+        <li>Make introductions generously — connecting people is one of the highest-value social moves</li>
+      </ul></div>
+      <div class="sp2-card"><h3>Intellectual confidence</h3><ul>
+        <li>"I think X is true because..." is more compelling than "I find X interesting"</li>
+        <li>Say "I might be wrong, but..." and then offer a real opinion</li>
+        <li>Disagree with grace: "I've actually thought about it differently" is a complete sentence</li>
+        <li>Ask the stupid question — whoever does is immediately respected</li>
+      </ul></div>
+      <div class="sp2-card"><h3>The body as home</h3><ul>
+        <li>Inhabit rather than observe — movement that feels good, skincare as attention, clothes as self-definition</li>
+        <li>Spend time alone intentionally — café, park, restaurant. The ability to be comfortable with yourself in public is magnetic.</li>
+        <li>Curate your inputs aggressively — what you read, watch, listen to shapes who you're becoming</li>
+        <li>Stop explaining yourself. You don't owe anyone a justification for your choices.</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <!-- STYLE -->
+  <div class="tc" id="sp-style">
+    <div class="sp2-h2">Your aesthetic</div>
+    <div class="sp2-note">90s old money coastal. Androgynous. Considered without effort. The through-line across your boards: quality fabrics, restrained colour, slightly masc silhouette, effortless rather than overdressed. Coastal old money meets Parisian academic meets Jacob Elordi off-duty. This is a very buildable aesthetic and you already have strong taste.</div>
+
+    <div class="sp2-h2">The palette</div>
+    <div class="swatch-row">
+      <div class="swatch"><div class="swatch-box" style="background:#1a2744"></div><div class="swatch-lbl">Navy</div></div>
+      <div class="swatch"><div class="swatch-box" style="background:#4a1528"></div><div class="swatch-lbl">Burgundy</div></div>
+      <div class="swatch"><div class="swatch-box" style="background:#2d4a30"></div><div class="swatch-lbl">Forest</div></div>
+      <div class="swatch"><div class="swatch-box" style="background:#f5f0e8;border:1px solid var(--bdr)"></div><div class="swatch-lbl">Cream</div></div>
+      <div class="swatch"><div class="swatch-box" style="background:#d4c4a0"></div><div class="swatch-lbl">Oatmeal</div></div>
+      <div class="swatch"><div class="swatch-box" style="background:#6b7a5e"></div><div class="swatch-lbl">Sage</div></div>
+      <div class="swatch"><div class="swatch-box" style="background:#8b6914"></div><div class="swatch-lbl">Camel</div></div>
+    </div>
+    <div class="sp2-note">Buy nothing outside this palette for the first six months. When in doubt, ask: does this work with navy, cream, and stone? If not, put it back. The discipline of a palette is what separates a wardrobe that looks intentional from one that looks accumulated.</div>
+
+    <div class="sp2-h2">Capsule wardrobe — foundation layer</div>
+    <table class="ex-tbl">
+      <tr><th>Item</th><th>Brand / Source</th><th>Price range</th></tr>
+      <tr><td>White/cream fitted tee (×2)</td><td>COS, Arket, or Uniqlo Supima Cotton</td><td>$25–55 each</td></tr>
+      <tr><td>Navy/dark crewneck tee (×2)</td><td>COS, Sunspel, or Uniqlo</td><td>$25–80 each</td></tr>
+      <tr><td>Crisp white Oxford shirt</td><td>Uniqlo Premium Linen, Ralph Lauren, or Arket</td><td>$50–120</td></tr>
+      <tr><td>Oversized linen shirt (cream or stone)</td><td>Arket, Mango, H&M Premium</td><td>$45–110</td></tr>
+      <tr><td>Navy or striped Breton top</td><td>Saint James, Petit Bateau, or SEZANE</td><td>$60–120</td></tr>
+      <tr><td>Fitted ribbed tank (×2, cream & black)</td><td>COS, Arket, SKIMS</td><td>$25–55 each</td></tr>
+    </table>
+
+    <div class="sp2-h2">Bottoms</div>
+    <table class="ex-tbl">
+      <tr><th>Item</th><th>Brand / Source</th><th>Price range</th></tr>
+      <tr><td>Light wash straight-leg jeans</td><td>Agolde, Abercrombie Curve Love, or GRLFRND</td><td>$80–198</td></tr>
+      <tr><td>Dark or black straight-leg jeans</td><td>Abercrombie, Madewell, or Weekday</td><td>$60–130</td></tr>
+      <tr><td>Wide-leg linen trousers (cream/stone)</td><td>Arket, COS, Mango</td><td>$60–120</td></tr>
+      <tr><td>Tailored black trousers</td><td>COS, Banana Republic, & Other Stories</td><td>$80–160</td></tr>
+      <tr><td>Linen shorts (navy or stone)</td><td>Abercrombie, Arket, or J.Crew</td><td>$45–80</td></tr>
+    </table>
+
+    <div class="sp2-h2">Knitwear</div>
+    <table class="ex-tbl">
+      <tr><th>Item</th><th>Brand / Source</th><th>Price range</th></tr>
+      <tr><td>Cream cable-knit crewneck</td><td>Abercrombie, Polo Ralph Lauren vintage, or Arket</td><td>$80–150</td></tr>
+      <tr><td>Navy ribbed crewneck</td><td>COS, Uniqlo, or & Other Stories</td><td>$60–100</td></tr>
+      <tr><td>Oversized grey or oatmeal crew</td><td>Abercrombie, Arket, or COS</td><td>$70–120</td></tr>
+      <tr><td>V-neck merino sweater (camel or stone)</td><td>Uniqlo Merino, COS, or J.Crew</td><td>$50–120</td></tr>
+    </table>
+
+    <div class="sp2-h2">Footwear</div>
+    <table class="ex-tbl">
+      <tr><th>Item</th><th>Brand / Source</th><th>Price range</th></tr>
+      <tr><td>Black or dark brown loafers</td><td>Steve Madden, Alohas, or Sam Edelman (entry); Margaux (mid)</td><td>$80–250</td></tr>
+      <tr><td>White leather low sneakers</td><td>New Balance 574 or 550, Axel Arigato</td><td>$100–200</td></tr>
+      <tr><td>Black lace-up ankle boots</td><td>Dr. Martens 1460, Thursday Boot Co., or Steve Madden</td><td>$100–200</td></tr>
+      <tr><td>Brown leather lace-up boots</td><td>Thursday Boot Co. Captain — the target</td><td>$150–200</td></tr>
+      <tr><td>Birkenstocks (Arizona, tan or black)</td><td>Birkenstock directly or Nordstrom</td><td>$100–130</td></tr>
+    </table>
+
+    <div class="sp2-h2">Accessories</div>
+    <table class="ex-tbl">
+      <tr><th>Item</th><th>Brand / Source</th><th>Price range</th></tr>
+      <tr><td>Ray-Ban Wayfarers or Clubmasters</td><td>Ray-Ban directly or Sunglass Hut</td><td>$160–200</td></tr>
+      <tr><td>Silver chain necklace (16–18")</td><td>Mejuri, Missoma, or vintage</td><td>$60–150</td></tr>
+      <tr><td>Silver ring (simple band or signet)</td><td>Mejuri, Vitaly, or vintage</td><td>$40–120</td></tr>
+      <tr><td>Canvas tote (navy/cream with contrast)</td><td>L.L. Bean Boat & Tote, or COS</td><td>$30–50</td></tr>
+      <tr><td>Leather belt (tan and black)</td><td>Madewell, COS, or vintage</td><td>$40–80 each</td></tr>
+    </table>
+
+    <div class="sp2-h2">Shopping strategy — 3 phases</div>
+    <div class="sp2-grid">
+      <div class="sp2-card"><h3>Phase 1 — Foundation ($400–600)</h3><ul>
+        <li>2 quality tees (one white, one navy)</li>
+        <li>1 linen shirt</li>
+        <li>1 pair straight-leg jeans (light wash)</li>
+        <li>1 crewneck sweater</li>
+        <li>White sneakers if you don't have a good pair</li>
+        <li>Loafers — the single most transformative shoe for this aesthetic</li>
+      </ul></div>
+      <div class="sp2-card"><h3>Phase 2 — Depth ($400–600)</h3><ul>
+        <li>Leather or moto jacket</li>
+        <li>A second pair of jeans (darker wash)</li>
+        <li>Knitwear — cable knit and ribbed piece</li>
+        <li>Birkenstocks for warmer months</li>
+        <li>Begin accessory building — one good chain, sunglasses</li>
+      </ul></div>
+      <div class="sp2-card"><h3>Phase 3 — Refinement (ongoing)</h3><ul>
+        <li>Wool overcoat — worth saving for and buying well</li>
+        <li>Thursday Boot Co. Women's Captain — fall purchase</li>
+        <li>Any gaps identified from wearing the wardrobe</li>
+      </ul></div>
+      <div class="sp2-card"><h3>Always check resale first</h3><ul>
+        <li>Depop, ThredUp, The RealReal before buying new</li>
+        <li>Polo Ralph Lauren, Levi's, Carhartt, leather jackets — abundant on resale</li>
+        <li>Build 60% of this wardrobe secondhand for a fraction of the cost</li>
+      </ul></div>
+    </div>
+
+    <div class="sp2-h2">Getting dressed — the rules</div>
+    <div class="sp2-note"><strong>The formula:</strong> Start with the most interesting piece you want to wear. Build everything else around it in your neutrals. Check silhouette — oversized top needs straight bottom, and vice versa. One accessory that adds something. Shoes last — they should feel like the natural conclusion of the outfit. <strong>Before you leave: look in the mirror and remove one thing.</strong> The instinct to add is almost always wrong. The edit is where style lives.</div>
+
+    <div class="sp2-h2">Tailoring</div>
+    <div class="sp2-note">A $30 pair of jeans hemmed to your exact length looks more expensive than $200 jeans at the wrong length. Budget $100–150 per year for tailoring. Hem jeans/trousers: $12–20. Take in a blazer: $25–40. Shorten sleeves: $15–25. Find a local tailor via Google Maps reviews.</div>
+
+    <div class="sp2-h2">Tattoo cover-ups</div>
+    <div class="sp2-note">Thigh and calf — both manageable candidates. Design direction: blackwork spheres, brushstroke crescents, scientific illustration (neuron/Cajal drawings). Book a consultation before committing to a direction. The consultation is free and will tell you what is actually achievable over your existing ink.</div>
+  </div>
+
+  <!-- RECIPES -->
+  <div class="tc" id="sp-recipes">
+    <div class="sp2-note">Your full recipe reference. Four recipe books below, plus 7 detailed recipes with full ingredients and prep notes from the weekly meal plan.</div>
+
+    <div class="sp2-h2">Recipe library — The Mediterranean Table (Vol. I)</div>
+    <div class="book-card">
+      <div class="book-card-hdr"><div class="book-vol">Vol. I</div><div class="book-title">The Mediterranean Table</div></div>
+      <div class="book-card-body">
+        <div class="book-chapter"><div class="book-chapter-title">Breakfasts</div><div class="book-dishes">Whipped feta toast · Smoked salmon omelette · Shakshuka · Ful medames · Labneh bowl · Avocado & za'atar toast · Greek yogurt with honey and walnuts · Baked eggs with harissa · Smoked salmon bagel plate · Herb frittata</div></div>
+        <div class="book-chapter"><div class="book-chapter-title">Lunches</div><div class="book-dishes">Swordfish Niçoise · Grilled octopus with lemon and herbs · Harira soup · Tuna-stuffed piquillo peppers · Chickpea and roasted pepper salad · Turkish lentil soup · Fattoush with grilled halloumi · Moroccan carrot salad · Baked feta with tomatoes · Prawn and couscous bowl</div></div>
+        <div class="book-chapter"><div class="book-chapter-title">Suppers</div><div class="book-dishes">Whole sea bass with fennel and lemon · Chermoula salmon · Linguine alle vongole · Moules marinières · Roasted cod with olive tapenade · Turkish braised beef with aubergine · Chicken tagine with preserved lemon · Grilled swordfish with salsa verde · Bouillabaisse · Baked sea bream · Lamb-free kofta with tzatziki · Prawn saganaki</div></div>
+      </div>
+    </div>
+
+    <div class="sp2-h2">Recipe library — The Classics Table (Vol. II)</div>
+    <div class="book-card">
+      <div class="book-card-hdr"><div class="book-vol">Vol. II</div><div class="book-title">The Classics Table</div></div>
+      <div class="book-card-body">
+        <div class="book-chapter"><div class="book-chapter-title">Classic American</div><div class="book-dishes">Roast chicken with pan gravy · Beef chili · New York strip steak · Clam chowder · Chicken pot pie · BLT with remoulade · Lobster roll · Grilled salmon with corn succotash · Classic Caesar salad · Cobb salad</div></div>
+        <div class="book-chapter"><div class="book-chapter-title">French Bistro</div><div class="book-dishes">Steak frites with béarnaise · Coq au vin · Duck confit · French onion soup · Salade Niçoise · Croque madame · Sole meunière · Chicken liver pâté · Ratatouille · Tarte flambée</div></div>
+        <div class="book-chapter"><div class="book-chapter-title">Asian-Inspired</div><div class="book-dishes">Tonkotsu ramen · Teriyaki salmon bowl · Vietnamese pho · Korean bulgogi · Thai green curry · Japanese gyudon · Bibimbap · Pad see ew · Hainanese chicken rice · Tom yum soup</div></div>
+        <div class="book-chapter"><div class="book-chapter-title">Mexican & Latin</div><div class="book-dishes">Beef birria · Mole negro with chicken · Carne asada · Lomo saltado · Cochinita pibil (chicken version) · Ceviche · Sopa de lima · Aguachile · Arroz con leche · Tres leches cake</div></div>
+      </div>
+    </div>
+
+    <div class="sp2-h2">Recipe library — Living Well Vol. 1 (Vol. III)</div>
+    <div class="book-card">
+      <div class="book-card-hdr"><div class="book-vol">Vol. III</div><div class="book-title">Living Well</div></div>
+      <div class="book-card-body">
+        <div class="book-chapter"><div class="book-chapter-title">Breakfasts</div><div class="book-dishes">Eggs Benedict with hollandaise · Truffle scrambled eggs · Steak and egg plate · Smoked mackerel hash · Crab omelette · Salmon and avocado toast · Bircher muesli · Baked eggs with cream · Pain perdu with berries · Smoked salmon blinis · French omelette fines herbes · Shakshuka with burrata</div></div>
+        <div class="book-chapter"><div class="book-chapter-title">Lunches</div><div class="book-dishes">Seared tuna Niçoise · Burrata and prosciutto · Lobster bisque · Thai beef salad · Crab Louis · Duck breast salad with orange vinaigrette · Grilled prawn cocktail · Beef tartare · Smoked salmon rillettes · Salade composée · Chilled cucumber and avocado soup · Ceviche verde</div></div>
+        <div class="book-chapter"><div class="book-chapter-title">Suppers</div><div class="book-dishes">Beef tenderloin with bone marrow · Duck breast with cherry sauce · Lobster thermidor · Whole roasted turbot · Rack of venison · Seared scallops with cauliflower purée · Sole amandine · Grilled côte de boeuf · Roasted monkfish with pancetta · Chicken en croûte · Boeuf bourguignon · Gratin dauphinois · Mushroom risotto · Prawn bisque with toast</div></div>
+      </div>
+    </div>
+
+    <div class="sp2-h2">Recipe library — Living Well Vol. 2 (Vol. IV)</div>
+    <div class="book-card">
+      <div class="book-card-hdr"><div class="book-vol">Vol. IV</div><div class="book-title">Living Well — Vol. 2</div></div>
+      <div class="book-card-body">
+        <div class="book-chapter"><div class="book-chapter-title">Breakfasts (no pork · no lamb · no alcohol)</div><div class="book-dishes">Crab omelette · Congee with ginger and spring onion · Tamagoyaki · Kedgeree · Turkish eggs (cilbir) · Bircher muesli · Avocado toast with dukkah · Smoked salmon and cream cheese bagel · Chia pudding with mango · Baked shakshuka · Greek yogurt with pomegranate · Açaí bowl · Tofu scramble · Smoked mackerel fishcakes</div></div>
+        <div class="book-chapter"><div class="book-chapter-title">Lunches</div><div class="book-dishes">Ceviche · Crab Louie · Shawarma bowl (chicken or beef) · Vietnamese rice paper rolls · Duck breast salad · Seared tuna with sesame dressing · Prawn and glass noodle salad · Miso soup with tofu · Grilled chicken fattoush · Salmon poke bowl · Cold soba with dipping sauce · Thai laab (chicken) · Avocado and prawn cocktail · Niçoise with seared tuna</div></div>
+        <div class="book-chapter"><div class="book-chapter-title">Suppers</div><div class="book-dishes">Beef fillet with truffle butter · Seared scallops with pea purée · Soy-braised beef cheeks · Whole lobster with drawn butter · Coconut poached salmon · Beef short rib with gremolata · Miso black cod · Duck breast with plum sauce · Harissa roasted chicken · Prawn thermidor · Whole sea bass baked in salt · Beef tataki · Grilled swordfish with mango salsa · Lamb-free tagine with chickpeas · Tom kha with prawns · Teriyaki salmon</div></div>
+      </div>
+    </div>
+
+    <div class="sp2-h2">Detailed recipes — with full ingredients</div>
+
+    <div class="rec-card">
+      <div class="rec-card-hdr"><div class="rec-card-name">Egg Salad on Rye Crispbreads</div><div class="rec-card-macros">300 cal · 30g protein · 8g fibre</div></div>
+      <div class="rec-card-body">
+        <ul>
+          <li>3 hard-boiled eggs, chopped</li>
+          <li>1 tsp light mayo + 1 tsp Dijon mustard</li>
+          <li>Celery, dill, salt and pepper</li>
+          <li>4 rye crispbreads (Wasa or similar)</li>
+          <li>1 cup cucumber and cherry tomatoes on the side</li>
+        </ul>
+        <div class="rec-note">Make a big batch on prep day — keeps in the fridge for 3 days with no extra work.</div>
+      </div>
+    </div>
+
+    <div class="rec-card">
+      <div class="rec-card-hdr"><div class="rec-card-name">Cottage Cheese & Egg Snack Plate</div><div class="rec-card-macros">340 cal · 34g protein · 8g fibre</div></div>
+      <div class="rec-card-body">
+        <ul>
+          <li>1 cup 2% cottage cheese</li>
+          <li>2 hard-boiled eggs</li>
+          <li>Cucumber, cherry tomatoes, bell pepper strips</li>
+          <li>10 kalamata olives</li>
+          <li>3 whole wheat pita triangles, toasted</li>
+        </ul>
+        <div class="rec-note">Zero cooking required beyond the hard-boiled eggs. Just assemble and eat.</div>
+      </div>
+    </div>
+
+    <div class="rec-card">
+      <div class="rec-card-hdr"><div class="rec-card-name">Tuna & White Bean Plate</div><div class="rec-card-macros">320 cal · 40g protein · 8g fibre</div></div>
+      <div class="rec-card-body">
+        <ul>
+          <li>2 cans (170g total) tuna in water, drained</li>
+          <li>1/4 cup white beans, rinsed</li>
+          <li>Lemon juice, Dijon, black pepper</li>
+          <li>Celery sticks, cucumber, cherry tomatoes</li>
+          <li>4 whole grain crackers</li>
+        </ul>
+        <div class="rec-note">The most efficient way to hit 40g protein at lunch. Two cans is the move.</div>
+      </div>
+    </div>
+
+    <div class="rec-card">
+      <div class="rec-card-hdr"><div class="rec-card-name">Baked Lemon Herb Salmon with Asparagus & Quinoa</div><div class="rec-card-macros">480 cal · 55g protein · 13g fibre</div></div>
+      <div class="rec-card-body">
+        <ul>
+          <li>175g salmon fillet</li>
+          <li>1/3 cup cooked quinoa</li>
+          <li>1 cup asparagus, roasted</li>
+          <li>Lemon, garlic, 1 tsp olive oil, dill</li>
+          <li>Large side salad with no-oil lemon vinaigrette</li>
+        </ul>
+        <div class="rec-note">Cook both salmon portions on one day and reheat at 275°F for 15 min — or cook fresh in 15 min both times.</div>
+      </div>
+    </div>
+
+    <div class="rec-card">
+      <div class="rec-card-hdr"><div class="rec-card-name">Chicken & White Bean Stew</div><div class="rec-card-macros">460 cal · 55g protein · 13g fibre</div></div>
+      <div class="rec-card-body">
+        <ul>
+          <li>180g boneless chicken breast, skinless</li>
+          <li>3/4 cup canned white beans, rinsed</li>
+          <li>Canned diced tomatoes, 2 cups kale, garlic, onion</li>
+          <li>Low-sodium chicken broth</li>
+          <li>Thyme, rosemary, bay leaf</li>
+        </ul>
+        <div class="rec-note">Make a double batch — it reheats beautifully and tastes better the next day.</div>
+      </div>
+    </div>
+
+    <div class="rec-card">
+      <div class="rec-card-hdr"><div class="rec-card-name">Sheet Pan Cod with Chickpeas & Vegetables</div><div class="rec-card-macros">460 cal · 55g protein · 12g fibre</div></div>
+      <div class="rec-card-body">
+        <ul>
+          <li>210g cod fillet</li>
+          <li>1/2 cup canned chickpeas, rinsed</li>
+          <li>1 cup cherry tomatoes, 1 cup zucchini sliced, 1 cup broccoli florets</li>
+          <li>1 tsp olive oil, smoked paprika, cumin, lemon</li>
+        </ul>
+        <div class="rec-note">Everything on one sheet pan at 425°F for 20 min. Make double and reheat the second portion.</div>
+      </div>
+    </div>
+
+    <div class="rec-card">
+      <div class="rec-card-hdr"><div class="rec-card-name">Turkey & Vegetable Stir-Fry with Brown Rice</div><div class="rec-card-macros">460 cal · 50g protein · 12g fibre</div></div>
+      <div class="rec-card-body">
+        <ul>
+          <li>170g lean ground turkey</li>
+          <li>1/3 cup cooked brown rice</li>
+          <li>2 cups broccoli, snap peas, bell pepper, carrots</li>
+          <li>Low-sodium soy sauce, ginger, garlic, 1 tsp sesame oil</li>
+          <li>1 tsp cornstarch to thicken sauce</li>
+        </ul>
+        <div class="rec-note">Cook extra brown rice and keep it for the rest of the week.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CURRICULUM -->
+  <div class="tc" id="sp-curriculum">
+    <div class="sp2-note">Personal Neuroscience Curriculum — 8 semesters, 3–4 years, 8–15 hours per week. Modelled on accredited neuroscience undergraduate programs at McGill, UBC, and Johns Hopkins. Follow it sequentially — the prerequisite logic is intentional and skipping ahead will leave gaps that compound.</div>
+
+    <div class="sp2-h2">Year 1 — Scientific Foundations (8–10 hrs/week)</div>
+    <div class="cur-sem">
+      <div class="cur-sem-hdr"><div class="cur-sem-title">Semester 1 — Cell Biology, Chemistry & Introduction to the Brain</div><div class="cur-sem-tag">~12–14 hrs/week</div></div>
+      <div class="cur-course"><div class="cur-course-name">BIO 101 — Cell Biology and Genetics</div><div class="cur-course-hrs">4–5 hrs/week</div><div class="cur-course-desc">Cell structure, plasma membrane, DNA/RNA and protein synthesis, cell signalling, genetics and gene expression. <strong>Resources:</strong> Alberts Molecular Biology of the Cell (free older editions online), Khan Academy Cell Biology, MIT OCW 7.012.</div></div>
+      <div class="cur-course"><div class="cur-course-name">CHEM 101 — General Chemistry I</div><div class="cur-course-hrs">4–5 hrs/week</div><div class="cur-course-desc">Atomic structure, chemical bonding, acids/bases and pH, electrochemistry. <strong>Resources:</strong> Khan Academy Chemistry (free, excellent), MIT OCW 5.111, Crash Course Chemistry (YouTube).</div></div>
+      <div class="cur-course"><div class="cur-course-name">NEUR 099 — Introduction to Neuroscience</div><div class="cur-course-hrs">3–4 hrs/week</div><div class="cur-course-desc">History of neuroscience, major divisions of the nervous system, overview of brain regions. <strong>Resources:</strong> Bear, Connors & Paradiso Neuroscience: Exploring the Brain (chapters 1–4), MIT OCW 9.01, Neuroscientifically Challenged (YouTube).</div></div>
+    </div>
+
+    <div class="cur-sem">
+      <div class="cur-sem-hdr"><div class="cur-sem-title">Semester 2 — Organic Chemistry, Physics & Quantitative Methods</div><div class="cur-sem-tag">~12–14 hrs/week</div></div>
+      <div class="cur-course"><div class="cur-course-name">CHEM 201 — Organic Chemistry I</div><div class="cur-course-hrs">4–5 hrs/week</div><div class="cur-course-desc">Carbon chemistry, functional groups, stereochemistry, amines and amides (precursors to neurotransmitters). <strong>Resources:</strong> Khan Academy Organic Chemistry, MIT OCW 5.12, Organic Chemistry Tutor (YouTube).</div></div>
+      <div class="cur-course"><div class="cur-course-name">PHYS 101 — Physics for Life Sciences</div><div class="cur-course-hrs">4–5 hrs/week</div><div class="cur-course-desc">Electricity and magnetism, DC circuits (directly maps to neuron membrane), waves and optics. <strong>Resources:</strong> Khan Academy Physics, MIT OCW 8.01, Yale Open Course PHYS 200.</div></div>
+      <div class="cur-course"><div class="cur-course-name">STAT 101 — Statistics and Research Methods</div><div class="cur-course-hrs">3–4 hrs/week</div><div class="cur-course-desc">Hypothesis testing, effect sizes, experimental design. <strong>Resources:</strong> Khan Academy Statistics and Probability, Coursera: Johns Hopkins Statistical Inference, Motulsky Intuitive Biostatistics.</div></div>
+    </div>
+
+    <div class="sp2-h2">Year 2 — Core Neuroscience (10–12 hrs/week)</div>
+    <div class="cur-sem">
+      <div class="cur-sem-hdr"><div class="cur-sem-title">Semester 3 — Cellular & Molecular Neuroscience + Neuroanatomy I</div><div class="cur-sem-tag">~14–15 hrs/week</div></div>
+      <div class="cur-course"><div class="cur-course-name">NEUR 201 — Cellular and Molecular Neuroscience</div><div class="cur-course-hrs">5–6 hrs/week</div><div class="cur-course-desc">Resting membrane potential, action potential, synaptic transmission, neurotransmitters, synaptic plasticity (LTP/LTD), glial cells. Do not rush this course. <strong>Resources:</strong> Kandel et al. Principles of Neural Science 6th ed (THE textbook), MIT OCW 9.014, Brandon Pletsch neurophysiology playlist (YouTube).</div></div>
+      <div class="cur-course"><div class="cur-course-name">NEUR 202 — Neuroanatomy I</div><div class="cur-course-hrs">4–5 hrs/week</div><div class="cur-course-desc">Meninges, ventricles, CSF, spinal cord, brainstem, cerebellum, limbic system, neocortex. Work with 3D visualization tools. <strong>Resources:</strong> Haines Neuroanatomy in Clinical Context, Netter's Atlas, 3D Brain app (free), Allen Brain Atlas (brain-map.org).</div></div>
+      <div class="cur-course"><div class="cur-course-name">PSYC 201 — Introduction to Psychology</div><div class="cur-course-hrs">3 hrs/week</div><div class="cur-course-desc">Learning, memory, cognition, emotion, developmental psychology. <strong>Resources:</strong> Coursera: Yale Introduction to Psychology (free, highly rated), OpenStax Psychology 2e (free PDF), Crash Course Psychology (YouTube).</div></div>
+    </div>
+
+    <div class="cur-sem">
+      <div class="cur-sem-hdr"><div class="cur-sem-title">Semester 4 — Systems Neuroscience + Neuroanatomy II + Biochemistry</div><div class="cur-sem-tag">~13–15 hrs/week</div></div>
+      <div class="cur-course"><div class="cur-course-name">NEUR 301 — Systems Neuroscience</div><div class="cur-course-hrs">5–6 hrs/week</div><div class="cur-course-desc">Visual, auditory, somatosensory, and motor systems. Cerebellum, basal ganglia, neuromodulatory pathways (dopamine, serotonin, norepinephrine). <strong>Resources:</strong> Kandel Principles of Neural Science Parts IV–VI, MIT OCW 9.04, Coursera: Computational Neuroscience UW (free audit).</div></div>
+      <div class="cur-course"><div class="cur-course-name">NEUR 302 — Neuroanatomy II</div><div class="cur-course-hrs">3–4 hrs/week</div><div class="cur-course-desc">Sensory and motor pathways, cranial nerve lesion localization, limbic circuitry, introduction to neuroimaging. <strong>Resources:</strong> FitzGerald Clinical Neuroanatomy, Blumenfeld Neuroanatomy Through Clinical Cases, Radiopaedia.org (free).</div></div>
+      <div class="cur-course"><div class="cur-course-name">BIOC 301 — Biochemistry for Neuroscience</div><div class="cur-course-hrs">4–5 hrs/week</div><div class="cur-course-desc">Enzyme kinetics, receptor biochemistry, neurotransmitter biosynthesis, neuroenergetics. <strong>Resources:</strong> Berg Tymoczko & Stryer Biochemistry, Khan Academy MCAT Biochemistry (free, excellent).</div></div>
+    </div>
+
+    <div class="sp2-h2">Year 3 — Advanced Topics (12–15 hrs/week)</div>
+    <div class="cur-sem">
+      <div class="cur-sem-hdr"><div class="cur-sem-title">Semester 5 — Cognitive Neuroscience + Pharmacology + Research Methods</div></div>
+      <div class="cur-course"><div class="cur-course-name">NEUR 401 — Cognitive Neuroscience</div><div class="cur-course-hrs">5–6 hrs/week</div><div class="cur-course-desc">Attention, working memory, long-term memory systems, the hippocampus, executive function, language, social cognition, consciousness. <strong>Resources:</strong> Gazzaniga Ivry & Mangun Cognitive Neuroscience 5th ed, Robert Sapolsky Human Behavioral Biology (YouTube, 25 lectures, free — excellent).</div></div>
+      <div class="cur-course"><div class="cur-course-name">NEUR 402 — Neuropharmacology</div><div class="cur-course-hrs">4–5 hrs/week</div><div class="cur-course-desc">Dopamine, serotonin, opioid, cholinergic pharmacology. Antidepressants, antipsychotics, Parkinson's treatments, psychedelics. <strong>Resources:</strong> Nestler Hyman & Malenka Molecular Neuropharmacology, Stahl's Essential Psychopharmacology 5th ed, MIT OCW 9.15.</div></div>
+      <div class="cur-course"><div class="cur-course-name">NEUR 403 — Research Methods</div><div class="cur-course-hrs">4 hrs/week</div><div class="cur-course-desc">Electrophysiology, EEG, fMRI, optogenetics, chemogenetics, transgenic models, TMS. <strong>Resources:</strong> Nature Methods (free tutorials), PubMed — start reading methods sections of papers.</div></div>
+    </div>
+
+    <div class="cur-sem">
+      <div class="cur-sem-hdr"><div class="cur-sem-title">Semester 6 — Computational Neuroscience + Development + Disorders</div></div>
+      <div class="cur-course"><div class="cur-course-name">NEUR 451 — Computational Neuroscience</div><div class="cur-course-hrs">5–6 hrs/week</div><div class="cur-course-desc">Hodgkin-Huxley model, population coding, information theory, reinforcement learning, Bayesian brain theories, Python neural data analysis. Requires Python. <strong>Resources:</strong> Dayan & Abbott Theoretical Neuroscience (free PDF at theoreticalneuro.net), Neuromatch Academy (free, Python-based), Coursera: Computational Neuroscience UW.</div></div>
+      <div class="cur-course"><div class="cur-course-name">NEUR 452 — Developmental Neurobiology</div><div class="cur-course-hrs">4 hrs/week</div><div class="cur-course-desc">Neural tube formation, neurogenesis, neuronal migration, synaptogenesis, critical periods, adult neurogenesis, BDNF. <strong>Resources:</strong> Sanes Reh & Harris Development of the Nervous System 4th ed.</div></div>
+      <div class="cur-course"><div class="cur-course-name">NEUR 453 — Neurology and Neuropathology</div><div class="cur-course-hrs">4 hrs/week</div><div class="cur-course-desc">Stroke, epilepsy, Parkinson's, Alzheimer's, MS, TBI, psychiatric disorders from a neuroscience perspective. <strong>Resources:</strong> Kandel Principles of Neural Science disease chapters, NEJM Case Records (free online), Radiopaedia.org.</div></div>
+    </div>
+
+    <div class="sp2-h2">Year 4 — Specialization & Capstone (10–12 hrs/week)</div>
+    <div class="sp2-grid">
+      <div class="sp2-card"><h3>Track A — Clinical & Translational</h3><ul>
+        <li>Neuropsychiatric disorders in depth</li>
+        <li>Biomarkers in neurology</li>
+        <li>Clinical trial design</li>
+        <li>Neurorehabilitation</li>
+        <li>Resources: Stahl's Psychopharmacology, NEJM Neurology cases, UpToDate Neurology</li>
+      </ul></div>
+      <div class="sp2-card"><h3>Track B — Computational & Systems</h3><ul>
+        <li>Advanced Python: NumPy, SciPy, Matplotlib, MNE</li>
+        <li>Calcium imaging analysis</li>
+        <li>Deep neural networks and the ventral visual stream</li>
+        <li>Brain-machine interfaces</li>
+        <li>Resources: Neuromatch Academy, DeepMind x UCL lectures (YouTube)</li>
+      </ul></div>
+      <div class="sp2-card"><h3>Track C — Behavioral & Affective</h3><ul>
+        <li>Stress neurobiology, HPA axis</li>
+        <li>Fear and anxiety — amygdala in depth</li>
+        <li>Reward and addiction</li>
+        <li>Sleep neuroscience</li>
+        <li>Resources: Sapolsky Behave, LeDoux The Emotional Brain, Sapolsky's Stanford lectures (YouTube)</li>
+      </ul></div>
+      <div class="sp2-card"><h3>Capstone — Independent Study</h3><ul>
+        <li>Choose a focused research question</li>
+        <li>Read 20–40 primary research papers on PubMed</li>
+        <li>Produce a literature review (5,000–8,000 words) or research proposal</li>
+        <li>Tools: Zotero (reference management, free), Anki (spaced repetition, build decks as you go), Obsidian (knowledge management)</li>
+      </ul></div>
+    </div>
+
+    <div class="sp2-h2">Core textbooks</div>
+    <table class="ex-tbl">
+      <tr><th>Title</th><th>Use</th></tr>
+      <tr><td>Kandel et al. — Principles of Neural Science 6th ed.</td><td>THE core textbook — return to this throughout</td></tr>
+      <tr><td>Bear, Connors & Paradiso — Neuroscience: Exploring the Brain 4th ed.</td><td>Best entry-level text</td></tr>
+      <tr><td>Purves et al. — Neuroscience 6th ed.</td><td>Strong systems coverage</td></tr>
+      <tr><td>Gazzaniga, Ivry & Mangun — Cognitive Neuroscience 5th ed.</td><td>Year 3 cognitive neuroscience</td></tr>
+      <tr><td>Dayan & Abbott — Theoretical Neuroscience</td><td>Free PDF online — computational track</td></tr>
+      <tr><td>Nestler, Hyman & Malenka — Molecular Neuropharmacology 3rd ed.</td><td>Pharmacology</td></tr>
+      <tr><td>Haines — Neuroanatomy in Clinical Context 9th ed.</td><td>Neuroanatomy I & II</td></tr>
+    </table>
+
+    <div class="sp2-h2">Free online resources</div>
+    <table class="ex-tbl">
+      <tr><th>Resource</th><th>What it covers</th></tr>
+      <tr><td>MIT OCW 9.01 Neuroscience and Behavior</td><td>ocw.mit.edu — free</td></tr>
+      <tr><td>MIT OCW 9.04 Sensory and Motor Systems</td><td>ocw.mit.edu — free</td></tr>
+      <tr><td>Coursera: Computational Neuroscience (UW)</td><td>Free audit</td></tr>
+      <tr><td>Coursera: Medical Neuroscience (Duke/Emory)</td><td>Free audit</td></tr>
+      <tr><td>Robert Sapolsky — Human Behavioral Biology</td><td>YouTube, 25 lectures, Stanford — free</td></tr>
+      <tr><td>Neuromatch Academy</td><td>neuromatch.io — free, Python-based</td></tr>
+      <tr><td>Allen Brain Atlas</td><td>brain-map.org — 3D brain atlas, free</td></tr>
+      <tr><td>EyeWire</td><td>eyewire.org — MIT connectomics citizen science</td></tr>
+      <tr><td>Radiopaedia</td><td>radiopaedia.org — free neuroimaging cases</td></tr>
+      <tr><td>PubMed</td><td>pubmed.ncbi.nlm.nih.gov — primary literature</td></tr>
+    </table>
+
+    <div class="sp2-h2">Milestone self-assessments</div>
+    <table class="ex-tbl">
+      <tr><th>Milestone</th><th>Target</th></tr>
+      <tr><td>End of Year 1</td><td>Read and understand a general neuroscience review article in Annual Review of Neuroscience</td></tr>
+      <tr><td>End of Year 2</td><td>Read and understand the methods section of a cellular neuroscience paper in Journal of Neuroscience</td></tr>
+      <tr><td>End of Year 3</td><td>Read, summarize, and critically evaluate a primary research paper in your area of interest</td></tr>
+      <tr><td>End of Year 4</td><td>Complete the capstone and be able to defend your conclusions in conversation with a knowledgeable person</td></tr>
+    </table>
   </div>
 
   <!-- DAILY TEMPLATE -->
@@ -1634,7 +2216,7 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
       <tr><td>7:05</td><td style="color:var(--txt)">Shower</td><td>15 min. Cold rinse at end.</td></tr>
       <tr><td>7:20</td><td style="color:var(--txt)">Get ready</td><td>Skin, hair, clothes — desk by 8</td></tr>
       <tr><td>8:00</td><td style="color:var(--txt)">Work (remote)</td><td></td></tr>
-      <tr><td>12:00</td><td style="color:var(--txt)">Lunch</td><td>Prepped the night before — no decisions when hungry</td></tr>
+      <tr><td>12:00</td><td style="color:var(--txt)">Lunch</td><td>Prepped the night before</td></tr>
       <tr><td>1:00</td><td style="color:var(--txt)">Work (remote)</td><td></td></tr>
       <tr><td>3:30+</td><td style="color:var(--txt)">Study block / RA work / free</td><td>See curriculum for what runs each day</td></tr>
       <tr><td>9:00</td><td style="color:var(--txt)">Closing shift</td><td>Prep tomorrow's food, tidy, set out clothes, review one-line log</td></tr>
@@ -1645,7 +2227,6 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
     </table>
 
     <div class="sp2-h2">The seven non-negotiables</div>
-    <div class="sp2-note">These make the day count. Miss one and the day doesn't count — but you don't punish yourself. Note it, understand why, and tomorrow starts clean.</div>
     <div class="sp2-grid">
       <div class="sp2-card"><ul>
         <li>Workout one: cardio (20+ min)</li>
@@ -1658,61 +2239,6 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
         <li>Progress photo + one-line log written</li>
         <li>Calories tracked and within target</li>
       </ul></div>
-    </div>
-  </div>
-
-  <!-- TO ACQUIRE -->
-  <div class="tc" id="sp-acquire">
-    <div class="sp2-note">Organised by category. Friday afternoons in Phase 3 are when these get done.</div>
-    <div class="sp2-h2">Living space</div>
-    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px">
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">New couch cushion covers</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Living room art</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Art for above desk</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Cat tree</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">New cat dishes</span>
-    </div>
-    <div class="sp2-h2">Kitchen</div>
-    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px">
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Drawer knife block</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Wooden utensils</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Espresso machine</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Mixing bowls</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">New eating utensils</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Blender</span>
-    </div>
-    <div class="sp2-h2">Bedroom</div>
-    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px">
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">New bedding</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Bedroom art</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">New pillows</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Mattress topper</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">New quilt</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Decorative pillows</span>
-    </div>
-    <div class="sp2-h2">Wardrobe</div>
-    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px">
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Shorts</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Underwear</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Sports bras</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Bras</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Summer pants</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Dress</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Loafers</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Dress shoes</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Black jeans</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Blue jeans</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Button-up shirts</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Watches</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Rings</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Thursday Boot Co. Captain</span>
-    </div>
-    <div class="sp2-h2">Appearance</div>
-    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px">
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Latisse</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Facial series — skin texture</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Eyebrow appointments</span>
-      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Tattoo cover consultations</span>
     </div>
   </div>
 </div>
