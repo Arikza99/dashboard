@@ -1380,407 +1380,342 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
 
 <!-- ══════ SUMMER PLAN ══════ -->
 <div class="page" id="p-summer">
-  <div class="ph"><div class="pl">Summer</div><div class="pt">Becoming</div><div class="psub">May 1 through September — three phases, one direction.</div></div>
-
-  <!-- Summer plan sub-nav -->
+  <div class="ph"><div class="pl">Summer</div><div class="pt">Becoming</div><div class="psub">Your reference for becoming the best version of yourself. Come here when you need direction.</div></div>
   <div class="tabs" style="flex-wrap:wrap;gap:4px;margin-bottom:20px">
-    <div class="tab active" onclick="stab('sp','overview',this)">Overview</div>
-    <div class="tab" onclick="stab('sp','edmonton',this)">Phase 1: Edmonton</div>
-    <div class="tab" onclick="stab('sp','vancouver',this)">Phase 2: Vancouver</div>
-    <div class="tab" onclick="stab('sp','firelight',this)">Phase 3: Firelight</div>
-    <div class="tab" onclick="stab('sp','daily',this)">Daily Templates</div>
-    <div class="tab" onclick="stab('sp','curriculum',this)">Curriculum</div>
-    <div class="tab" onclick="stab('sp','presence',this)">Presence Practice</div>
-    <div class="tab" onclick="stab('sp','professional',this)">Professional Edge</div>
-    <div class="tab" onclick="stab('sp','fitness',this)">Fitness</div>
-    <div class="tab" onclick="stab('sp','buylist',this)">To Acquire</div>
+    <div class="tab active" onclick="stab('sp','training',this)">Training</div>
+    <div class="tab" onclick="stab('sp','running',this)">Running</div>
+    <div class="tab" onclick="stab('sp','nutrition',this)">Nutrition</div>
+    <div class="tab" onclick="stab('sp','skin',this)">Skin & Glow</div>
+    <div class="tab" onclick="stab('sp','presence',this)">Presence</div>
+    <div class="tab" onclick="stab('sp','daily',this)">Daily Template</div>
+    <div class="tab" onclick="stab('sp','acquire',this)">To Acquire</div>
   </div>
 
   <style>
-    .sp-h1{font-size:22px;font-weight:400;margin-bottom:4px;color:var(--txt)}
-    .sp-sub{font-size:12px;color:var(--soft);margin-bottom:18px}
-    .sp-h2{font-size:15px;font-weight:500;color:var(--txt);margin:24px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--bdr)}
-    .sp-h3{font-size:12px;font-weight:500;color:var(--soft);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
-    .sp-p{font-size:12.5px;color:var(--mid);line-height:1.7;margin-bottom:10px}
-    .sp-badge{display:inline-block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-bottom:14px}
-    .sp-badge-amber{background:#fdf3e0;color:#c8850a}
-    .sp-badge-teal{background:#e6f5ef;color:#0f7a5a}
-    .sp-badge-purple{background:#eeedf8;color:#5a4ab0}
-    .sp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-    .sp-card{border:1px solid var(--bdr);border-radius:5px;padding:14px 16px;background:var(--surf)}
-    .sp-card ul{padding-left:14px}
-    .sp-card li{font-size:12px;color:var(--mid);margin-bottom:4px;line-height:1.5}
-    .sp-week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:20px}
-    .sp-day{border:1px solid var(--bdr);border-radius:5px;overflow:hidden;background:var(--surf)}
-    .sp-dh{padding:7px 9px;background:var(--surf2);border-bottom:1px solid var(--bdr)}
-    .sp-dn{font-size:11px;font-weight:500;color:var(--txt)}
-    .sp-ds{font-size:9px;color:var(--dim)}
-    .sp-blk{padding:5px 9px;border-bottom:1px solid var(--bdr);font-size:10px}
-    .sp-blk:last-child{border-bottom:none}
-    .sp-bt{font-size:9px;color:var(--dim);font-family:var(--mono)}
-    .sp-bl{font-size:10.5px;font-weight:500;color:var(--txt)}
-    .sp-bn{font-size:9.5px;color:var(--soft);margin-top:1px;line-height:1.4}
-    .sp-bm{background:#fdf6e8}.sp-bw{background:#f8f8f6}.sp-bst{background:#eef7f3}
-    .sp-bf{background:#fdf0ec}.sp-be{background:#f4f2fb}.sp-bv{background:#eef5e4}
-    .sp-bfr{background:var(--surf)}
-    .sp-tbl{border:1px solid var(--bdr);border-radius:5px;overflow:hidden;margin-bottom:16px}
-    .sp-tr{display:flex;border-bottom:1px solid var(--bdr)}
-    .sp-tr:last-child{border-bottom:none}
-    .sp-tt{width:80px;flex-shrink:0;padding:7px 10px;font-size:9.5px;color:var(--dim);font-family:var(--mono);border-right:1px solid var(--bdr);background:var(--surf2);display:flex;align-items:center}
-    .sp-tc{flex:1;padding:7px 12px}
-    .sp-tl{font-size:12px;font-weight:500;color:var(--txt)}
-    .sp-td{font-size:11px;color:var(--mid);margin-top:2px;line-height:1.5}
-    .sp-cur{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
-    .sp-cc{border:1px solid var(--bdr);border-radius:5px;padding:12px 14px;background:var(--surf)}
-    .sp-cd{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:3px}
-    .sp-cm{font-size:12.5px;font-weight:500;color:var(--txt);margin-bottom:3px}
-    .sp-cdt{font-size:11px;color:var(--mid);line-height:1.5}
-    .sp-pb{border-left:3px solid var(--bdr2);padding:10px 14px;margin-bottom:12px;background:var(--surf);border-radius:0 5px 5px 0}
-    .sp-pb.amber{border-left-color:#c8850a}.sp-pb.teal{border-left-color:#0f7a5a}
-    .sp-pb.purple{border-left-color:#5a4ab0}.sp-pb.coral{border-left-color:#b84020}
-    .sp-pt{font-size:12px;font-weight:500;color:var(--txt);margin-bottom:4px}
-    .sp-pd{font-size:12px;color:var(--mid);line-height:1.6}
-    .sp-checklist{list-style:none;padding:0}
-    .sp-checklist li{font-size:12px;color:var(--mid);padding:5px 0;border-bottom:1px solid var(--bdr);display:flex;gap:10px;align-items:flex-start}
-    .sp-checklist li:last-child{border-bottom:none}
-    .sp-checklist li::before{content:'';display:inline-block;width:13px;height:13px;border:1px solid var(--bdr2);border-radius:3px;flex-shrink:0;margin-top:1px}
-    .sp-pill{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;margin:2px}
-    .sp-pill-amber{background:#fdf3e0;color:#c8850a}
-    .sp-pill-teal{background:#e6f5ef;color:#0f7a5a}
-    .sp-pill-purple{background:#eeedf8;color:#5a4ab0}
-    .sp-pill-coral{background:#faeee9;color:#b84020}
-    .sp-buys{margin-bottom:14px}
-    .sp-buycat{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:6px;margin-top:12px}
-    .sp-buyitems{display:flex;flex-wrap:wrap;gap:5px}
-    .sp-buyitem{font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid);background:var(--surf)}
+    .sp2-h2{font-size:15px;font-weight:500;color:var(--txt);margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--bdr)}
+    .sp2-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+    .sp2-card{border:1px solid var(--bdr);border-radius:5px;padding:12px 14px;background:var(--surf)}
+    .sp2-card h3{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--soft);margin-bottom:8px;font-weight:500}
+    .sp2-card ul{padding-left:14px}
+    .sp2-card li{font-size:12px;color:var(--mid);margin-bottom:4px;line-height:1.5}
+    .sp2-note{font-size:12px;color:var(--mid);padding:10px 12px;background:var(--surf2);border-radius:4px;margin-bottom:10px;line-height:1.6;border-left:3px solid var(--creative)}
+    .wk-row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surf);border:1px solid var(--bdr);border-radius:4px;margin-bottom:4px}
+    .wk-day{font-size:11px;font-weight:500;min-width:90px;color:var(--txt)}
+    .wk-focus{font-size:12px;color:var(--mid);flex:1}
+    .wk-tag{font-size:9px;padding:2px 7px;border-radius:3px;font-weight:500;flex-shrink:0}
+    .wk-strength{background:rgba(61,122,82,.12);color:#3d7a52}
+    .wk-run{background:rgba(196,125,14,.12);color:#c47d0e}
+    .wk-mobility{background:rgba(74,120,180,.12);color:#4a78b4}
+    .ex-tbl{width:100%;border-collapse:collapse;margin-bottom:14px}
+    .ex-tbl th{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);padding:6px 10px;text-align:left;border-bottom:1px solid var(--bdr)}
+    .ex-tbl td{font-size:12px;padding:8px 10px;border-bottom:1px solid var(--bdr);color:var(--mid);vertical-align:top}
+    .ex-tbl tr:last-child td{border-bottom:none}
+    .ex-tbl tr:hover td{background:var(--surf2)}
+    .ex-sets{color:var(--creative);font-weight:500;white-space:nowrap}
+    .skin-row{display:flex;align-items:flex-start;gap:12px;padding:9px 12px;background:var(--surf);border:1px solid var(--bdr);border-radius:4px;margin-bottom:4px}
+    .skin-day{font-size:11px;font-weight:500;min-width:80px;color:var(--txt)}
+    .skin-items{font-size:12px;color:var(--mid);flex:1;line-height:1.6}
+    .skin-label{font-size:9px;padding:2px 7px;border-radius:3px;font-weight:500;flex-shrink:0}
+    .skin-exf{background:rgba(184,50,50,.1);color:#b83232}
+    .skin-ret{background:rgba(80,60,140,.1);color:#503c8c}
+    .skin-rec{background:rgba(61,122,82,.1);color:#3d7a52}
+    .skin-dry{background:rgba(42,100,128,.1);color:#2a6480}
+    .phase-hdr{padding:10px 14px;background:var(--surf2);border:1px solid var(--bdr);border-radius:5px 5px 0 0;display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+    .phase-body{border:1px solid var(--bdr);border-top:none;border-radius:0 0 5px 5px;overflow:hidden}
+    .run-row{display:flex;gap:12px;padding:9px 14px;border-bottom:1px solid var(--bdr)}
+    .run-row:last-child{border-bottom:none}
+    .run-day-lbl{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);min-width:70px}
+    .run-desc{font-size:12px;color:var(--mid)}
+    .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:14px}
+    .stat-chip{background:var(--surf);border:1px solid var(--bdr);border-radius:5px;padding:10px 12px}
+    .stat-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:3px}
+    .stat-val{font-size:16px;font-weight:500;color:var(--txt)}
   </style>
 
-  <!-- OVERVIEW -->
-  <div class="tc active" id="sp-overview">
-    <div class="sp-grid">
-      <div class="sp-card"><div class="sp-h3" style="color:#c8850a">Phase 1 — Edmonton</div><div style="font-size:12px;font-weight:500;color:#c8850a;margin-bottom:6px">May 1–13</div><ul><li>Remote work continues</li><li>Stairstepper + kettlebell, home equipment</li><li>Curriculum begins — light, consistent</li><li>Goal: arrive back with momentum, not excuses</li></ul></div>
-      <div class="sp-card"><div class="sp-h3" style="color:#0f7a5a">Phase 2 — Vancouver</div><div style="font-size:12px;font-weight:500;color:#0f7a5a;margin-bottom:6px">May 13–June 1</div><ul><li>Remote work continues</li><li>Apartment gym + rec centre</li><li>Full curriculum rotation established</li><li>Goal: gym habit locked before Firelight starts</li></ul></div>
-      <div class="sp-card"><div class="sp-h3" style="color:#5a4ab0">Phase 3 — Firelight</div><div style="font-size:12px;font-weight:500;color:#5a4ab0;margin-bottom:6px">June 1 onward</div><ul><li>Mon–Thu 8–4:30, 3-day weekends</li><li>Full gym access</li><li>Deep study blocks on long weekends</li><li>Goal: operate at full capacity</li></ul></div>
-      <div class="sp-card"><div class="sp-h3">The constants</div><ul><li>Morning routine every single day</li><li>Evening routine every single day</li><li>Senior Helpers — Wed + Sun 7–9pm</li><li>Church Sundays</li><li>French + Anki daily</li><li>Drawing gestures daily</li><li>Guitar weekly</li></ul></div>
+  <!-- TRAINING -->
+  <div class="tc active" id="sp-training">
+    <div class="stat-row">
+      <div class="stat-chip"><div class="stat-lbl">Start date</div><div class="stat-val" style="font-size:13px">May 17</div></div>
+      <div class="stat-chip"><div class="stat-lbl">Current weight</div><div class="stat-val">147.2</div></div>
+      <div class="stat-chip"><div class="stat-lbl">Goal weight</div><div class="stat-val" style="color:var(--creative)">125</div></div>
+      <div class="stat-chip"><div class="stat-lbl">To lose</div><div class="stat-val" style="color:var(--deadline)">22.2 lbs</div></div>
+      <div class="stat-chip"><div class="stat-lbl">Race goal</div><div class="stat-val">10K</div></div>
+      <div class="stat-chip"><div class="stat-lbl">Days / week</div><div class="stat-val">7</div></div>
     </div>
-    <div class="sp-h2">The non-negotiables</div>
-    <div class="sp-p">These seven things make the day count. Miss one and the day doesn't count — but you don't punish yourself. You note it, you understand why, and tomorrow starts clean.</div>
-    <ul class="sp-checklist">
-      <li>Workout one: cardio (20+ min)</li>
-      <li>Workout two: strength (20+ min)</li>
-      <li>Read 30+ pages — physical book or ebook</li>
-      <li>One 30-minute study or skill block from the curriculum</li>
-      <li>Water: 4L minimum</li>
-      <li>Progress photo taken + one-line log written</li>
-      <li>Calories tracked and within target</li>
-    </ul>
+
+    <div class="sp2-h2">Weekly schedule</div>
+    <div class="wk-row"><div class="wk-day">Monday</div><span class="wk-tag wk-strength">Strength</span><div class="wk-focus">Lower Body + Core — Gym</div></div>
+    <div class="wk-row"><div class="wk-day">Tuesday</div><span class="wk-tag wk-run">Run</span><div class="wk-focus">Easy Zone 2 Run — Treadmill or outside</div></div>
+    <div class="wk-row"><div class="wk-day">Wednesday</div><span class="wk-tag wk-strength">Strength</span><div class="wk-focus">Upper Body Push + Pull — Gym</div></div>
+    <div class="wk-row"><div class="wk-day">Thursday</div><span class="wk-tag wk-run">Run</span><div class="wk-focus">Tempo or Intervals — Treadmill or outside</div></div>
+    <div class="wk-row"><div class="wk-day">Friday</div><span class="wk-tag wk-strength">Strength</span><div class="wk-focus">Full Body — Gym</div></div>
+    <div class="wk-row"><div class="wk-day">Saturday</div><span class="wk-tag wk-run">Run</span><div class="wk-focus">Long Run — easy pace, Treadmill or outside</div></div>
+    <div class="wk-row"><div class="wk-day">Sunday</div><span class="wk-tag wk-mobility">Mobility</span><div class="wk-focus">Flexibility + Recovery — Apartment</div></div>
+
+    <div class="sp2-h2">Monday — Lower Body + Core</div>
+    <table class="ex-tbl">
+      <tr><th>Exercise</th><th>Note</th><th>Sets</th></tr>
+      <tr><td>Leg Press or Leg Extension Machine</td><td></td><td class="ex-sets">4 × 12</td></tr>
+      <tr><td>Lying Leg Curl</td><td></td><td class="ex-sets">3 × 12</td></tr>
+      <tr><td>Dumbbell Romanian Deadlift</td><td>15 lb each hand</td><td class="ex-sets">3 × 12</td></tr>
+      <tr><td>Dumbbell Walking Lunges</td><td>15 lb each hand</td><td class="ex-sets">3 × 10 each</td></tr>
+      <tr><td>Plank Hold</td><td></td><td class="ex-sets">3 × 45 sec</td></tr>
+      <tr><td>Dumbbell Russian Twists</td><td>10 lb</td><td class="ex-sets">3 × 15</td></tr>
+    </table>
+
+    <div class="sp2-h2">Wednesday — Upper Body Push + Pull</div>
+    <table class="ex-tbl">
+      <tr><th>Exercise</th><th>Note</th><th>Sets</th></tr>
+      <tr><td>Chest Press Machine</td><td></td><td class="ex-sets">4 × 10</td></tr>
+      <tr><td>Incline Press Machine</td><td></td><td class="ex-sets">3 × 10</td></tr>
+      <tr><td>Shoulder Press Machine</td><td></td><td class="ex-sets">3 × 10</td></tr>
+      <tr><td>Lat Pulldown Cable</td><td></td><td class="ex-sets">4 × 10</td></tr>
+      <tr><td>Seated Cable Row</td><td></td><td class="ex-sets">3 × 12</td></tr>
+      <tr><td>Dumbbell Lateral Raises</td><td>10 lb</td><td class="ex-sets">3 × 12</td></tr>
+      <tr><td>Cable Tricep Pushdown</td><td></td><td class="ex-sets">3 × 12</td></tr>
+    </table>
+
+    <div class="sp2-h2">Friday — Full Body</div>
+    <table class="ex-tbl">
+      <tr><th>Exercise</th><th>Note</th><th>Sets</th></tr>
+      <tr><td>Chest Press Machine</td><td></td><td class="ex-sets">3 × 10</td></tr>
+      <tr><td>Lat Pulldown Cable</td><td></td><td class="ex-sets">3 × 10</td></tr>
+      <tr><td>Shoulder Press Machine</td><td></td><td class="ex-sets">3 × 10</td></tr>
+      <tr><td>Leg Press or Leg Extension</td><td></td><td class="ex-sets">3 × 12</td></tr>
+      <tr><td>Dumbbell Romanian Deadlift</td><td>15 lb each hand</td><td class="ex-sets">3 × 10</td></tr>
+      <tr><td>Dumbbell Bicep Curls</td><td>10 or 15 lb</td><td class="ex-sets">3 × 12</td></tr>
+      <tr><td>Plank Hold</td><td></td><td class="ex-sets">3 × 45 sec</td></tr>
+    </table>
+
+    <div class="sp2-h2">Sunday — Mobility (25–35 min, apartment)</div>
+    <table class="ex-tbl">
+      <tr><th>Exercise</th><th>Duration</th></tr>
+      <tr><td>Cat-Cow</td><td class="ex-sets">10 slow reps</td></tr>
+      <tr><td>Child's Pose</td><td class="ex-sets">60 sec</td></tr>
+      <tr><td>90/90 Hip Stretch</td><td class="ex-sets">90 sec each</td></tr>
+      <tr><td>Pigeon Pose</td><td class="ex-sets">90 sec each</td></tr>
+      <tr><td>Standing Quad Stretch</td><td class="ex-sets">45 sec each</td></tr>
+      <tr><td>Lying Hamstring Stretch</td><td class="ex-sets">60 sec each</td></tr>
+      <tr><td>Doorframe Chest Opener</td><td class="ex-sets">60 sec</td></tr>
+      <tr><td>Seated Spinal Twist</td><td class="ex-sets">60 sec each</td></tr>
+      <tr><td>Legs Up the Wall</td><td class="ex-sets">3 min</td></tr>
+      <tr><td>Savasana</td><td class="ex-sets">2 min</td></tr>
+    </table>
+
+    <div class="sp2-h2">Recovery rules</div>
+    <div class="sp2-note">On any day combining strength and running, always lift first, run after. Sleep 7–9 hours — poor sleep spikes hunger and tanks both fat loss and run performance. Sunday mobility is low intensity by design. As machines get easy, increase weight rather than adding more volume.</div>
   </div>
 
-  <!-- PHASE 1: EDMONTON -->
-  <div class="tc" id="sp-edmonton">
-    <div class="sp-badge sp-badge-amber">Goal: arrive back with momentum, not excuses</div>
-    <div class="sp-week">
-      <div class="sp-day"><div class="sp-dh"><div class="sp-dn">Monday</div></div>
-        <div class="sp-blk sp-bm"><div class="sp-bt">5:30</div><div class="sp-bl">Morning routine</div></div>
-        <div class="sp-blk sp-bw"><div class="sp-bt">8:00</div><div class="sp-bl">Work</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">3:30</div><div class="sp-bl">Logic + Sci Lit</div><div class="sp-bn">60 min reading + retrieval</div></div>
-        <div class="sp-blk sp-bfr"><div class="sp-bt">5:00</div><div class="sp-bl">Free / family</div></div>
-        <div class="sp-blk sp-be"><div class="sp-bt">9:00</div><div class="sp-bl">Evening routine</div></div>
-      </div>
-      <div class="sp-day"><div class="sp-dh"><div class="sp-dn">Tuesday</div></div>
-        <div class="sp-blk sp-bm"><div class="sp-bt">5:30</div><div class="sp-bl">Morning routine</div></div>
-        <div class="sp-blk sp-bw"><div class="sp-bt">8:00</div><div class="sp-bl">Work</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">3:30</div><div class="sp-bl">French + Anki</div><div class="sp-bn">30 min Duolingo + video</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">4:15</div><div class="sp-bl">RA work</div></div>
-        <div class="sp-blk sp-bfr"><div class="sp-bt">5:30</div><div class="sp-bl">Free / family</div></div>
-        <div class="sp-blk sp-be"><div class="sp-bt">9:00</div><div class="sp-bl">Evening routine</div></div>
-      </div>
-      <div class="sp-day"><div class="sp-dh"><div class="sp-dn">Wednesday</div><div class="sp-ds">Vol 7–9pm</div></div>
-        <div class="sp-blk sp-bm"><div class="sp-bt">5:30</div><div class="sp-bl">Morning routine</div></div>
-        <div class="sp-blk sp-bw"><div class="sp-bt">8:00</div><div class="sp-bl">Work</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">3:30</div><div class="sp-bl">Math I</div><div class="sp-bn">Khan Academy, 60 min</div></div>
-        <div class="sp-blk sp-bv"><div class="sp-bt">7:00</div><div class="sp-bl">Senior Helpers</div></div>
-        <div class="sp-blk sp-be"><div class="sp-bt">9:30</div><div class="sp-bl">Evening routine</div><div class="sp-bn">Shortened</div></div>
-      </div>
-      <div class="sp-day"><div class="sp-dh"><div class="sp-dn">Thursday</div><div class="sp-ds">Drawing</div></div>
-        <div class="sp-blk sp-bm"><div class="sp-bt">5:30</div><div class="sp-bl">Morning routine</div></div>
-        <div class="sp-blk sp-bw"><div class="sp-bt">8:00</div><div class="sp-bl">Work</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">3:30</div><div class="sp-bl">Drawing — Phase A</div><div class="sp-bn">Gesture sketches, 30 min</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">4:15</div><div class="sp-bl">Logic problems</div><div class="sp-bn">Problem sets, 30 min</div></div>
-        <div class="sp-blk sp-bfr"><div class="sp-bt">5:00</div><div class="sp-bl">Free / family</div></div>
-        <div class="sp-blk sp-be"><div class="sp-bt">9:00</div><div class="sp-bl">Evening routine</div></div>
-      </div>
-      <div class="sp-day"><div class="sp-dh"><div class="sp-dn">Friday</div><div class="sp-ds">Review</div></div>
-        <div class="sp-blk sp-bm"><div class="sp-bt">5:30</div><div class="sp-bl">Morning routine</div></div>
-        <div class="sp-blk sp-bw"><div class="sp-bt">8:00</div><div class="sp-bl">Work</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">3:30</div><div class="sp-bl">Weekly retrieval</div><div class="sp-bn">Both modules, no notes</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">4:30</div><div class="sp-bl">Anki + French</div></div>
-        <div class="sp-blk sp-be"><div class="sp-bt">9:00</div><div class="sp-bl">Evening routine</div></div>
-      </div>
-      <div class="sp-day"><div class="sp-dh"><div class="sp-dn">Saturday</div><div class="sp-ds">Deep work</div></div>
-        <div class="sp-blk sp-bm"><div class="sp-bt">7:00</div><div class="sp-bl">Morning routine</div><div class="sp-bn">Relaxed start</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">9:00</div><div class="sp-bl">Math I deep work</div><div class="sp-bn">2.5 hrs</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">12:00</div><div class="sp-bl">Drawing</div><div class="sp-bn">45 min gestures</div></div>
-        <div class="sp-blk sp-bfr"><div class="sp-bt">1:00</div><div class="sp-bl">Free / family</div></div>
-        <div class="sp-blk sp-be"><div class="sp-bt">9:00</div><div class="sp-bl">Evening routine</div></div>
-      </div>
-      <div class="sp-day"><div class="sp-dh"><div class="sp-dn">Sunday</div><div class="sp-ds">Vol 7–9pm</div></div>
-        <div class="sp-blk sp-bm"><div class="sp-bt">8:00</div><div class="sp-bl">Church</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">10:00</div><div class="sp-bl">Weekly review</div><div class="sp-bn">30 min</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">10:30</div><div class="sp-bl">Sci Lit reading</div><div class="sp-bn">90 min</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">12:00</div><div class="sp-bl">Guitar</div><div class="sp-bn">30–45 min</div></div>
-        <div class="sp-blk sp-bfr"><div class="sp-bt">1:00</div><div class="sp-bl">Free</div></div>
-        <div class="sp-blk sp-bv"><div class="sp-bt">7:00</div><div class="sp-bl">Senior Helpers</div></div>
-        <div class="sp-blk sp-be"><div class="sp-bt">9:30</div><div class="sp-bl">Evening routine</div><div class="sp-bn">Shortened</div></div>
-      </div>
+  <!-- RUNNING -->
+  <div class="tc" id="sp-running">
+    <div class="sp2-note">Easy runs: treadmill 1% incline, conversational pace, 4–5 effort out of 10. You should be able to hold a full sentence. Tempo runs: 7–8 out of 10, uncomfortable but sustainable.</div>
+
+    <div class="sp2-h2">Phase 1 — Base Building (Weeks 1–4)</div>
+    <div class="phase-body">
+      <div class="run-row"><div class="run-day-lbl">Tuesday</div><div class="run-desc">25–30 min easy run</div></div>
+      <div class="run-row"><div class="run-day-lbl">Thursday</div><div class="run-desc">4 × 5 min at slightly uncomfortable pace, 2 min walk recovery between</div></div>
+      <div class="run-row"><div class="run-day-lbl">Saturday</div><div class="run-desc">35–40 min easy long run</div></div>
     </div>
-    <div class="sp-grid">
-      <div class="sp-card"><div class="sp-h3">Fitness in Edmonton</div><ul><li>Stairstepper 20–30 min: happens inside morning routine after sun salutation</li><li>Kettlebell 20 min: YouTube session, same block</li><li>Both workouts done before 8am — no double getting-ready</li><li>Workout clothes go on at 5:30, shower before sitting at desk</li></ul></div>
-      <div class="sp-card"><div class="sp-h3">Edmonton survival rules</div><ul><li>Morning routine is the anchor — one bad evening doesn't become two bad mornings</li><li>Don't pre-decide about drinking — decide each morning instead</li><li>RA hours: Tue + Thu afternoons, covers the biweekly 16–20 hrs</li><li>Study is light by design — 60 min/day builds real momentum over 13 days</li></ul></div>
+
+    <div class="sp2-h2">Phase 2 — Build (Weeks 5–8)</div>
+    <div class="phase-body">
+      <div class="run-row"><div class="run-day-lbl">Tuesday</div><div class="run-desc">35 min easy</div></div>
+      <div class="run-row"><div class="run-day-lbl">Thursday</div><div class="run-desc">5 × 5 min tempo, or 6 × 400m hard with 90 sec recovery</div></div>
+      <div class="run-row"><div class="run-day-lbl">Saturday</div><div class="run-desc">50–55 min easy long run</div></div>
     </div>
+
+    <div class="sp2-h2">Phase 3 — Peak (Weeks 9–12)</div>
+    <div class="phase-body">
+      <div class="run-row"><div class="run-day-lbl">Tuesday</div><div class="run-desc">40 min easy</div></div>
+      <div class="run-row"><div class="run-day-lbl">Thursday</div><div class="run-desc">3 × 10 min at 10K goal pace, 2 min recovery</div></div>
+      <div class="run-row"><div class="run-day-lbl">Saturday</div><div class="run-desc">60–65 min easy, or practice 8K race effort</div></div>
+    </div>
+
+    <div class="sp2-h2">Stair stepper — apartment tool</div>
+    <div class="sp2-note">Morning fasted movement: 15–20 min before breakfast at low intensity. Evening while watching something: easy stepping burns an extra 200–300 cal without effort. Gym-free days: 30–40 min at moderate effort counts as a full cardio session.</div>
   </div>
 
-  <!-- PHASE 2: VANCOUVER -->
-  <div class="tc" id="sp-vancouver">
-    <div class="sp-badge sp-badge-teal">Goal: gym habit locked before Firelight starts</div>
-    <div class="sp-week">
-      <div class="sp-day"><div class="sp-dh"><div class="sp-dn">Monday</div></div>
-        <div class="sp-blk sp-bm"><div class="sp-bt">5:30</div><div class="sp-bl">Morning routine</div></div>
-        <div class="sp-blk sp-bw"><div class="sp-bt">8:00</div><div class="sp-bl">Work</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">3:30</div><div class="sp-bl">Logic + Sci Lit</div><div class="sp-bn">60–75 min</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">5:00</div><div class="sp-bl">RA work</div><div class="sp-bn">Flex</div></div>
-        <div class="sp-blk sp-be"><div class="sp-bt">9:00</div><div class="sp-bl">Evening routine</div></div>
-      </div>
-      <div class="sp-day"><div class="sp-dh"><div class="sp-dn">Tuesday</div></div>
-        <div class="sp-blk sp-bm"><div class="sp-bt">5:30</div><div class="sp-bl">Morning routine</div></div>
-        <div class="sp-blk sp-bw"><div class="sp-bt">8:00</div><div class="sp-bl">Work</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">3:30</div><div class="sp-bl">French + Math I</div><div class="sp-bn">30 min each</div></div>
-        <div class="sp-blk sp-bfr"><div class="sp-bt">5:00</div><div class="sp-bl">Free</div></div>
-        <div class="sp-blk sp-be"><div class="sp-bt">9:00</div><div class="sp-bl">Evening routine</div></div>
-      </div>
-      <div class="sp-day"><div class="sp-dh"><div class="sp-dn">Wednesday</div><div class="sp-ds">Vol 7–9pm</div></div>
-        <div class="sp-blk sp-bm"><div class="sp-bt">5:30</div><div class="sp-bl">Morning routine</div></div>
-        <div class="sp-blk sp-bw"><div class="sp-bt">8:00</div><div class="sp-bl">Work</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">3:30</div><div class="sp-bl">Drawing</div><div class="sp-bn">30 min minimum</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">4:15</div><div class="sp-bl">RA work</div></div>
-        <div class="sp-blk sp-bv"><div class="sp-bt">7:00</div><div class="sp-bl">Senior Helpers</div></div>
-        <div class="sp-blk sp-be"><div class="sp-bt">9:30</div><div class="sp-bl">Evening routine</div><div class="sp-bn">Shortened</div></div>
-      </div>
-      <div class="sp-day"><div class="sp-dh"><div class="sp-dn">Thursday</div></div>
-        <div class="sp-blk sp-bm"><div class="sp-bt">5:30</div><div class="sp-bl">Morning routine</div></div>
-        <div class="sp-blk sp-bw"><div class="sp-bt">8:00</div><div class="sp-bl">Work</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">3:30</div><div class="sp-bl">Logic problems</div><div class="sp-bn">Problem sets, 60 min</div></div>
-        <div class="sp-blk sp-bfr"><div class="sp-bt">5:00</div><div class="sp-bl">Free</div></div>
-        <div class="sp-blk sp-be"><div class="sp-bt">9:00</div><div class="sp-bl">Evening routine</div></div>
-      </div>
-      <div class="sp-day"><div class="sp-dh"><div class="sp-dn">Friday</div><div class="sp-ds">Review</div></div>
-        <div class="sp-blk sp-bm"><div class="sp-bt">5:30</div><div class="sp-bl">Morning routine</div></div>
-        <div class="sp-blk sp-bw"><div class="sp-bt">8:00</div><div class="sp-bl">Work</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">3:30</div><div class="sp-bl">Weekly retrieval</div><div class="sp-bn">Both modules, no notes</div></div>
-        <div class="sp-blk sp-bfr"><div class="sp-bt">4:30</div><div class="sp-bl">Errands, self-care</div></div>
-        <div class="sp-blk sp-be"><div class="sp-bt">9:00</div><div class="sp-bl">Evening routine</div></div>
-      </div>
-      <div class="sp-day"><div class="sp-dh"><div class="sp-dn">Saturday</div><div class="sp-ds">Deep work</div></div>
-        <div class="sp-blk sp-bm"><div class="sp-bt">7:00</div><div class="sp-bl">Morning routine</div><div class="sp-bn">Relaxed</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">9:00</div><div class="sp-bl">Math I deep work</div><div class="sp-bn">2.5–3 hrs</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">12:00</div><div class="sp-bl">Drawing long render</div><div class="sp-bn">45 min</div></div>
-        <div class="sp-blk sp-bfr"><div class="sp-bt">1:00</div><div class="sp-bl">Free — cooking, film, friends</div></div>
-        <div class="sp-blk sp-be"><div class="sp-bt">9:00</div><div class="sp-bl">Evening routine</div></div>
-      </div>
-      <div class="sp-day"><div class="sp-dh"><div class="sp-dn">Sunday</div><div class="sp-ds">Vol 7–9pm</div></div>
-        <div class="sp-blk sp-bm"><div class="sp-bt">8:00</div><div class="sp-bl">Church</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">10:00</div><div class="sp-bl">Weekly review</div><div class="sp-bn">30 min</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">10:30</div><div class="sp-bl">Sci Lit reading</div><div class="sp-bn">90 min</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">12:00</div><div class="sp-bl">Guitar</div><div class="sp-bn">30–45 min</div></div>
-        <div class="sp-blk sp-bfr"><div class="sp-bt">1:00</div><div class="sp-bl">Free</div></div>
-        <div class="sp-blk sp-bv"><div class="sp-bt">7:00</div><div class="sp-bl">Senior Helpers</div></div>
-        <div class="sp-blk sp-be"><div class="sp-bt">9:30</div><div class="sp-bl">Evening routine</div><div class="sp-bn">Shortened</div></div>
-      </div>
+  <!-- NUTRITION -->
+  <div class="tc" id="sp-nutrition">
+    <div class="stat-row">
+      <div class="stat-chip"><div class="stat-lbl">Calories</div><div class="stat-val" style="font-size:13px">1,500–1,650</div></div>
+      <div class="stat-chip"><div class="stat-lbl">Protein</div><div class="stat-val" style="color:var(--creative)">100–115g</div></div>
+      <div class="stat-chip"><div class="stat-lbl">Carbs</div><div class="stat-val" style="color:var(--deadline)">150–180g</div></div>
+      <div class="stat-chip"><div class="stat-lbl">Fat</div><div class="stat-val">45–60g</div></div>
+      <div class="stat-chip"><div class="stat-lbl">Water</div><div class="stat-val">4L min</div></div>
+    </div>
+
+    <div class="sp2-h2">Weight loss timeline</div>
+    <table class="ex-tbl">
+      <tr><th>Period</th><th>What to expect</th><th>Target</th></tr>
+      <tr><td>Weeks 1–2</td><td>Initial drop including water weight</td><td class="ex-sets">~145–146</td></tr>
+      <tr><td>Month 1</td><td>0.5–1 lb/week consistent fat loss</td><td class="ex-sets">~143–145</td></tr>
+      <tr><td>Month 3</td><td>10–14 lbs down from start</td><td class="ex-sets">~133–137</td></tr>
+      <tr><td>Month 6</td><td>18–22 lbs down from start</td><td class="ex-sets">~125–130</td></tr>
+      <tr><td>Month 7–9</td><td>Goal weight reached at healthy pace</td><td class="ex-sets" style="color:var(--creative)">125 lbs</td></tr>
+    </table>
+
+    <div class="sp2-h2">Protein sources</div>
+    <div class="sp2-note">Eggs, Greek yogurt, cottage cheese, chicken, fish, tofu, lentils. Protein at every meal without exception. Within 30–60 minutes after every strength session. This is the one number that matters most — hit 100g every day regardless of anything else.</div>
+
+    <div class="sp2-h2">Principles</div>
+    <div class="sp2-grid">
+      <div class="sp2-card"><h3>Every day</h3><ul><li>High-volume low-calorie foods first — vegetables, broth soups, fruit</li><li>Prep tomorrow's food during your closing shift</li><li>No decisions when hungry</li><li>Track calories for 2–3 weeks to calibrate</li></ul></div>
+      <div class="sp2-card"><h3>Run days (Tue, Thu, Sat)</h3><ul><li>Eat more carbs to fuel performance</li><li>Complex carbs before runs — oats, rice, sweet potato</li><li>Electrolytes on long run days</li><li>Post-run protein within the hour</li></ul></div>
     </div>
   </div>
 
-  <!-- PHASE 3: FIRELIGHT -->
-  <div class="tc" id="sp-firelight">
-    <div class="sp-badge sp-badge-purple">Goal: operate at full capacity</div>
-    <div class="sp-week">
-      <div class="sp-day"><div class="sp-dh"><div class="sp-dn">Monday</div></div>
-        <div class="sp-blk sp-bm"><div class="sp-bt">5:30</div><div class="sp-bl">Morning routine</div></div>
-        <div class="sp-blk sp-bw"><div class="sp-bt">8:00</div><div class="sp-bl">Firelight</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">4:30</div><div class="sp-bl">Logic + Sci Lit</div><div class="sp-bn">60 min</div></div>
-        <div class="sp-blk sp-bfr"><div class="sp-bt">6:00</div><div class="sp-bl">Free</div></div>
-        <div class="sp-blk sp-be"><div class="sp-bt">9:00</div><div class="sp-bl">Evening routine</div></div>
-      </div>
-      <div class="sp-day"><div class="sp-dh"><div class="sp-dn">Tuesday</div></div>
-        <div class="sp-blk sp-bm"><div class="sp-bt">5:30</div><div class="sp-bl">Morning routine</div></div>
-        <div class="sp-blk sp-bw"><div class="sp-bt">8:00</div><div class="sp-bl">Firelight</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">4:30</div><div class="sp-bl">French + Math I</div><div class="sp-bn">30 min each</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">5:30</div><div class="sp-bl">RA work</div><div class="sp-bn">Flex</div></div>
-        <div class="sp-blk sp-be"><div class="sp-bt">9:00</div><div class="sp-bl">Evening routine</div></div>
-      </div>
-      <div class="sp-day"><div class="sp-dh"><div class="sp-dn">Wednesday</div><div class="sp-ds">Vol 7–9pm</div></div>
-        <div class="sp-blk sp-bm"><div class="sp-bt">5:30</div><div class="sp-bl">Morning routine</div></div>
-        <div class="sp-blk sp-bw"><div class="sp-bt">8:00</div><div class="sp-bl">Firelight</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">4:30</div><div class="sp-bl">Drawing</div><div class="sp-bn">30 min gestures</div></div>
-        <div class="sp-blk sp-bv"><div class="sp-bt">7:00</div><div class="sp-bl">Senior Helpers</div></div>
-        <div class="sp-blk sp-be"><div class="sp-bt">9:30</div><div class="sp-bl">Evening routine</div><div class="sp-bn">Shortened</div></div>
-      </div>
-      <div class="sp-day"><div class="sp-dh"><div class="sp-dn">Thursday</div></div>
-        <div class="sp-blk sp-bm"><div class="sp-bt">5:30</div><div class="sp-bl">Morning routine</div></div>
-        <div class="sp-blk sp-bw"><div class="sp-bt">8:00</div><div class="sp-bl">Firelight</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">4:30</div><div class="sp-bl">Logic problems</div><div class="sp-bn">60 min problem sets</div></div>
-        <div class="sp-blk sp-bfr"><div class="sp-bt">6:00</div><div class="sp-bl">Free</div></div>
-        <div class="sp-blk sp-be"><div class="sp-bt">9:00</div><div class="sp-bl">Evening routine</div></div>
-      </div>
-      <div class="sp-day"><div class="sp-dh"><div class="sp-dn">Friday</div><div class="sp-ds">Day off</div></div>
-        <div class="sp-blk sp-bm"><div class="sp-bt">7:00</div><div class="sp-bl">Morning routine</div><div class="sp-bn">Relaxed</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">9:00</div><div class="sp-bl">Weekly retrieval</div><div class="sp-bn">45 min, no notes</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">10:00</div><div class="sp-bl">Sci Lit reading</div><div class="sp-bn">90 min</div></div>
-        <div class="sp-blk sp-bfr"><div class="sp-bt">12:00</div><div class="sp-bl">Free — facials, pool, errands</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">3:00</div><div class="sp-bl">Guitar</div><div class="sp-bn">45 min</div></div>
-        <div class="sp-blk sp-be"><div class="sp-bt">9:00</div><div class="sp-bl">Evening routine</div></div>
-      </div>
-      <div class="sp-day"><div class="sp-dh"><div class="sp-dn">Saturday</div><div class="sp-ds">Deep work</div></div>
-        <div class="sp-blk sp-bm"><div class="sp-bt">7:00</div><div class="sp-bl">Morning routine</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">9:00</div><div class="sp-bl">Math I deep work</div><div class="sp-bn">2.5–3 hrs</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">12:00</div><div class="sp-bl">Drawing long render</div><div class="sp-bn">45 min</div></div>
-        <div class="sp-blk sp-bfr"><div class="sp-bt">1:00</div><div class="sp-bl">Free — pool, cooking, film, friends</div></div>
-        <div class="sp-blk sp-be"><div class="sp-bt">9:00</div><div class="sp-bl">Evening routine</div></div>
-      </div>
-      <div class="sp-day"><div class="sp-dh"><div class="sp-dn">Sunday</div><div class="sp-ds">Vol 7–9pm</div></div>
-        <div class="sp-blk sp-bm"><div class="sp-bt">8:00</div><div class="sp-bl">Church</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">10:00</div><div class="sp-bl">Weekly review</div><div class="sp-bn">30 min</div></div>
-        <div class="sp-blk sp-bst"><div class="sp-bt">10:30</div><div class="sp-bl">Humanities reading</div><div class="sp-bn">90 min</div></div>
-        <div class="sp-blk sp-bfr"><div class="sp-bt">12:00</div><div class="sp-bl">Free</div></div>
-        <div class="sp-blk sp-bv"><div class="sp-bt">7:00</div><div class="sp-bl">Senior Helpers</div></div>
-        <div class="sp-blk sp-be"><div class="sp-bt">9:30</div><div class="sp-bl">Evening routine</div><div class="sp-bn">Shortened</div></div>
-      </div>
+  <!-- SKIN & GLOW -->
+  <div class="tc" id="sp-skin">
+    <div class="sp2-h2">Skin cycling — evening routine</div>
+    <div class="sp2-note">Skin cycling is a 4-night rotating schedule. It gives your skin the active treatments it needs while building in recovery time so you don't over-strip or irritate. Drysol (antiperspirant treatment) goes on a separate night away from any acids or retinol.</div>
+
+    <div class="skin-row"><div class="skin-day">Night 1</div><span class="skin-label skin-exf">Exfoliation</span><div class="skin-items">Cleanse · BHA or AHA exfoliant · niacinamide serum · moisturiser · no actives after the exfoliant</div></div>
+    <div class="skin-row"><div class="skin-day">Night 2</div><span class="skin-label skin-ret">Retinol</span><div class="skin-items">Cleanse · retinol (buffered — apply moisturiser first if sensitive) · niacinamide serum · slugging (Vaseline or Aquaphor over everything as final step)</div></div>
+    <div class="skin-row"><div class="skin-day">Night 3</div><span class="skin-label skin-rec">Recovery</span><div class="skin-items">Cleanse · niacinamide serum · barrier repair moisturiser · slugging — no actives, let skin recover</div></div>
+    <div class="skin-row"><div class="skin-day">Night 4</div><span class="skin-label skin-dry">Drysol</span><div class="skin-items">Cleanse · apply Drysol to underarms only on dry skin · niacinamide serum · moisturiser · no actives this night — Drysol + acids = irritation</div></div>
+    <div class="skin-row"><div class="skin-day">Then repeat</div><span class="skin-label skin-exf">Back to Night 1</span><div class="skin-items">The cycle repeats. After 8–12 weeks retinol tolerance builds — you can move to Night 1: exfoliant, Night 2: retinol, Nights 3–4 recovery, Drysol wherever it fits in recovery nights.</div></div>
+
+    <div class="sp2-h2">Morning skincare routine</div>
+    <div class="skin-row"><div class="skin-day">Step 1</div><div class="skin-items" style="color:var(--txt)">Gentle cleanser — or just water if skin feels balanced</div></div>
+    <div class="skin-row"><div class="skin-day">Step 2</div><div class="skin-items" style="color:var(--txt)">Niacinamide serum — pore-minimising, brightening, anti-inflammatory</div></div>
+    <div class="skin-row"><div class="skin-day">Step 3</div><div class="skin-items" style="color:var(--txt)">Lightweight moisturiser</div></div>
+    <div class="skin-row"><div class="skin-day">Step 4</div><div class="skin-items" style="color:var(--txt)">SPF 30+ — every single morning, rain or shine. This is the single most anti-ageing thing you can do.</div></div>
+    <div class="skin-row"><div class="skin-day">Step 5</div><div class="skin-items" style="color:var(--txt)">Lash serum (Latisse or Ordinary) on lash line — apply before moisturiser</div></div>
+
+    <div class="sp2-h2">Body care</div>
+    <div class="sp2-grid">
+      <div class="sp2-card"><h3>Daily</h3><ul><li>Body moisturiser after every shower while skin is still damp</li><li>SPF on any exposed skin</li><li>Lip balm with SPF during the day</li><li>Dry brush before shower on strength days — circulation and texture</li></ul></div>
+      <div class="sp2-card"><h3>Weekly</h3><ul><li>Body exfoliant — focus on upper arms, thighs, anywhere rough</li><li>Hair mask or deep conditioner — leave in while doing Sunday mobility</li><li>Eyebrow grooming</li><li>Cuticle oil on nails</li></ul></div>
     </div>
-    <div class="sp-card"><div class="sp-h3">The three-day weekend is your biggest structural asset</div><div class="sp-p" style="margin:0">Friday handles admin, review, appointments, and the pool so Saturday stays completely clear for deep work. Facials, brow appointments, and shopping all live in Friday afternoons. This is when the glow-up logistics actually get executed rather than planned.</div></div>
+
+    <div class="sp2-h2">Hair</div>
+    <div class="sp2-note">Target style: Dakota Johnson bottleneck/Birkin bangs. Products: Kevin Murphy Heated Defense (before heat), Doo.Over Spray (texture and hold), Hair.Resort Spray (beachy texture), R+Co Rockaway Salt Spray. Wash 2–3 times per week maximum for oily scalp. Cold rinse at the end seals the cuticle and adds shine. Braid loosely before bed every night.</div>
+
+    <div class="sp2-h2">The glow-up non-negotiables</div>
+    <div class="sp2-note">These are the things that actually compound. Skincare every single night without exception. SPF every morning. Sleep with hair braided. Body moisturiser after every shower. Drink your 4L of water — it shows on your skin within two weeks. Sunglasses outside — squinting causes lines. These feel small but over a summer they add up to a visible change.</div>
   </div>
 
-  <!-- DAILY TEMPLATES -->
-  <div class="tc" id="sp-daily">
-    <div class="sp-h2">Standard workday</div>
-    <div class="sp-tbl">
-      <div class="sp-tr sp-bm"><div class="sp-tt">5:00</div><div class="sp-tc"><span class="sp-tl">Wake up + take meds</span></div></div>
-      <div class="sp-tr sp-bm"><div class="sp-tt">5:05</div><div class="sp-tc"><span class="sp-tl">Morning Pages</span><div class="sp-td">25 min — stream of consciousness, no editing</div></div></div>
-      <div class="sp-tr sp-bf"><div class="sp-tt">5:30</div><div class="sp-tc"><span class="sp-tl">Workout clothes + Sun Salutation (10 min)</span><div class="sp-td">Yoga while preworkout activates</div></div></div>
-      <div class="sp-tr sp-bf"><div class="sp-tt">5:40</div><div class="sp-tc"><span class="sp-tl">Preworkout + NYT Games (25 min wait)</span><div class="sp-td">Crossword, Wordle — the wait made useful</div></div></div>
-      <div class="sp-tr sp-bf"><div class="sp-tt">6:05</div><div class="sp-tc"><span class="sp-tl">Cardio (30 min)</span><div class="sp-td">Phase 1: stairstepper. Phase 2+: run or treadmill intervals</div></div></div>
-      <div class="sp-tr sp-bf"><div class="sp-tt">6:35</div><div class="sp-tc"><span class="sp-tl">Strength (30 min)</span><div class="sp-td">Phase 1: kettlebell. Phase 2+: full body weights session</div></div></div>
-      <div class="sp-tr sp-bm"><div class="sp-tt">7:05</div><div class="sp-tc"><span class="sp-tl">Shower (15 min)</span></div></div>
-      <div class="sp-tr sp-bm"><div class="sp-tt">7:20</div><div class="sp-tc"><span class="sp-tl">Get ready (40 min)</span><div class="sp-td">Skin, hair, clothes — desk by 8</div></div></div>
-      <div class="sp-tr sp-bw"><div class="sp-tt">8:00</div><div class="sp-tc"><span class="sp-tl">Gov work (remote)</span></div></div>
-      <div class="sp-tr sp-bw"><div class="sp-tt">12:00</div><div class="sp-tc"><span class="sp-tl">Lunch</span><div class="sp-td">Prep from the night before — no decisions when hungry</div></div></div>
-      <div class="sp-tr sp-bw"><div class="sp-tt">1:00</div><div class="sp-tc"><span class="sp-tl">Gov work (remote)</span></div></div>
-      <div class="sp-tr sp-bst"><div class="sp-tt">3:30</div><div class="sp-tc"><span class="sp-tl">Study block — varies by day</span><div class="sp-td">See curriculum tab for what runs each day</div></div></div>
-      <div class="sp-tr sp-bfr"><div class="sp-tt">5:00</div><div class="sp-tc"><span class="sp-tl">Free — cook, read, film, rest</span><div class="sp-td">Actual free time, not hidden productivity time</div></div></div>
-      <div class="sp-tr sp-be"><div class="sp-tt">9:00</div><div class="sp-tc"><span class="sp-tl">Closing shift (35 min)</span><div class="sp-td">Prep tomorrow's food, tidy, set out clothes, review one-line log</div></div></div>
-      <div class="sp-tr sp-be"><div class="sp-tt">9:35</div><div class="sp-tc"><span class="sp-tl">Get ready for bed (25 min)</span><div class="sp-td">Double cleanse, skin cycling serums, lash serum, lip mask, floss, brush, mouthwash, tongue scrape, night hair serum, braid, meds + vitamins</div></div></div>
-      <div class="sp-tr sp-be"><div class="sp-tt">10:00</div><div class="sp-tc"><span class="sp-tl">Moon Salutation (10 min)</span></div></div>
-      <div class="sp-tr sp-be"><div class="sp-tt">10:10</div><div class="sp-tc"><span class="sp-tl">Journal (25 min)</span><div class="sp-td">Stoic evening reflection: what did I do well, what didn't reflect who I want to be, what will I do differently tomorrow</div></div></div>
-      <div class="sp-tr sp-be"><div class="sp-tt">10:35</div><div class="sp-tc"><span class="sp-tl">Read (30 min)</span><div class="sp-td">Lights out by 11 — 6.5 hrs if up at 5:30</div></div></div>
-    </div>
-    <div class="sp-h2">Volunteer nights (Wed + Sun) — shortened</div>
-    <div class="sp-tbl">
-      <div class="sp-tr sp-bv"><div class="sp-tt">7:00</div><div class="sp-tc"><span class="sp-tl">Senior Helpers</span></div></div>
-      <div class="sp-tr sp-be"><div class="sp-tt">9:15</div><div class="sp-tc"><span class="sp-tl">Get ready for bed</span><div class="sp-td">Full skin routine — don't skip this one</div></div></div>
-      <div class="sp-tr sp-be"><div class="sp-tt">9:40</div><div class="sp-tc"><span class="sp-tl">Moon Salutation</span></div></div>
-      <div class="sp-tr sp-be"><div class="sp-tt">9:50</div><div class="sp-tc"><span class="sp-tl">Journal — brief</span><div class="sp-td">One sentence is enough on these nights</div></div></div>
-      <div class="sp-tr sp-be"><div class="sp-tt">10:00</div><div class="sp-tc"><span class="sp-tl">Read — even 10 pages counts</span></div></div>
-    </div>
-  </div>
-
-  <!-- CURRICULUM -->
-  <div class="tc" id="sp-curriculum">
-    <div style="margin-bottom:12px">
-      <span class="sp-pill sp-pill-amber">Daily: French 20 min + Anki 15 min</span>
-      <span class="sp-pill sp-pill-teal">Daily: 20 min gesture drawing</span>
-      <span class="sp-pill sp-pill-purple">Wks 1–12: Logic (primary)</span>
-      <span class="sp-pill sp-pill-coral">Wks 1–8: Scientific Literacy</span>
-      <span class="sp-pill sp-pill-teal">Wks 1–12: Math I (Saturday)</span>
-    </div>
-    <div class="sp-cur">
-      <div class="sp-cc"><div class="sp-cd">Monday</div><div class="sp-cm">Logic + Scientific Literacy</div><div class="sp-cdt">Reading block. After each section, close the book and write retrieval notes from memory. Week 1: LPL Ch. 1–2 and Sagan Ch. 1–3.</div></div>
-      <div class="sp-cc"><div class="sp-cd">Tuesday</div><div class="sp-cm">French + Math I</div><div class="sp-cdt">French: 30 min Duolingo plus one Easy French or InnerFrench video. Math: Khan Academy exercises, one concept only. Week 1: algebra diagnostic.</div></div>
-      <div class="sp-cc"><div class="sp-cd">Wednesday</div><div class="sp-cm">Drawing — Phase A</div><div class="sp-cdt">Weeks 1–4: gesture sketches only. Dodson Keys to Drawing. 20–120 second poses. Use line-of-action.com. Goal: 100 gestures by end of Phase A.</div></div>
-      <div class="sp-cc"><div class="sp-cd">Thursday</div><div class="sp-cm">Logic problem sets</div><div class="sp-cdt">Exercise sets from LPL. Write your reasoning in plain English before checking the answer. Build Anki fallacy deck as you go.</div></div>
-      <div class="sp-cc"><div class="sp-cd">Friday</div><div class="sp-cm">Weekly retrieval</div><div class="sp-cdt">No notes. Write everything you remember from Logic and Sci Lit this week. Check it against the text. The gap is exactly what you study next week.</div></div>
-      <div class="sp-cc"><div class="sp-cd">Saturday</div><div class="sp-cm">Math I deep work — 2.5 to 3 hours</div><div class="sp-cdt">Weeks 1–2: algebra diagnostic. Week 3+: 3Blue1Brown Essence of Calculus. Attempt problems before watching solutions. Drawing long render follows.</div></div>
-      <div class="sp-cc"><div class="sp-cd">Sunday</div><div class="sp-cm">Sci Lit reading + weekly review + guitar</div><div class="sp-cdt">Sagan chapters, 90 min. Weekly review: log hours, update Anki, plan next week. Guitar 30–45 min — no pressure. Just play.</div></div>
-    </div>
-    <div class="sp-h2">What success looks like in week one</div>
-    <ul class="sp-checklist">
-      <li>Logic Anki deck started with 10 cards minimum</li>
-      <li>LPL Ch. 1–2 read with retrieval notes written after, not during</li>
-      <li>Sagan Ch. 1–3 read, one Claim Check drafted on any health or science news story</li>
-      <li>Khan algebra diagnostic attempted and gaps identified honestly</li>
-      <li>20 gesture sketches done across the week</li>
-      <li>French happened at least 4 days</li>
-    </ul>
-    <div class="sp-p" style="margin-top:10px">That is a complete, successful first week. Nothing more is required.</div>
-  </div>
-
-  <!-- PRESENCE PRACTICE -->
+  <!-- PRESENCE -->
   <div class="tc" id="sp-presence">
-    <div class="sp-p">What you're describing — talking too fast, saying things you immediately regret, thinking about yourself in groups — is not a personality flaw. It is what self-consciousness looks like from the inside. The fix is not becoming someone else. It is learning to redirect attention outward rather than inward, consistently, until it becomes automatic.</div>
-    <div class="sp-h2">Daily practices</div>
-    <div class="sp-pb amber"><div class="sp-pt">Morning intention (30 seconds)</div><div class="sp-pd">Pick one word that describes who you want to be today. Not what you want to accomplish. Who you want to be. Grounded. Curious. Present. Patient. Carry it.</div></div>
-    <div class="sp-pb teal"><div class="sp-pt">The one conversation practice</div><div class="sp-pd">In one conversation today, say something and do not qualify it. Make the statement. Stop. Do not add "I don't know" or "if that makes sense." Let it sit. The silence after a considered statement is weight, not awkwardness.</div></div>
-    <div class="sp-pb purple"><div class="sp-pt">The outward redirect</div><div class="sp-pd">The moment you notice you are watching yourself from the outside, ask: what is genuinely interesting about this person right now? Find it. Your self-consciousness disappears when your attention is fully on someone else.</div></div>
-    <div class="sp-pb coral"><div class="sp-pt">The weekly reach-out (Sunday)</div><div class="sp-pd">One message to one person you have been meaning to contact. "I've been bad at staying in touch and I'm trying to change that. How are you?" is enough. Most people who like you are not keeping score.</div></div>
-    <div class="sp-pb amber"><div class="sp-pt">Evening reflection (2 minutes, inside journal block)</div><div class="sp-pd">Three questions: What did I do well today in how I showed up to other people? What didn't reflect who I want to be? One specific thing I will do differently tomorrow.</div></div>
-    <div class="sp-h2">On speaking — slowing down</div>
-    <div class="sp-grid">
-      <div class="sp-card"><div class="sp-h3">The physical habits</div><ul><li>Slow down by 20% — deliberate pace reads as considered, not slow</li><li>Comfortable eye contact — genuine interest, not performed attentiveness</li><li>Ask one good question instead of several small ones — then listen to the full answer</li><li>Have positions. "Whatever you think" is an absence, not a position</li></ul></div>
-      <div class="sp-card"><div class="sp-h3">Stop explaining yourself</div><ul><li>"I don't drink tonight" needs no explanation</li><li>"I prefer to head home" needs no justification</li><li>"I'm not available then" is a complete sentence</li><li>The instinct to justify is the instinct to seek approval. Let your choices stand</li></ul></div>
+    <div class="sp2-note">What you're working on — talking more deliberately, not qualifying every statement, feeling genuine with people — is not a personality flaw. It is self-consciousness, and the fix is redirecting attention outward until it becomes automatic.</div>
+
+    <div class="sp2-h2">Daily practices</div>
+    <div class="skin-row" style="margin-bottom:4px"><div class="skin-day">Morning</div><div class="skin-items" style="color:var(--txt)"><strong>One word intention.</strong> Inside morning pages or just after: pick one word for who you want to be today. Grounded. Curious. Present. Carry it.</div></div>
+    <div class="skin-row" style="margin-bottom:4px"><div class="skin-day">Daily</div><div class="skin-items" style="color:var(--txt)"><strong>One unqualified statement.</strong> In one conversation today, say something and do not add "I don't know" or "if that makes sense." Make the statement. Stop. Let it sit.</div></div>
+    <div class="skin-row" style="margin-bottom:4px"><div class="skin-day">Groups</div><div class="skin-items" style="color:var(--txt)"><strong>Outward redirect.</strong> When you notice self-consciousness, ask: what is genuinely interesting about this person right now? Your self-consciousness disappears when your attention is fully on someone else.</div></div>
+    <div class="skin-row" style="margin-bottom:4px"><div class="skin-day">Sunday</div><div class="skin-items" style="color:var(--txt)"><strong>One reach-out.</strong> One message to one person you've been meaning to contact. "I've been bad at staying in touch and I'm trying to change that. How are you?" is enough.</div></div>
+    <div class="skin-row" style="margin-bottom:14px"><div class="skin-day">Evening</div><div class="skin-items" style="color:var(--txt)"><strong>Journal reflection.</strong> What did I do well today in how I showed up? What didn't reflect who I want to be? One thing I'll do differently tomorrow.</div></div>
+
+    <div class="sp2-h2">Speaking</div>
+    <div class="sp2-grid">
+      <div class="sp2-card"><h3>Do this</h3><ul><li>Slow down by 20% — deliberate pace reads as considered</li><li>Ask one good question then fully listen to the answer</li><li>Have positions — "whatever you think" is an absence</li><li>Comfortable eye contact — genuine interest, not performance</li></ul></div>
+      <div class="sp2-card"><h3>Stop doing this</h3><ul><li>"I don't know" after every statement</li><li>"If that makes sense" as a filler</li><li>Justifying choices that don't need justification</li><li>"I don't drink tonight" needs no explanation. Neither does leaving early.</li></ul></div>
+    </div>
+
+    <div class="sp2-h2">Professional edge</div>
+    <div class="sp2-grid">
+      <div class="sp2-card"><h3>The anticipation habit</h3><ul><li>At end of each work day: what will someone need from me tomorrow that I could prepare tonight?</li><li>When you finish a task: what's the logical next question? Answer it before they ask</li><li>Never send a problem without a proposed solution</li></ul></div>
+      <div class="sp2-card"><h3>Communication</h3><ul><li>Say what it is and what you need in the first sentence</li><li>Confirm your understanding of a task before starting, not halfway through</li><li>If something will be late, say so 24 hours before — not after</li><li>"I'll confirm that" is a power move when you deliver</li></ul></div>
     </div>
   </div>
 
-  <!-- PROFESSIONAL EDGE -->
-  <div class="tc" id="sp-professional">
-    <div class="sp-p">The difference between "sorry, I'm still working on that" and "I have that for you right here" is almost never talent. It is the gap between doing work in your head versus doing it on paper early.</div>
-    <div class="sp-grid">
-      <div class="sp-card"><div class="sp-h3">The anticipation habit</div><ul><li>At the end of each workday, ask: what will someone need from me tomorrow that I could prepare tonight?</li><li>When you finish a task, ask: what is the logical next question someone will have? Answer it before they ask</li><li>Before any client-facing moment, write down the three things they are most likely to ask. Have the answers ready</li></ul></div>
-      <div class="sp-card"><div class="sp-h3">The communication habits</div><ul><li>When you send work, say what it is and what you want the recipient to do in the first sentence</li><li>Never send a problem without at least one proposed solution</li><li>Confirm your understanding of a task before you start it, not halfway through</li><li>If something will be late, say so 24 hours before it is due — not after</li></ul></div>
-    </div>
-    <div class="sp-pb teal"><div class="sp-pt">The meeting habit</div><div class="sp-pd">Before every meeting, pick one thing you will contribute — one observation, one question, one piece of information you bring that others don't have. Say it. Then stop talking and listen fully.</div></div>
-    <div class="sp-pb purple"><div class="sp-pt">The generous colleague habit</div><div class="sp-pd">Once a week, do something that makes a colleague's job easier without being asked. Generosity at work builds reputation faster than any individual piece of work.</div></div>
-    <div class="sp-pb amber"><div class="sp-pt">The end-of-day log (5 min, inside closing shift)</div><div class="sp-pd">Three lines: what I completed today, what is outstanding and when it will be done, one thing I will do tomorrow before anyone has to ask me.</div></div>
-    <div class="sp-h2">When you don't know something</div>
-    <div class="sp-card"><ul><li>"I don't have that in front of me right now — I'll get it to you by end of day" is professional and trustworthy</li><li>"I'm not sure but let me find out" followed by actually finding out is the entire job</li><li>Guessing to avoid looking uninformed is the only thing that actually undermines credibility</li><li>Saying "I'll confirm that" is a power move when you deliver</li></ul></div>
-  </div>
+  <!-- DAILY TEMPLATE -->
+  <div class="tc" id="sp-daily">
+    <div class="sp2-note">This is your standard workday. Every day follows this structure. The morning routine is the anchor — one bad evening does not become two bad mornings.</div>
+    <table class="ex-tbl">
+      <tr><th>Time</th><th>Block</th><th>Detail</th></tr>
+      <tr><td>5:00</td><td style="color:var(--txt)">Wake up + meds</td><td></td></tr>
+      <tr><td>5:05</td><td style="color:var(--txt)">Morning Pages</td><td>25 min, stream of consciousness, no editing</td></tr>
+      <tr><td>5:30</td><td style="color:var(--txt)">Workout clothes + Sun Salutation</td><td>10 min yoga while preworkout activates</td></tr>
+      <tr><td>5:40</td><td style="color:var(--txt)">Preworkout + NYT Games</td><td>25 min wait, made useful</td></tr>
+      <tr><td>6:05</td><td style="color:var(--txt)">Cardio — 30 min</td><td>Run, treadmill, or stairstepper</td></tr>
+      <tr><td>6:35</td><td style="color:var(--txt)">Strength — 30 min</td><td>On strength days per weekly schedule</td></tr>
+      <tr><td>7:05</td><td style="color:var(--txt)">Shower</td><td>15 min. Cold rinse at end.</td></tr>
+      <tr><td>7:20</td><td style="color:var(--txt)">Get ready</td><td>Skin, hair, clothes — desk by 8</td></tr>
+      <tr><td>8:00</td><td style="color:var(--txt)">Work (remote)</td><td></td></tr>
+      <tr><td>12:00</td><td style="color:var(--txt)">Lunch</td><td>Prepped the night before — no decisions when hungry</td></tr>
+      <tr><td>1:00</td><td style="color:var(--txt)">Work (remote)</td><td></td></tr>
+      <tr><td>3:30+</td><td style="color:var(--txt)">Study block / RA work / free</td><td>See curriculum for what runs each day</td></tr>
+      <tr><td>9:00</td><td style="color:var(--txt)">Closing shift</td><td>Prep tomorrow's food, tidy, set out clothes, review one-line log</td></tr>
+      <tr><td>9:35</td><td style="color:var(--txt)">Evening skincare</td><td>Full routine per skin cycling schedule</td></tr>
+      <tr><td>10:00</td><td style="color:var(--txt)">Moon Salutation</td><td>10 min</td></tr>
+      <tr><td>10:10</td><td style="color:var(--txt)">Journal</td><td>Stoic reflection — what went well, what didn't, what changes tomorrow</td></tr>
+      <tr><td>10:35</td><td style="color:var(--txt)">Read</td><td>30 min. Lights out by 11.</td></tr>
+    </table>
 
-  <!-- FITNESS -->
-  <div class="tc" id="sp-fitness">
-    <div class="sp-grid">
-      <div class="sp-card"><div class="sp-h3">Phase 1: May 1–13 (Edmonton)</div><ul><li>Cardio: stairstepper, 20–30 min, build to 30 by day 5</li><li>Strength: kettlebell YouTube session</li><li>Both happen in the morning block before 8am</li><li>Goal: establish the streak, do not miss a day</li></ul></div>
-      <div class="sp-card"><div class="sp-h3">Phase 2: May 13–June 1 (Vancouver)</div><ul><li>Cardio: run sessions, treadmill or outdoor intervals</li><li>Strength: full body weights, apartment gym or rec centre</li><li>Building toward running continuously</li><li>Goal: arrive at Firelight with a working gym habit</li></ul></div>
-      <div class="sp-card"><div class="sp-h3">Phase 3: June 1 onward</div><ul><li>Cardio: running, increasing intervals, building toward 10k</li><li>Strength: full body weights, full gym access</li><li>Pool opens June 1 — swim laps Fri/Sat as second cardio option</li><li>Goal: operate at full physical capacity through summer</li></ul></div>
-      <div class="sp-card"><div class="sp-h3">Performance targets</div><ul><li>10 pullups</li><li>40 pushups</li><li>80 sit-ups in 2 minutes</li><li>2-minute plank</li><li>2.4 km under 10 minutes</li><li>10 km continuous in 1:30</li></ul></div>
+    <div class="sp2-h2">The seven non-negotiables</div>
+    <div class="sp2-note">These make the day count. Miss one and the day doesn't count — but you don't punish yourself. Note it, understand why, and tomorrow starts clean.</div>
+    <div class="sp2-grid">
+      <div class="sp2-card"><ul>
+        <li>Workout one: cardio (20+ min)</li>
+        <li>Workout two: strength (20+ min)</li>
+        <li>Read 30+ pages</li>
+        <li>One study or skill block from curriculum</li>
+      </ul></div>
+      <div class="sp2-card"><ul>
+        <li>Water: 4L minimum</li>
+        <li>Progress photo + one-line log written</li>
+        <li>Calories tracked and within target</li>
+      </ul></div>
     </div>
-    <div class="sp-h2">Recovery and non-negotiables</div>
-    <div class="sp-card"><ul><li>Sleep 7–8 hours — part of the body composition plan, not separate from it</li><li>Water 4L minimum daily — tracked, not approximate</li><li>Prep food the night before on work days — the closing shift is when this happens</li><li>Weekly weigh-in Saturday morning, before eating, after bathroom — not more often</li><li>Rest days do not exist but recovery workouts do — 20 min of intentional movement counts</li></ul></div>
   </div>
 
   <!-- TO ACQUIRE -->
-  <div class="tc" id="sp-buylist">
-    <div class="sp-p">Organised by category — Friday afternoons in Phase 3 are when these get done.</div>
-    <div class="sp-buys">
-      <div class="sp-buycat">Living space</div>
-      <div class="sp-buyitems"><div class="sp-buyitem">New couch cushion covers</div><div class="sp-buyitem">Living room art</div><div class="sp-buyitem">Art for above desk</div><div class="sp-buyitem">Cat tree</div><div class="sp-buyitem">New cat dishes</div></div>
-      <div class="sp-buycat">Kitchen</div>
-      <div class="sp-buyitems"><div class="sp-buyitem">Drawer knife block</div><div class="sp-buyitem">Wooden utensils</div><div class="sp-buyitem">Espresso machine</div><div class="sp-buyitem">Mixing bowls</div><div class="sp-buyitem">New eating utensils</div><div class="sp-buyitem">Blender</div></div>
-      <div class="sp-buycat">Bedroom</div>
-      <div class="sp-buyitems"><div class="sp-buyitem">New bedding</div><div class="sp-buyitem">Bedroom art</div><div class="sp-buyitem">New pillows</div><div class="sp-buyitem">Mattress topper</div><div class="sp-buyitem">New quilt</div><div class="sp-buyitem">Decorative pillows</div></div>
-      <div class="sp-buycat">Wardrobe</div>
-      <div class="sp-buyitems"><div class="sp-buyitem">Shorts</div><div class="sp-buyitem">Underwear</div><div class="sp-buyitem">Sports bras</div><div class="sp-buyitem">Bras</div><div class="sp-buyitem">Summer pants</div><div class="sp-buyitem">Dress</div><div class="sp-buyitem">Sweaters</div><div class="sp-buyitem">Loafers</div><div class="sp-buyitem">Dress shoes</div><div class="sp-buyitem">Black jeans</div><div class="sp-buyitem">Blue jeans</div><div class="sp-buyitem">Button-up shirts</div><div class="sp-buyitem">Watches</div><div class="sp-buyitem">Rings</div></div>
-      <div class="sp-buycat">Appearance</div>
-      <div class="sp-buyitems"><div class="sp-buyitem">Latisse</div><div class="sp-buyitem">Facial series — skin texture</div><div class="sp-buyitem">Eyebrow appointments</div><div class="sp-buyitem">Tattoo cover research</div></div>
+  <div class="tc" id="sp-acquire">
+    <div class="sp2-note">Organised by category. Friday afternoons in Phase 3 are when these get done.</div>
+    <div class="sp2-h2">Living space</div>
+    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px">
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">New couch cushion covers</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Living room art</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Art for above desk</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Cat tree</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">New cat dishes</span>
+    </div>
+    <div class="sp2-h2">Kitchen</div>
+    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px">
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Drawer knife block</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Wooden utensils</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Espresso machine</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Mixing bowls</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">New eating utensils</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Blender</span>
+    </div>
+    <div class="sp2-h2">Bedroom</div>
+    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px">
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">New bedding</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Bedroom art</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">New pillows</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Mattress topper</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">New quilt</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Decorative pillows</span>
+    </div>
+    <div class="sp2-h2">Wardrobe</div>
+    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px">
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Shorts</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Underwear</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Sports bras</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Bras</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Summer pants</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Dress</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Loafers</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Dress shoes</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Black jeans</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Blue jeans</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Button-up shirts</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Watches</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Rings</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Thursday Boot Co. Captain</span>
+    </div>
+    <div class="sp2-h2">Appearance</div>
+    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px">
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Latisse</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Facial series — skin texture</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Eyebrow appointments</span>
+      <span style="font-size:11px;padding:3px 9px;border:1px solid var(--bdr);border-radius:20px;color:var(--mid)">Tattoo cover consultations</span>
     </div>
   </div>
 </div>
-
 
 <!-- ══════ FLASHCARDS ══════ -->
 <div class="page" id="p-flashcards">
