@@ -489,6 +489,7 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
     <div class="nl">Lists</div>
     <div class="ni" onclick="nav('grocery',this)"><div class="nd"></div>Grocery</div>
     <div class="ni" onclick="nav('shopping',this)"><div class="nd"></div>Shopping</div>
+    <div class="ni" onclick="nav('recipes',this)"><div class="nd"></div>Recipes</div>
     <div class="ni" onclick="nav('cleaning',this)"><div class="nd"></div>Cleaning</div>
     <div class="nl">Summer</div>
     <div class="ni" onclick="nav('summer',this)"><div class="nd"></div>Becoming</div>
@@ -531,6 +532,19 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
 
   <!-- DAILY -->
   <div class="htc active" id="ht-daily">
+
+    <!-- Today Todo -->
+    <div class="sec" style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)">Today — To Do</div>
+        <button class="btn bsm" onclick="clearTodayTodo()">Clear done</button>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <input type="text" id="todayTodoInput" placeholder="Add a task for today..." style="flex:1;padding:7px 9px;font-size:12px" onkeydown="if(event.key==='Enter')addTodayTodo()">
+        <button class="btn bd" onclick="addTodayTodo()">+ Add</button>
+      </div>
+      <div id="todayTodoList"></div>
+    </div>
 
     <!-- Morning briefing -->
     <div class="sec" style="margin-bottom:14px">
@@ -2298,6 +2312,46 @@ select{padding:6px 24px 6px 9px;cursor:pointer;-webkit-appearance:none;appearanc
       <button class="btn bd" onclick="beginQuiz()">Go again</button>
     </div>
   </div>
+</div>
+
+<!-- ══════ RECIPES ══════ -->
+<div class="page" id="p-recipes">
+  <div class="ph"><div class="pl">Lists</div><div class="pt">Recipes</div><div class="psub">Your recipe reference. Add your own and build the library over time.</div></div>
+  <div class="tabs">
+    <div class="tab active" onclick="stab('rcp','all',this)">All</div>
+    <div class="tab" onclick="stab('rcp','breakfast',this)">Breakfast</div>
+    <div class="tab" onclick="stab('rcp','lunch',this)">Lunch</div>
+    <div class="tab" onclick="stab('rcp','dinner',this)">Dinner</div>
+    <div class="tab" onclick="stab('rcp','drinks',this)">Drinks</div>
+  </div>
+
+  <!-- Add recipe form -->
+  <div class="card sec" style="margin-bottom:16px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px">
+      <input type="text" id="rcpName" placeholder="Recipe name..." style="padding:7px 9px">
+      <select id="rcpCat" style="padding:7px 9px">
+        <option value="breakfast">Breakfast</option>
+        <option value="lunch">Lunch</option>
+        <option value="dinner">Dinner</option>
+        <option value="drinks">Drinks</option>
+      </select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:7px;margin-bottom:7px">
+      <input type="number" id="rcpCal" placeholder="Calories" style="padding:7px 9px" min="0">
+      <input type="number" id="rcpProtein" placeholder="Protein (g)" style="padding:7px 9px" min="0">
+      <input type="number" id="rcpCarbs" placeholder="Carbs (g)" style="padding:7px 9px" min="0">
+      <input type="number" id="rcpFat" placeholder="Fat (g)" style="padding:7px 9px" min="0">
+    </div>
+    <textarea id="rcpIngredients" placeholder="Ingredients (one per line)..." style="width:100%;padding:7px 9px;min-height:80px;resize:vertical;font-size:12px;margin-bottom:7px"></textarea>
+    <textarea id="rcpNote" placeholder="Prep note (optional)..." style="width:100%;padding:7px 9px;min-height:50px;resize:vertical;font-size:12px;margin-bottom:7px"></textarea>
+    <button class="btn bd" onclick="addRecipe()">+ Add recipe</button>
+  </div>
+
+  <div class="tc active" id="rcp-all"><div id="rcpList-all"></div></div>
+  <div class="tc" id="rcp-breakfast"><div id="rcpList-breakfast"></div></div>
+  <div class="tc" id="rcp-lunch"><div id="rcpList-lunch"></div></div>
+  <div class="tc" id="rcp-dinner"><div id="rcpList-dinner"></div></div>
+  <div class="tc" id="rcp-drinks"><div id="rcpList-drinks"></div></div>
 </div>
 
 <!-- ══════ CLEANING ══════ -->
@@ -4110,6 +4164,8 @@ function collectAllData() {
   data.habits = habits.map(function(h){ return Object.assign({},h,{checks:Object.assign({},h.checks)}); });
   data.journalEntries = journalEntries.map(function(e){ return Object.assign({},e); });
   data.savingsGoals = savingsGoals.map(function(g){ return Object.assign({},g,{log:[...(g.log||[])]}); });
+  data.todayTodos = todayTodos.map(function(t){ return Object.assign({},t); });
+  data.recipes = recipes.map(function(r){ return Object.assign({},r); });
   data.references = references.map(r => ({...r}));
   // fitness
   data.fitData = JSON.parse(JSON.stringify(fitData));
@@ -4297,6 +4353,8 @@ function restoreAllData(data) {
   if (data.habits && Array.isArray(data.habits)) { habits.length = 0; data.habits.forEach(function(h){ habits.push(h); }); rendHabits(); }
   if (data.journalEntries && Array.isArray(data.journalEntries)) { journalEntries.length = 0; data.journalEntries.forEach(function(e){ journalEntries.push(e); }); rendJournal(); }
   if (data.savingsGoals && Array.isArray(data.savingsGoals)) { savingsGoals.length = 0; data.savingsGoals.forEach(function(g){ savingsGoals.push(g); }); rendSavings(); }
+  if (data.todayTodos && Array.isArray(data.todayTodos)) { todayTodos.length = 0; data.todayTodos.forEach(function(t){ todayTodos.push(t); }); rendTodayTodo(); }
+  if (data.recipes && Array.isArray(data.recipes)) { recipes.length = 0; data.recipes.forEach(function(r){ recipes.push(r); }); rendRecipes(); }
   if (data.fcDecks && Array.isArray(data.fcDecks)) { fcDecks.length = 0; data.fcDecks.forEach(d => { if(!fcDecks.includes(d)) fcDecks.push(d); }); }
   renderFcDeckSelect(); renderFcCards();
   // restore weekly view
@@ -5706,6 +5764,163 @@ function deleteSaving(id) {
   rendSavings(); updFinSum(); scheduleAutoSave();
 }
 rendSavings();
+
+
+// ── TODAY TODO ─────────────────────────────────────
+const todayTodos = [];
+
+function addTodayTodo() {
+  var input = document.getElementById('todayTodoInput');
+  var text = input ? input.value.trim() : '';
+  if (!text) return;
+  todayTodos.push({ id: Date.now().toString(), text: text, done: false });
+  input.value = '';
+  rendTodayTodo();
+  scheduleAutoSave();
+}
+
+function rendTodayTodo() {
+  var el = document.getElementById('todayTodoList');
+  if (!el) return;
+  if (!todayTodos.length) { el.innerHTML = '<div class="empty">Nothing yet — add a task above.</div>'; return; }
+  el.innerHTML = '';
+  todayTodos.forEach(function(item) {
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--bdr)';
+    var ck = document.createElement('div');
+    ck.style.cssText = 'width:16px;height:16px;border-radius:3px;border:1px solid var(--bdr);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;' + (item.done ? 'background:var(--txt);border-color:var(--txt);color:#fff' : '');
+    ck.textContent = item.done ? '✓' : '';
+    ck.addEventListener('click', function() { toggleTodayTodo(item.id); });
+    var lbl = document.createElement('div');
+    lbl.style.cssText = 'flex:1;font-size:12.5px;' + (item.done ? 'text-decoration:line-through;color:var(--dim)' : 'color:var(--txt)');
+    lbl.textContent = item.text;
+    var del = document.createElement('div');
+    del.style.cssText = 'font-size:10px;color:var(--dim);cursor:pointer;padding:0 4px;opacity:0;transition:opacity .1s';
+    del.textContent = '✕';
+    del.addEventListener('click', function() { deleteTodayTodo(item.id); });
+    row.appendChild(ck); row.appendChild(lbl); row.appendChild(del);
+    row.addEventListener('mouseenter', function() { del.style.opacity = '1'; });
+    row.addEventListener('mouseleave', function() { del.style.opacity = '0'; });
+    el.appendChild(row);
+  });
+}
+
+function toggleTodayTodo(id) {
+  var item = todayTodos.find(function(i) { return i.id === id; });
+  if (item) { item.done = !item.done; rendTodayTodo(); scheduleAutoSave(); }
+}
+
+function deleteTodayTodo(id) {
+  var idx = todayTodos.findIndex(function(i) { return i.id === id; });
+  if (idx !== -1) { todayTodos.splice(idx, 1); rendTodayTodo(); scheduleAutoSave(); }
+}
+
+function clearTodayTodo() {
+  for (var i = todayTodos.length - 1; i >= 0; i--) {
+    if (todayTodos[i].done) todayTodos.splice(i, 1);
+  }
+  rendTodayTodo(); scheduleAutoSave();
+}
+rendTodayTodo();
+
+// ── RECIPES ────────────────────────────────────────
+const recipes = [];
+
+// Pre-populate with 7 meal plan recipes
+(function() {
+  var defaults = [
+    {id:'r1',name:'Egg Salad on Rye Crispbreads',cat:'lunch',cal:300,protein:30,carbs:22,fat:10,
+     ingredients:'3 hard-boiled eggs, chopped\n1 tsp light mayo + 1 tsp Dijon mustard\nCelery, dill, salt and pepper\n4 rye crispbreads (Wasa or similar)\n1 cup cucumber and cherry tomatoes on the side',
+     note:'Make a big batch on prep day — keeps in the fridge for 3 days.'},
+    {id:'r2',name:'Cottage Cheese & Egg Snack Plate',cat:'lunch',cal:340,protein:34,carbs:20,fat:12,
+     ingredients:'1 cup 2% cottage cheese\n2 hard-boiled eggs\nCucumber, cherry tomatoes, bell pepper strips\n10 kalamata olives\n3 whole wheat pita triangles, toasted',
+     note:'Zero cooking required beyond the hard-boiled eggs. Just assemble and eat.'},
+    {id:'r3',name:'Tuna & White Bean Plate',cat:'lunch',cal:320,protein:40,carbs:18,fat:8,
+     ingredients:'2 cans (170g total) tuna in water, drained\n1/4 cup white beans, rinsed\nLemon juice, Dijon, black pepper\nCelery sticks, cucumber, cherry tomatoes\n4 whole grain crackers',
+     note:'The most efficient way to hit 40g protein at lunch.'},
+    {id:'r4',name:'Baked Lemon Herb Salmon with Asparagus & Quinoa',cat:'dinner',cal:480,protein:55,carbs:30,fat:14,
+     ingredients:'175g salmon fillet\n1/3 cup cooked quinoa\n1 cup asparagus, roasted\nLemon, garlic, 1 tsp olive oil, dill\nLarge side salad with no-oil lemon vinaigrette',
+     note:'Cook both portions at once and reheat at 275F for 15 min, or cook fresh in 15 min.'},
+    {id:'r5',name:'Chicken & White Bean Stew',cat:'dinner',cal:460,protein:55,carbs:28,fat:10,
+     ingredients:'180g boneless chicken breast, skinless\n3/4 cup canned white beans, rinsed\nCanned diced tomatoes, 2 cups kale, garlic, onion\nLow-sodium chicken broth\nThyme, rosemary, bay leaf',
+     note:'Make a double batch — it reheats beautifully and tastes better the next day.'},
+    {id:'r6',name:'Sheet Pan Cod with Chickpeas & Vegetables',cat:'dinner',cal:460,protein:55,carbs:32,fat:10,
+     ingredients:'210g cod fillet\n1/2 cup canned chickpeas, rinsed\n1 cup cherry tomatoes\n1 cup zucchini, sliced\n1 cup broccoli florets\n1 tsp olive oil, smoked paprika, cumin, lemon',
+     note:'Everything on one sheet pan at 425F for 20 min. Make double and reheat the second portion.'},
+    {id:'r7',name:'Turkey & Vegetable Stir-Fry with Brown Rice',cat:'dinner',cal:460,protein:50,carbs:35,fat:12,
+     ingredients:'170g lean ground turkey\n1/3 cup cooked brown rice\n2 cups broccoli, snap peas, bell pepper, carrots\nLow-sodium soy sauce, ginger, garlic, 1 tsp sesame oil\n1 tsp cornstarch to thicken sauce',
+     note:'Cook extra brown rice and keep it for the rest of the week.'}
+  ];
+  defaults.forEach(function(r) { recipes.push(r); });
+})();
+
+function addRecipe() {
+  var name = document.getElementById('rcpName').value.trim();
+  var cat = document.getElementById('rcpCat').value;
+  var cal = parseInt(document.getElementById('rcpCal').value) || 0;
+  var protein = parseInt(document.getElementById('rcpProtein').value) || 0;
+  var carbs = parseInt(document.getElementById('rcpCarbs').value) || 0;
+  var fat = parseInt(document.getElementById('rcpFat').value) || 0;
+  var ingredients = document.getElementById('rcpIngredients').value.trim();
+  var note = document.getElementById('rcpNote').value.trim();
+  if (!name) return;
+  recipes.unshift({ id: Date.now().toString(), name: name, cat: cat, cal: cal, protein: protein, carbs: carbs, fat: fat, ingredients: ingredients, note: note });
+  ['rcpName','rcpCal','rcpProtein','rcpCarbs','rcpFat','rcpIngredients','rcpNote'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) el.value = '';
+  });
+  rendRecipes(); scheduleAutoSave();
+}
+
+function deleteRecipe(id) {
+  var idx = recipes.findIndex(function(r) { return r.id === id; });
+  if (idx !== -1) { recipes.splice(idx, 1); rendRecipes(); scheduleAutoSave(); }
+}
+
+function rendRecipes() {
+  var cats = ['all','breakfast','lunch','dinner','drinks'];
+  cats.forEach(function(cat) {
+    var el = document.getElementById('rcpList-' + cat);
+    if (!el) return;
+    var filtered = cat === 'all' ? recipes : recipes.filter(function(r) { return r.cat === cat; });
+    if (!filtered.length) { el.innerHTML = '<div class="empty">No ' + (cat === 'all' ? '' : cat + ' ') + 'recipes yet.</div>'; return; }
+    el.innerHTML = '';
+    filtered.forEach(function(r) {
+      var card = document.createElement('div');
+      card.style.cssText = 'border:1px solid var(--bdr);border-radius:5px;overflow:hidden;margin-bottom:10px;background:var(--surf)';
+      var catColors = { breakfast: 'var(--admin)', lunch: 'var(--deadline)', dinner: 'var(--creative)', drinks: 'var(--soft)' };
+      var macros = [];
+      if (r.cal) macros.push(r.cal + ' cal');
+      if (r.protein) macros.push(r.protein + 'g protein');
+      if (r.carbs) macros.push(r.carbs + 'g carbs');
+      if (r.fat) macros.push(r.fat + 'g fat');
+      var hdr = '<div style="padding:10px 14px;background:var(--surf2);border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px">' +
+        '<div>' +
+          '<div style="font-size:13px;font-weight:500;color:var(--txt);margin-bottom:3px">' + r.name + '</div>' +
+          '<div style="display:flex;gap:8px;align-items:center">' +
+            '<span style="font-size:9px;padding:2px 7px;border-radius:3px;background:' + (catColors[r.cat]||'var(--soft)') + ';color:#fff;font-weight:500">' + r.cat + '</span>' +
+            (macros.length ? '<span style="font-size:11px;color:var(--soft)">' + macros.join(' · ') + '</span>' : '') +
+          '</div>' +
+        '</div>' +
+        '<div style="font-size:10px;color:var(--urgent);cursor:pointer;padding:2px 4px" data-id="' + r.id + '" onclick="deleteRecipe(this.dataset.id)">✕</div>' +
+      '</div>';
+      var body = '<div style="padding:10px 14px">';
+      if (r.ingredients) {
+        var lines = r.ingredients.split('\n').filter(function(l) { return l.trim(); });
+        body += '<div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:6px">Ingredients</div>';
+        body += '<ul style="padding-left:14px;margin-bottom:8px">';
+        lines.forEach(function(l) { body += '<li style="font-size:12px;color:var(--mid);margin-bottom:3px;line-height:1.5">' + l + '</li>'; });
+        body += '</ul>';
+      }
+      if (r.note) {
+        body += '<div style="font-size:11px;color:var(--soft);font-style:italic;padding:6px 10px;background:var(--surf2);border-radius:3px">' + r.note + '</div>';
+      }
+      body += '</div>';
+      card.innerHTML = hdr + body;
+      el.appendChild(card);
+    });
+  });
+}
+rendRecipes();
 
 window.addEventListener('load', () => { setTimeout(sbLoad, 500); });
 </script>
